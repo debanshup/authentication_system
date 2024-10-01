@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
       const user = await User.findOne({ email });
 
-      console.log(user);
+      // console.log(user);
     
       
       
@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: "User created successfully",
         success: true,
+        // id: savedUser.id
         user: savedUser,
         // email: savedUser.email
       });

@@ -23,7 +23,7 @@ const Signup = () => {
                 // toast password should be matched
             }
 
-            router.push('./signup/mailinfo')
+            // router.push('./signup/'+user.email)
         } catch (error: any) {
             console.log(error.message);
 

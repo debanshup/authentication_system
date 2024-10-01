@@ -17,10 +17,16 @@ const Login = () => {
                 <label htmlFor="">Password</label>
                 <input className='form-control' type={"password"} placeholder='enter Password' />
             </div>
-            <div>
+            <div className='row'>
+                <div className='col-6 text-start px-4'>
                 <span>Don't have an account
                     <Link href={"/signup"}> create one</Link>
                 </span>
+                </div>
+                <div className='col-6 text-end px-4'>
+                <Link href={"/cred"}> forgot password</Link>
+                </div>
+
             </div>
             <div>
                 <button onClick={loginBtnClickHandler} className='btn btn-primary'>log in</button>
