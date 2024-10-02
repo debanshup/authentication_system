@@ -8,11 +8,12 @@ export async function POST(request: NextRequest) {
     console.log(reqBody);
 
     return NextResponse.json({
-      message: "",
-      status: 123,
+      success: true
     });
   } catch (error) {
-
-    
+    return NextResponse.json({
+      message: 'Somrthing went wrong',
+      status: 500
+    })
   }
 }

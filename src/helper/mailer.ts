@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import User from "@/models/userModel";
 import { MailType } from "@/types/enums";
+import { NextResponse } from "next/server";
 
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
@@ -11,11 +12,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+
 export async function sendMail({ email, mailType }: any) {
-  try {
+  // try {
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User not found");  // this error will be handled in its caller
     }
     let mailOptions: any, token: string;
 
@@ -29,7 +32,7 @@ export async function sendMail({ email, mailType }: any) {
         subject: "Password Reset Request",
         html: `
                 <p>You have requested a password reset. Please use the following link to reset your password:</p>
-                <a href="${process.env.CLIENT_URL}/reset-password?token=${token}">Reset Password</a>
+                <a href="${process.env.DOMAIN}/reset-password?token=${token}">Reset Password</a>
                 <p>This link will expire in 10 minutes.</p>
             `,
       };
@@ -42,17 +45,23 @@ export async function sendMail({ email, mailType }: any) {
         subject: "Email Verification",
         html: `
                 <p>Thank you for registering. Please verify your email by clicking the link below:</p>
-                <a href="${process.env.CLIENT_URL}/verify-email?token=${token}">Verify Email</a>
+                <a href="${process.env.DOMAIN}/confirmation?token=${token}">Verify Email</a>
                 <p>This link will expire in 10 minutes.</p>
             `,
       };
     }
+    
     const info = await transporter.sendMail(mailOptions)
     console.log('email sent to '+email);
     return info
     
-  } catch (error: any) {
-    //
-    console.error(error)
-  }
+  // } catch (error: any) {
+  //   //
+  //   // console.error(error.message)
+  //   return NextResponse.json({
+  //     message: error.message,
+  //     status: 500
+  //   })
+    
+  // }
 }

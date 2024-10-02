@@ -4,27 +4,15 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { sendMail } from "@/helper/mailer";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 connect();
 
 export async function POST(request: NextRequest) {
-    try {
-    //   console.log('entered');
+  try {
     const reqBody = await request.json();
     const { email } = reqBody;
-    // console.log(reqBody);
-    
-    const user = User.findOne({
-      email: email,
-    });
-    console.log(user);
-    
-    if (!user) {
-      return NextResponse.json({
-        message: "No user found",
-        status: 400,
-      });
-    }
 
     // send mail
     await sendMail({
@@ -32,14 +20,19 @@ export async function POST(request: NextRequest) {
       mailType: "reset",
     });
 
-
+    // return res
     return NextResponse.json({
+      status: 200,
       success: true,
     });
+
   } catch (error: any) {
+
+    console.log(error.message);
     return NextResponse.json({
-        error: error.message,
-        status: 500
-    })
+      seccess: false,
+      error: error.message,
+      status: 500,
+    });
   }
 }

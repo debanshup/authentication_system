@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error: any) {
-    console.log(error);
+    console.log(error.error);
 
     return NextResponse.json({
       error: error.message,

@@ -2,30 +2,38 @@
 import axios from 'axios'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const Cred = () => {
-const[credId, setCredId] = useState('')
+    const router = useRouter()
+    const [credId, setCredId] = useState('')
 
 
-   async function nextBtnClickHandler() {
+    async function nextBtnClickHandler() {
 
-    await axios.post("./api/users/cred", credId)
-    alert(credId)
-}
+        const res = await axios.post("./api/users/cred", { email: credId })
+        // alert(res.data.success)
+        // alert(credId)
+        if (res.data.success) {
+            router.push('./verifyaccount')
+        } else {
+            alert("No user found")
+        }
+    }
 
     return (
-        <div className='container'>
-            <div>
-                <input onChange={(e) => {setCredId(e.target.value)}} type="email" placeholder='email' />
+        <div className='container '>
+            <div className='text-center'>
+                <input onChange={(e) => { setCredId(e.target.value) }} type="email" placeholder='email' />
             </div>
             <div className='row'>
-                <div className='col-6'>
-                    <Link href={'/login'}>Back</Link>
+                <div className='col-6 '>
+                    <Link className='btn btn-outline-primary' href={'/login'}>Back</Link>
                 </div>
-                <div className='col-6'>
-                    <Link onClick={nextBtnClickHandler} href={'/resetpassword'}>Next</Link>
+                <div className='col-6 text-end '>
+                    <button className='btn btn-outline-primary' onClick={nextBtnClickHandler}>Next</button>
                 </div>
-                <div className='col-6'></div>
+
             </div>
         </div>
     )
