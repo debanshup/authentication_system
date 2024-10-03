@@ -1,0 +1,68 @@
+import mongoose from "mongoose";
+
+
+const otpSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    otp: {
+        type: String,
+        required: true,
+    },
+    otpExpires: {
+        type: Date,
+        required: true,
+    },
+
+
+
+
+    // will be used later
+    otpAttempts: {
+        type: Number,
+        default: 0,
+    },
+    sentOtpCount: {
+        type: Number,
+        default: 0,
+    },
+    sentOtpCountExpires: Date
+
+})
+
+
+
+// method to generate otp (will bw used later for login/other purpose)
+otpSchema.methods.generateOtp = function () {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    this.otp = crypto.createHash('sha256')
+        .update(otp)
+        .digest('hex')
+    this.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+
+    return otp
+}
+
+
+// clear otp
+otpSchema.methods.clearOtp = function () {
+    this.otp = undefined;
+    this.otpExpires = undefined;
+}
+
+
+
+
+
+
+
+
+
+
+
+const OTP = mongoose.models.OTP || mongoose.model(
+    "OTP", otpSchema
+)
+export default OTP

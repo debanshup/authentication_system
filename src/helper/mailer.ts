@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import User from "@/models/userModel";
+import OTP from "@/models/otpModel"
 import { MailType } from "@/types/enums";
 import { NextResponse } from "next/server";
 
@@ -32,7 +33,7 @@ export async function sendMail({ email, mailType }: any) {
         subject: "Password Reset Request",
         html: `
                 <p>You have requested a password reset. Please use the following link to reset your password:</p>
-                <a href="${process.env.DOMAIN}/reset-password?token=${token}">Reset Password</a>
+                <a href="${process.env.DOMAIN}/resetpassword?token=${token}">Reset Password</a>
                 <p>This link will expire in 10 minutes.</p>
             `,
       };

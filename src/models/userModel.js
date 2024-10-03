@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema(
         passwordResetTokenExpires: Date,
         emailVerificationToken: String,  // Token for email verification
         emailVerificationTokenExpires: Date,
+        reqId: String,  // request id for otp verification
+        reqIdExpires: Date,
         otp: String,
         otpExpires: Date,
 
@@ -44,10 +46,18 @@ const userSchema = new mongoose.Schema(
             default: 'inactive',
         },
         lastLogin: Date, // Track last login time
+
+        // track failed login
         failedLoginAttempts: {
             type: Number,
             default: 0,  // Track failed login attempts for security
         },
+
+        // track number of otp sent
+        otpCount: {
+            type: Number,
+            default: 0,
+        }
 
         // implement more advanced schema, mfa enabled, lockAccount...
 
@@ -109,22 +119,45 @@ userSchema.methods.createEmailVerificationToken = function () {
     return verificationToken;
 }
 
+// generate reqId
 
-
-
-// method to generate otp (will bw used later for login/other purpose)
-userSchema.methods.generateOtp = function () {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    this.otp = crypto.createHash('sha256')
-        .update(otp)
+userSchema.methods.ceateReqId = function () {
+    const reqId = crypto.randomBytes(32).toString('hex')
+    this.reqId = crypto
+        .createHash('sha256')
+        .update(reqId)
         .digest('hex')
-    this.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+
+    this.reqIdExpires = Date.now() + 10 * 60 * 1000;
+
+    return reqId
+
 }
 
 
 
+// clear tokens
+userSchema.methods.clearOtp = function () {
+    this.otp = undefined;
+    this.otpExpires = undefined;
+}
+
+userSchema.methods.clearEmailVerificationToken = function () {
+    this.emailVerificationToken = undefined;
+    this.emailVerificationTokenExpires = undefined;
+}
+
+userSchema.methods.clearPasswordResetToken = function () {
+    this.passwordResetToken = undefined;
+    this.passwordResetTokenExpires = undefined;
+}
 
 
+// clear req id
+userSchema.methods.clearReqId = function () {
+    this.reqId = undefined;
+    this.reqIdExpires = undefined;
+}
 /**
  * more implementations...
  */
