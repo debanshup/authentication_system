@@ -3,4 +3,9 @@ enum MailType {
     VERIFICATION = 'verification'
 }
 
-export {MailType}
+enum IdentifierParams {
+    R_ID='req',
+    TOKEN='token',
+}
+
+export {MailType, IdentifierParams}

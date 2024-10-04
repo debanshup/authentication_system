@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import crypto from 'crypto'
 
 const otpSchema = new mongoose.Schema({
     userId: {
@@ -9,11 +9,11 @@ const otpSchema = new mongoose.Schema({
     },
     otp: {
         type: String,
-        required: true,
+        // required: true,
     },
     otpExpires: {
         type: Date,
-        required: true,
+        // required: true,
     },
 
 
@@ -28,7 +28,9 @@ const otpSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    sentOtpCountExpires: Date
+    sentOtpCountExpires: Date,
+    reqId: String,  // request id for otp verification
+    reqIdExpires: Date,
 
 })
 
@@ -50,9 +52,34 @@ otpSchema.methods.generateOtp = function () {
 otpSchema.methods.clearOtp = function () {
     this.otp = undefined;
     this.otpExpires = undefined;
+
+    // clears reqId with clearing password
+
+    this.reqId = undefined;
+    this.reqIdExpires = undefined;
 }
 
 
+// generate req id
+otpSchema.methods.createReqId = function () {
+    const reqId = crypto.randomBytes(32).toString('hex')
+    this.reqId = crypto
+        .createHash('sha256')
+        .update(reqId)
+        .digest('hex')
+
+    this.reqIdExpires = Date.now() + 10 * 60 * 1000;
+
+    return reqId
+
+}
+
+
+// clear req id (OPTIONAL)
+otpSchema.methods.clearReqId = function () {
+    this.reqId = undefined;
+    this.reqIdExpires = undefined;
+}
 
 
 
@@ -66,3 +93,12 @@ const OTP = mongoose.models.OTP || mongoose.model(
     "OTP", otpSchema
 )
 export default OTP
+
+
+
+
+
+
+
+
+// create a OTP document in signup route / mailer

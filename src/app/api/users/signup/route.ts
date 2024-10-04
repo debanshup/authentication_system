@@ -8,10 +8,7 @@ import { sendMail } from "@/helper/mailer";
 import axios from "axios";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-
-
-
-
+import OTP from "@/models/otpModel";
 
 connect();
 
@@ -19,7 +16,6 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { username, email, password, confirmedPassword } = reqBody;
-
 
     // check if both passwords match
 
@@ -29,9 +25,6 @@ export async function POST(request: NextRequest) {
       const user = await User.findOne({ email });
 
       // console.log(user);
-    
-      
-      
 
       if (user) {
         return NextResponse.json(
@@ -51,27 +44,30 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
       });
 
-      
       // save user
       const savedUser = await newUser.save();
 
       // send verification email
       await sendMail({
         email: email,
-        mailType: 'verification'
+        mailType: "verification",
       });
 
+      const otpDocument = new OTP({
+        userId: (await User.findOne({ email }))._id,
+      });
 
+      const savedOtpDocument = await otpDocument.save();
 
       return NextResponse.json({
         message: "User created successfully",
         success: true,
         // id: savedUser.id
         user: savedUser,
+        otpDocument: savedOtpDocument,
         // email: savedUser.email
       });
     }
-
   } catch (error: any) {
     console.log(error.error);
 

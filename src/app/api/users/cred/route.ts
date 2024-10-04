@@ -6,6 +6,7 @@ import User from "@/models/userModel";
 import { sendMail } from "@/helper/mailer";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import OTP from "@/models/otpModel";
 
 connect();
 
@@ -25,9 +26,7 @@ export async function POST(request: NextRequest) {
       status: 200,
       success: true,
     });
-
   } catch (error: any) {
-
     console.log(error.message);
     return NextResponse.json({
       seccess: false,
@@ -36,3 +35,6 @@ export async function POST(request: NextRequest) {
     });
   }
 }
+
+
+// create another route api named confirmation to compare between dbOTP and entered otp

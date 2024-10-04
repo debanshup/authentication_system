@@ -3,7 +3,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
+import { IdentifierParams } from '@/types/enums'
 const Cred = () => {
     const router = useRouter()
     const [credId, setCredId] = useState('')
@@ -12,10 +12,25 @@ const Cred = () => {
     async function nextBtnClickHandler() {
 
         const res = await axios.post("./api/users/cred", { email: credId })
+
+        const reqId = await axios.get('./api/users/reqid', { params: { credId } })
+
+        // will be implemented later
+
+
+
+
+
+
+
+
+
+
+
         // alert(res.data.success)
         // alert(credId)
-        if (res.data.success) {
-            router.push('./verifyaccount')
+        if (res.data.success && reqId.data.success) {
+            router.push(`./verifyaccount?${IdentifierParams.R_ID}=${reqId.data.id}`)
         } else {
             alert("No user found")
         }

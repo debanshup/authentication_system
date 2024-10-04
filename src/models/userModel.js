@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs"
 import crypto from 'crypto'
+
+
 const userSchema = new mongoose.Schema(
     {
         username: {
@@ -33,11 +35,9 @@ const userSchema = new mongoose.Schema(
         passwordResetTokenExpires: Date,
         emailVerificationToken: String,  // Token for email verification
         emailVerificationTokenExpires: Date,
-        reqId: String,  // request id for otp verification
-        reqIdExpires: Date,
-        otp: String,
-        otpExpires: Date,
 
+
+        
         mfaSecret: String,
 
         accountStatus: {
@@ -121,26 +121,11 @@ userSchema.methods.createEmailVerificationToken = function () {
 
 // generate reqId
 
-userSchema.methods.ceateReqId = function () {
-    const reqId = crypto.randomBytes(32).toString('hex')
-    this.reqId = crypto
-        .createHash('sha256')
-        .update(reqId)
-        .digest('hex')
 
-    this.reqIdExpires = Date.now() + 10 * 60 * 1000;
-
-    return reqId
-
-}
 
 
 
 // clear tokens
-userSchema.methods.clearOtp = function () {
-    this.otp = undefined;
-    this.otpExpires = undefined;
-}
 
 userSchema.methods.clearEmailVerificationToken = function () {
     this.emailVerificationToken = undefined;
@@ -153,11 +138,6 @@ userSchema.methods.clearPasswordResetToken = function () {
 }
 
 
-// clear req id
-userSchema.methods.clearReqId = function () {
-    this.reqId = undefined;
-    this.reqIdExpires = undefined;
-}
 /**
  * more implementations...
  */

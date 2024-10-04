@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import OTP from "@/models/otpModel";
+
 
 export async function POST(request: NextRequest) {
   try {
-    const reqBody = request.json();
-    console.log("entering verify route");
-
-    console.log(reqBody);
-
+    const reqBody = await request.json();
+    const { otp } = reqBody;
+    
     return NextResponse.json({
-      success: true
+      success: true,
     });
   } catch (error) {
     return NextResponse.json({
-      message: 'Somrthing went wrong',
-      status: 500
-    })
+      message: "Somrthing went wrong",
+      status: 500,
+    });
   }
 }
