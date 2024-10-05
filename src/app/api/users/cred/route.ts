@@ -3,7 +3,7 @@
 import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
-import { sendMail } from "@/helper/mailer";
+import { sendPasswordResetEmail } from "@/helper/mailer";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import OTP from "@/models/otpModel";
@@ -15,17 +15,35 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { email } = reqBody;
 
+    // find if user exists
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("user not found!");
+    }
+
+    // find otprecord based on user Id
+    const otpRecord = await OTP.findOne({ userId: user._id });
+
+    // if otprecord does not exist throw relevent error
+    if (!otpRecord) {
+      throw new Error("record not found!");
+    }
+
+    // create new otp
+    const otp = otpRecord.generateOtp();
+    const username = user.username;
+    await otpRecord.save();
+
     // send mail
-    await sendMail({
-      email: email,
-      mailType: "reset",
-    });
+    await sendPasswordResetEmail({ email, otp, username });
 
     // return res
     return NextResponse.json({
       status: 200,
       success: true,
     });
+
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({
@@ -35,6 +53,5 @@ export async function POST(request: NextRequest) {
     });
   }
 }
-
 
 // create another route api named confirmation to compare between dbOTP and entered otp

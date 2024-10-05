@@ -17,13 +17,17 @@ const Signup = () => {
     async function nextBtnClickHandler() {
         try {
             if (user.password === user.confirmedPassword) {
-                await axios.post('/api/users/signup', user)
+                const response = await axios.post('/api/users/signup', user)
+                // alert(response.data.registration_status)
+                if (response.data.registration_status) {
+                    alert('redirecting to login')
+                    router.push('./login')
+                }
                 
             } else {
                 // toast password should be matched
             }
 
-            // router.push('./signup/'+user.email)
         } catch (error: any) {
             console.log(error.message);
 

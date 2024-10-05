@@ -15,7 +15,7 @@ const Cred = () => {
 
         const reqId = await axios.get('./api/users/reqid', { params: { credId } })
 
-        // will be implemented later
+        //  will be implemented later
 
 
 

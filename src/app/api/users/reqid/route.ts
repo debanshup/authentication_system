@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
   console.log("entered reqid route");
 
   try {
-    const email = request.nextUrl.searchParams.get("credId");
-    console.log(email);
+    const email = request.nextUrl.searchParams.get("credId") || '';
+    // console.log(email);
 
     const user = await User.findOne({ email });
     if (!user) {

@@ -11,6 +11,12 @@ const VerifyEmail = () => {
         router.push("/login",)
     }
 
+
+
+
+
+
+
     async function resendBtnClickHandler() {
         // throw new Error('Function not implemented.');
     }

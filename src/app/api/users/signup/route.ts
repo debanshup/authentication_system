@@ -3,11 +3,11 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs";
-import { sendMail } from "@/helper/mailer";
-import axios from "axios";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+// import bcryptjs from "bcryptjs";
+import { sendEmailVerificationEmail } from "@/helper/mailer";
+// import axios from "axios";
+// import { redirect } from "next/navigation";
+// import { revalidatePath } from "next/cache";
 import OTP from "@/models/otpModel";
 
 connect();
@@ -23,35 +23,26 @@ export async function POST(request: NextRequest) {
       // if user already exists
 
       const user = await User.findOne({ email });
-
-      // console.log(user);
+// console.log(user.isEmailVerified);
 
       if (user) {
-        return NextResponse.json(
-          { error: "User already exists" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "User already exists", status: 400, registration_status: user.isEmailVerified });
       }
 
-      // encrypt password and create user
-
-      const salt = await bcryptjs.genSalt(10);
-
-      const hashedPassword = await bcryptjs.hash(confirmedPassword, salt);
       const newUser = new User({
         username: username,
         email: email,
-        password: hashedPassword,
+        password: confirmedPassword,
       });
+
+      const token = newUser.createEmailVerificationToken();
+
+      // send verification email
+
+      await sendEmailVerificationEmail({ email, token });
 
       // save user
       const savedUser = await newUser.save();
-
-      // send verification email
-      await sendMail({
-        email: email,
-        mailType: "verification",
-      });
 
       const otpDocument = new OTP({
         userId: (await User.findOne({ email }))._id,

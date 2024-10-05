@@ -119,11 +119,6 @@ userSchema.methods.createEmailVerificationToken = function () {
     return verificationToken;
 }
 
-// generate reqId
-
-
-
-
 
 // clear tokens
 
@@ -135,6 +130,11 @@ userSchema.methods.clearEmailVerificationToken = function () {
 userSchema.methods.clearPasswordResetToken = function () {
     this.passwordResetToken = undefined;
     this.passwordResetTokenExpires = undefined;
+}
+
+// set isEmailVerified = true
+userSchema.methods.setEmailVerified = function () {
+    this.isEmailVerified = true
 }
 
 
