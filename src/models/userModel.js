@@ -80,7 +80,10 @@ userSchema.pre('save', async function (next) {
 
 // check account status and email verification
 userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcryptjs.compare(enteredPassword, this.password)
+    
+    const result = await bcryptjs.compare(enteredPassword, this.password)
+
+    return result
 }
 
 

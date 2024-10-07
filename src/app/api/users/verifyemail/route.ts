@@ -6,7 +6,7 @@ import User from "@/models/userModel";
 connect();
 
 export async function GET(request: NextRequest) {
-  console.log("entering ve route");
+  // console.log("entering ve route");
 
   try {
     const token = request.nextUrl.searchParams.get("token") || "";
@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
     const user = await User.findOne({
       emailVerificationToken: encryptedToken,
       emailVerificationTokenExpires: { $gt: Date.now() },
+      isEmailVerified: false,
     });
 
     console.log(encryptedToken);
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // after confirmation clear verification token
-    // user.clearEmailVerificationToken();
+    user.clearEmailVerificationToken();
 
     // set Verified = true
     user.setEmailVerified();

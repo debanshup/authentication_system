@@ -1,44 +1,93 @@
 import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel"
-import bcryptjs from "bcryptjs"
+import User from "@/models/userModel";
+import bcryptjs from "bcryptjs";
 import { error } from "console";
-import { Jwt } from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 import { connected } from "process";
+import crypto from "crypto";
+import { sendVerificationEmail } from "@/helper/mailer";
+import jwt from "jsonwebtoken";
 
-// connect()
+connect();
 
-// export async function POST(request: NextRequest) {
-//     try {
-//         const reqBody = await request.json()
-//         const {email, password} = reqBody;
-//         console.log(reqBody);
+export async function POST(request: NextRequest) {
+  try {
+    const reqBody = await request.json();
+    const { username, password } = reqBody;
 
-//         // check if user exists
-//         const user = await User.findOne({email})
-//         if(!user){
-//             return NextResponse.json({error: "User does not exist"}, {status: 400})
-//         }
-//         const validPassword = await bcryptjs.compare(password, user.password)
-//         if (!validPassword) {
-//             return NextResponse.json(
-//                 {
-//                     error: "Invalid password",
-//                     status: 400
-//                 }
-//             )
-//         }
-//         console.log(user);
 
-//         //  create token data
 
-//         const tokenData = {
-//             id: user.id,
+    // find user
+    const user = await User.findOne({
+      $or: [{ email: username }, { username: username }],
+    });
 
-//         }
-        
-        
-//     } catch (error) {
-        
-//     }
-// }
+    if (!user) {
+      return NextResponse.json({
+        status: 400,
+        message: "Invalid username",
+        success: false,
+      });
+    }
+
+
+
+    // check if email verified or not
+    if (!user.isEmailVerified) {
+      const token = user.createEmailVerificationToken();
+      await user.save()
+      await sendVerificationEmail({ email: user.email, token: token });
+      return NextResponse.json({
+        message: "email is not verified, check inbox for verificaion email",
+      });
+    }
+    
+
+    const matched = await user.comparePassword(password);
+    if (!matched) {
+      return NextResponse.json({
+        message: "Invalid password",
+        success: false,
+      });
+    }
+
+
+    // generate cookie
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      verified: user.isEmailVerified,
+    };
+
+
+
+    // sign jwt
+    const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
+      //   algorithm: "none",   will be changed later
+      expiresIn: "1h",
+    });
+    const response = NextResponse.json({
+      success: true,
+    });
+
+    response.cookies.set("sessionId", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60,
+      path: "/", // accessible throughout the site
+    });
+
+    return response;
+
+
+    
+  } catch (error: any) {
+    console.log(error.message);
+    return NextResponse.json({
+      message: 'something went wrong',
+      status: 500
+    })
+  }
+}

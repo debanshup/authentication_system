@@ -18,9 +18,12 @@ const Reset = () => {
     }
   }
   useEffect(() => {
-    const urlToken = window.location.search.split('=')[1] || ''
+    const urlToken = window.location.search.split('=')[1] 
     
-    setToken(urlToken)
+if (token) {
+  setToken(urlToken)
+  
+}
     // alert(token);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

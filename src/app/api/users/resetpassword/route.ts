@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      
       // console.log(user);
 
       user.password = confirmPassword;
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
       user.clearPasswordResetToken();
 
       await user.save();
+
       console.log(user);
     }
 

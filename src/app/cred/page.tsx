@@ -13,7 +13,9 @@ const Cred = () => {
 
         const res = await axios.post("./api/users/cred", { email: credId })
 
-        const reqId = await axios.get('./api/users/reqid', { params: { credId } })
+
+        // use post instead 
+        const reqId = await axios.post('./api/users/reqid', {email: credId })
 
         //  will be implemented later
 
@@ -21,16 +23,12 @@ const Cred = () => {
 
 
 
-
-
-
-
-
+        
 
         // alert(res.data.success)
         // alert(credId)
         if (res.data.success && reqId.data.success) {
-            router.push(`./verifyaccount?${IdentifierParams.R_ID}=${reqId.data.id}`)
+            router.push(`./verify-otp?${IdentifierParams.R_ID}=${reqId.data.id}`)
         } else {
             alert("No user found")
         }

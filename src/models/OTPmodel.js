@@ -55,8 +55,8 @@ otpSchema.methods.clearOtp = function () {
 
     // clears reqId with clearing password
 
-    this.reqId = undefined;
-    this.reqIdExpires = undefined;
+    // this.reqId = undefined;
+    // this.reqIdExpires = undefined;
 }
 
 

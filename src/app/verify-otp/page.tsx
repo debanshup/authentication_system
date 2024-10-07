@@ -1,16 +1,38 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 
 const VerifyEmail = () => {
     const [otp, setOtp] = useState('')
+    const [reqId, setReqId] = useState('')
     const router = useRouter();
     async function verifyBtnClickHandler() {
-        await axios.post('./api/users/verifyaccount', { otp })
-        router.push("/login",)
+        const res = await axios.post('./api/users/verify-otp', { otp: otp, reqId: reqId })
+        const token = await axios.post('./api/users/token', {reqId: reqId})
+
+
+        alert(res.data.message)
+
+        if (res.data.success && token.data.success) {
+            router.push(`resetpassword?token=${token.data.value}`)
+        }
     }
 
+
+    useEffect(() => {
+
+
+        const token = window.location.search.split('req=')[1]
+        if (token) {
+            setReqId(token)
+            
+        }
+
+        return () => {
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
 
 

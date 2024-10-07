@@ -4,7 +4,7 @@ import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 // import bcryptjs from "bcryptjs";
-import { sendEmailVerificationEmail } from "@/helper/mailer";
+import { sendVerificationEmail } from "@/helper/mailer";
 // import axios from "axios";
 // import { redirect } from "next/navigation";
 // import { revalidatePath } from "next/cache";
@@ -23,10 +23,14 @@ export async function POST(request: NextRequest) {
       // if user already exists
 
       const user = await User.findOne({ email });
-// console.log(user.isEmailVerified);
+      // console.log(user.isEmailVerified);
 
       if (user) {
-        return NextResponse.json({ error: "User already exists", status: 400, registration_status: user.isEmailVerified });
+        return NextResponse.json({
+          error: "User already exists",
+          status: 400,
+          registration_status: user.isEmailVerified,
+        });
       }
 
       const newUser = new User({
@@ -39,7 +43,7 @@ export async function POST(request: NextRequest) {
 
       // send verification email
 
-      await sendEmailVerificationEmail({ email, token });
+      await sendVerificationEmail({ email, token });
 
       // save user
       const savedUser = await newUser.save();

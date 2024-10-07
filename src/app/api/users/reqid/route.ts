@@ -2,17 +2,18 @@ import OTP from "@/models/otpModel";
 import User from "@/models/userModel";
 import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
-import { stat } from "fs";
 
 connect();
 
-export async function GET(request: NextRequest) {
+// use post instead of get
+export async function POST(request: NextRequest) {
   console.log("entered reqid route");
 
   try {
-    const email = request.nextUrl.searchParams.get("credId") || '';
+    const reqbody = await request.json();
+    const { email } = reqbody;
     // console.log(email);
-
+    
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({
@@ -22,18 +23,12 @@ export async function GET(request: NextRequest) {
     }
     console.log("user found");
 
-    // console.log(user._id);
-
     const otpRecord = await OTP.findOne({ userId: user._id });
     console.log(otpRecord.userId);
 
     const reqId = otpRecord.createReqId();
 
-    // create reqId
-
-    // console.log("getting req id");
-
-    // console.log(reqId);
+    await otpRecord.save()
 
     return NextResponse.json({ id: reqId, success: true, status: 200 });
   } catch (error: any) {
