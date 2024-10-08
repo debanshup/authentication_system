@@ -19,50 +19,51 @@ export async function POST(request: NextRequest) {
 
     // check if both passwords match
 
-    if (password === confirmedPassword) {
-      // if user already exists
+    if (!(password === confirmedPassword) || !password || !confirmedPassword) {
+      return NextResponse.json({ success: false, status: 400 });
+    }
+    // if user already exists
 
-      const user = await User.findOne({ email });
-      // console.log(user.isEmailVerified);
+    const user = await User.findOne({ email });
+    // console.log(user.isEmailVerified);
 
-      if (user) {
-        return NextResponse.json({
-          error: "User already exists",
-          status: 400,
-          registration_status: user.isEmailVerified,
-        });
-      }
-
-      const newUser = new User({
-        username: username,
-        email: email,
-        password: confirmedPassword,
-      });
-
-      const token = newUser.createEmailVerificationToken();
-
-      // send verification email
-
-      await sendVerificationEmail({ email, token });
-
-      // save user
-      const savedUser = await newUser.save();
-
-      const otpDocument = new OTP({
-        userId: (await User.findOne({ email }))._id,
-      });
-
-      const savedOtpDocument = await otpDocument.save();
-
+    if (user) {
       return NextResponse.json({
-        message: "User created successfully",
-        success: true,
-        // id: savedUser.id
-        user: savedUser,
-        otpDocument: savedOtpDocument,
-        // email: savedUser.email
+        error: "User already exists",
+        status: 400,
+        registration_status: user.isEmailVerified,
       });
     }
+
+    const newUser = new User({
+      username: username,
+      email: email,
+      password: confirmedPassword,
+    });
+
+    const token = newUser.createEmailVerificationToken();
+
+    // send verification email
+
+    await sendVerificationEmail({ email, token });
+
+    // save user
+    const savedUser = await newUser.save();
+
+    const otpDocument = new OTP({
+      userId: savedUser._id,
+    });
+
+    const savedOtpDocument = await otpDocument.save();
+
+    return NextResponse.json({
+      message: "User created successfully",
+      success: true,
+      // id: savedUser.id
+      user: savedUser,
+      otpDocument: savedOtpDocument,
+      // email: savedUser.email
+    });
   } catch (error: any) {
     console.log(error.error);
 

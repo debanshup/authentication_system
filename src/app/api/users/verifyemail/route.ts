@@ -5,11 +5,12 @@ import User from "@/models/userModel";
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   // console.log("entering ve route");
 
   try {
-    const token = request.nextUrl.searchParams.get("token") || "";
+    const reqBody = await request.json();
+    const { token } = reqBody;
 
     // get this token from relevent page's window section
 
@@ -18,13 +19,15 @@ export async function GET(request: NextRequest) {
       .update(token)
       .digest("hex");
 
+    console.log(encryptedToken);
+
     const user = await User.findOne({
       emailVerificationToken: encryptedToken,
       emailVerificationTokenExpires: { $gt: Date.now() },
       isEmailVerified: false,
     });
 
-    console.log(encryptedToken);
+    // console.log(user);
 
     if (!user) {
       throw new Error("invalid or expired token");
@@ -41,6 +44,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       status: 200,
+      message: "Email successfully verified",
     });
   } catch (error) {
     return NextResponse.json({

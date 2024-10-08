@@ -93,7 +93,8 @@ export async function sendVerificationEmail({ email, token }: any) {
             from: 'test@mail.com',
             to: email,
             subject: 'Email verification',
-            text: `Thank you for registering. Please verify your email by clicking the link ${process.env.DOMAIN}/verifyemail?token=${token}. Link valid for 10 minutes.`
+            encoding: 'utf-8',
+            text: `Thank you for registering. Please verify your email by clicking the link ${process.env.DOMAIN}/verifyemail?token=${encodeURIComponent(token)}. Link valid for 10 minutes.`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -115,7 +116,7 @@ export async function sendPasswordResetEmail({ email, otp, username }: any) {
         const mailOptions = {
             from: 'test@mail.com',
             to: email,
-            subject: 'Email verification',
+            subject: 'Password reset',
             text: `Hi ${username}. OTP: ${otp}. Valid for 10 minutes`
         };
 

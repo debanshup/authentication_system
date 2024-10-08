@@ -15,7 +15,7 @@ const VerifyEmail = () => {
         alert(res.data.message)
 
         if (res.data.success && token.data.success) {
-            router.push(`resetpassword?token=${token.data.value}`)
+            router.push(`reset-password?token=${token.data.value}`)
         }
     }
 

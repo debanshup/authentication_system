@@ -15,8 +15,6 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { username, password } = reqBody;
 
-
-
     // find user
     const user = await User.findOne({
       $or: [{ email: username }, { username: username }],
@@ -30,18 +28,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-
-
     // check if email verified or not
     if (!user.isEmailVerified) {
       const token = user.createEmailVerificationToken();
-      await user.save()
+      console.log('login route: '+token);
+      
+      await user.save();
       await sendVerificationEmail({ email: user.email, token: token });
       return NextResponse.json({
         message: "email is not verified, check inbox for verificaion email",
       });
     }
-    
 
     const matched = await user.comparePassword(password);
     if (!matched) {
@@ -51,7 +48,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-
     // generate cookie
     const payload = {
       id: user._id,
@@ -59,8 +55,6 @@ export async function POST(request: NextRequest) {
       role: user.role,
       verified: user.isEmailVerified,
     };
-
-
 
     // sign jwt
     const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
@@ -80,14 +74,11 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-
-
-    
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({
-      message: 'something went wrong',
-      status: 500
-    })
+      message: "something went wrong",
+      status: 500,
+    });
   }
 }

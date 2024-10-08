@@ -17,13 +17,16 @@ const Login = () => {
                 if (response.data.success) {
                     router.push("./profile")
                 }
+                else {
+                    alert(response.data.message)
+                }
 
             } else {
                 alert('enter valid credentials')
             }
         } catch (error: any) {
             setErrorMessage(error.message)
-            alert('error.message')
+            alert(error.message)
         }
     }
 

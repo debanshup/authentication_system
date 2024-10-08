@@ -2,8 +2,10 @@
 import axios from "axios";
 import { url } from "inspector";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Reset = () => {
+  const router = useRouter()
   const [token, setToken] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -11,21 +13,24 @@ const Reset = () => {
   async function submitBtnClickHandler() {
     try {
       if (password === confirmPassword) {
-        await axios.post('./api/users/resetpassword', { password: password, confirmPassword: confirmPassword, token: token })
+        const res = await axios.post('./api/users/reset-password', { password: password, confirmPassword: confirmPassword, token: token })
+        alert(res.data.message)
+        router.push('./login')
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error.message);
 
     }
   }
   useEffect(() => {
-    const urlToken = window.location.search.split('=')[1] 
-    
-if (token) {
-  setToken(urlToken)
-  
-}
+    const urlToken = window.location.search.split('token=')[1]
+
+    if (urlToken) {
+      setToken(urlToken)
+
+    }
     // alert(token);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 

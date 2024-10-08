@@ -11,14 +11,16 @@ const VerifyEmail = () => {
     const [errorMessage, setErrorMessage] = useState('')
     useEffect(() => {
         const token = window.location.search.split('token=')[1] || ''
-        verify(token)
+        if (token) {
+            verify(token)
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
     async function verify(token: String) {
         try {
-            const response = await axios.get('./api/users/verifyemail', { params: {token} })
+            const response = await axios.post('./api/users/verifyemail', {token})
             setSuccess(response.data.success)
             if (response.data.success || response.data.already_verified) {
                 setTimeout(() => {
