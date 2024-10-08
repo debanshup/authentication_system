@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     otpRecord.clearOtp();
+    otpRecord.clearReqId();
 
     await otpRecord.save();
 
