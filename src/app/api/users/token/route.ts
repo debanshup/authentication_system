@@ -3,6 +3,8 @@ import OTP from "@/models/otpModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+
+
 connect();
 
 export async function POST(request: NextRequest) {

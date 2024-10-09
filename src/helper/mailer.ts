@@ -79,7 +79,6 @@ export async function sendVerificationEmail({ email, token }: any) {
       from: "test@mail.com",
       to: email,
       subject: "Email verification",
-      encoding: "utf-8",
       text: `Thank you for registering. Please verify your email by clicking the link ${
         process.env.DOMAIN
       }/verifyemail?token=${encodeURIComponent(
