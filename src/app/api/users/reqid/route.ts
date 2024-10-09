@@ -7,13 +7,13 @@ connect();
 
 // use post instead of get
 export async function POST(request: NextRequest) {
-  console.log("entered reqid route");
+  // console.log("entered reqid route");
 
   try {
     const reqbody = await request.json();
     const { email } = reqbody;
     // console.log(email);
-    
+
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({
@@ -24,11 +24,11 @@ export async function POST(request: NextRequest) {
     console.log("user found");
 
     const otpRecord = await OTP.findOne({ userId: user._id });
-    console.log(otpRecord.userId);
+    // console.log(otpRecord.userId);
 
     const reqId = otpRecord.createReqId();
 
-    await otpRecord.save()
+    await otpRecord.save();
 
     return NextResponse.json({ id: reqId, success: true, status: 200 });
   } catch (error: any) {

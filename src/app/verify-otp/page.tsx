@@ -12,10 +12,10 @@ const VerifyEmail = () => {
         const token = await axios.post('./api/users/token', {reqId: reqId})
 
 
-        alert(res.data.message)
+        alert(token.data.message)
 
         if (res.data.success && token.data.success) {
-            router.push(`reset-password?token=${token.data.value}`)
+            router.push(`./reset-password?token=${token.data.value}`)
         }
     }
 
