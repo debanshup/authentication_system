@@ -15,7 +15,7 @@ const Login = () => {
             if (user.password && user.username) {
                 const response = await axios.post('./api/users/login', user)
                 if (response.data.success) {
-                    router.push("./profile/dashboard")
+                    router.push(`/profile/dashboard/${response.data.username}`)
                 }
                 else {
                     alert(response.data.message)

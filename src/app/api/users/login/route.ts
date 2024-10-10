@@ -59,10 +59,11 @@ export async function POST(request: NextRequest) {
     // sign jwt
     const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
       //   algorithm: "none",   will be changed later
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
     const response = NextResponse.json({
       success: true,
+      username: user.username
     });
 
     response.cookies.set("sessionId", token, {
