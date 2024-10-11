@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     // find user
     const user = await User.findOne({
-      $or: [{ email: username }, { username: username }],
+      $or: [{ username: username }, { email: username }],
     });
 
     if (!user) {
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
     // check if email verified or not
     if (!user.isEmailVerified) {
       const token = user.createEmailVerificationToken();
-      console.log('login route: '+token);
-      
+      console.log("login route: " + token);
+
       await user.save();
       await sendVerificationEmail({ email: user.email, token: token });
       return NextResponse.json({
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
     const response = NextResponse.json({
       success: true,
-      username: user.username
+      username: user.username,
     });
 
     response.cookies.set("sessionId", token, {

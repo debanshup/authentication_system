@@ -29,9 +29,11 @@ export async function POST(request: NextRequest) {
 
     if (user) {
       return NextResponse.json({
-        error: "User already exists",
+        message: "User already exists",
         status: 400,
         registration_status: user.isEmailVerified,
+
+        user_exist: true
       });
     }
 
