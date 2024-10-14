@@ -81,7 +81,7 @@ export async function sendVerificationEmail({ email, token }: any) {
       subject: "Email verification",
       text: `Thank you for registering. Please verify your email by clicking the link ${
         process.env.DOMAIN
-      }/verifyemail?token=${encodeURIComponent(
+      }/verify-email?token=${encodeURIComponent(
         token
       )}. Link valid for 10 minutes.`,
     };
@@ -94,7 +94,7 @@ export async function sendVerificationEmail({ email, token }: any) {
       }
     });
   } catch (error: any) {
-    console.log(error.message);
+    throw new Error("Something went wrong");
   }
 }
 
@@ -115,6 +115,6 @@ export async function sendPasswordResetEmail({ email, otp, username }: any) {
       }
     });
   } catch (error: any) {
-    console.log(error.message);
+    throw new Error("Something went wrong");
   }
 }

@@ -7,6 +7,7 @@ import { connected } from "process";
 import crypto from "crypto";
 import { sendVerificationEmail } from "@/helper/mailer";
 import jwt from "jsonwebtoken";
+import OTP from "@/models/otpModel";
 
 connect();
 
@@ -17,26 +18,28 @@ export async function POST(request: NextRequest) {
 
     // find user
     const user = await User.findOne({
-      $or: [{ email: username }, { username: username }],
+      $or: [{ username: username }, { email: username }],
     });
 
     if (!user) {
       return NextResponse.json({
         status: 400,
-        message: "Invalid username",
+        message: "Invalid username or password",
         success: false,
+        user_exist: false,
       });
     }
 
     // check if email verified or not
     if (!user.isEmailVerified) {
       const token = user.createEmailVerificationToken();
-      console.log('login route: '+token);
-      
       await user.save();
       await sendVerificationEmail({ email: user.email, token: token });
       return NextResponse.json({
-        message: "email is not verified, check inbox for verificaion email",
+        message: "Email is not verified, check inbox for verificaion email",
+        verification_status: user.isEmailVerified,
+        email: user.email
+
       });
     }
 
@@ -59,10 +62,15 @@ export async function POST(request: NextRequest) {
     // sign jwt
     const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
       //   algorithm: "none",   will be changed later
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
     const response = NextResponse.json({
       success: true,
+      username: user.username,
+      email: user.email,
+      verification_status: user.isEmailVerified,
+      user_exist: true,
+
     });
 
     response.cookies.set("sessionId", token, {

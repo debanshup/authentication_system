@@ -84,6 +84,29 @@ otpSchema.methods.clearReqId = function () {
 
 
 
+// compare otp
+otpSchema.methods.compareOtp = function (enteredOtp) {
+    const hashedEncryptedOtp = Buffer.from(
+        crypto.createHash('sha256').update(enteredOtp).digest('hex'),
+        'hex'
+      );
+
+      // Convert the stored OTP (already hashed) to a Buffer
+    const hashedStoredOtp = Buffer.from(this.otp, 'hex')
+    try {
+        if (hashedEncryptedOtp.length !== hashedStoredOtp.length) {
+            throw new Error('OTP mismatch')
+        }
+
+        const isValid = crypto.timingSafeEqual(hashedStoredOtp, hashedEncryptedOtp);
+        return isValid
+    } catch (error) {
+        throw new Error(error.message || 'Error verifying OTP')
+    }
+}
+
+
+
 
 
 

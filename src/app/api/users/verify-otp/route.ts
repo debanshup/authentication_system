@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { otp, reqId } = reqBody;
 
-    const encryptedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const encryptedReqId = crypto
       .createHash("sha256")
@@ -21,22 +20,33 @@ export async function POST(request: NextRequest) {
       .digest("hex");
 
     const otpRecord = await OTP.findOne({
-      otp: encryptedOtp,
+      // otp: encryptedOtp,
       otpExpires: { $gt: Date.now() },
       reqId: encryptedReqId,
       reqIdExpires: { $gt: Date.now() },
     });
 
-    // console.log("record found");
 
-    console.log(otpRecord);
+    const user = await User.findById(otpRecord.userId.toString());
 
-    if (!otpRecord) {
-      // console.log("record not found");
+
+    if (!otpRecord || !user) {
 
       return NextResponse.json({
+        message: "Unexpected error occured!",
         success: false,
-        message: "Invalid or expired OTP.",
+      });
+    }
+
+    const matched = otpRecord.compareOtp(otp)
+
+    if (!matched) {
+
+      console.log('otp not matched');
+      
+      return NextResponse.json({
+        message: "OTP unmatched",
+        isMatched: false,
       });
     }
 
@@ -53,6 +63,8 @@ export async function POST(request: NextRequest) {
     console.log(error.message);
 
     return NextResponse.json({
+      // something went wrong
+      success: false,
       message: "Somrthing went wrong",
       status: 500,
     });

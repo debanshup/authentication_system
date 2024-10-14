@@ -139,6 +139,10 @@ userSchema.methods.clearPasswordResetToken = function () {
 userSchema.methods.setEmailVerified = function () {
     this.isEmailVerified = true
 }
+userSchema.methods.setAccountStatus = function (status) {
+    this.accountStatus = status
+}
+
 
 
 /**

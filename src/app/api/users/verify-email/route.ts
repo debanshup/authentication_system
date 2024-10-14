@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
     // set Verified = true
     user.setEmailVerified();
 
+    user.setAccountStatus("active"); // create a enum account_status
+
     await user.save();
 
     return NextResponse.json({
