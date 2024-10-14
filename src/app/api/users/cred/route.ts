@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw new Error("user not found!");
+      return NextResponse.json({
+        user_exist: false
+      })
     }
 
     // find otprecord based on user Id
@@ -27,7 +29,9 @@ export async function POST(request: NextRequest) {
 
     // if otprecord does not exist throw relevent error
     if (!otpRecord) {
-      throw new Error("record not found!");
+      return NextResponse.json({
+        otp_record_exist: false
+      })
     }
 
     // create new otp
@@ -41,13 +45,13 @@ export async function POST(request: NextRequest) {
     // return res
     return NextResponse.json({
       status: 200,
-      success: true,
+      otp_sent_status: true,
     });
 
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({
-      seccess: false,
+      success: false,
       error: error.message,
       status: 500,
     });

@@ -25,14 +25,13 @@ export async function POST(request: NextRequest) {
     // if user already exists
 
     const user = await User.findOne({ email });
-    // console.log(user.isEmailVerified);
+
 
     if (user) {
       return NextResponse.json({
         message: "User already exists",
         status: 400,
         registration_status: user.isEmailVerified,
-
         user_exist: true
       });
     }
@@ -61,14 +60,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "User created successfully",
       success: true,
-      // id: savedUser.id
+      registration_status: user.isEmailVerified,
       user: savedUser,
       otpDocument: savedOtpDocument,
       // email: savedUser.email
     });
   } catch (error: any) {
-    console.log(error.error);
-
     return NextResponse.json({
       error: error.message,
       status: 500,

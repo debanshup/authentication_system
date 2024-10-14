@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "invalid req id", success: false });
     }
     const user = await User.findById(otpRecord.userId.toString());
-    console.log(user);
 
     if (!user) {
+      
       return NextResponse.json({ message: "Invalid creds", success: false });
     }
 
@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
       status: 200,
     });
   } catch (error: any) {
+    // console.log(error.message);
+    
     return NextResponse.json({
       success: false,
       status: 500,

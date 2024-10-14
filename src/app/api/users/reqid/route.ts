@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
         status: 400,
       });
     }
-    console.log("user found");
 
     const otpRecord = await OTP.findOne({ userId: user._id });
     // console.log(otpRecord.userId);
