@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
     }
 
     const otpRecord = await OTP.findOne({ userId: user._id });
-    // console.log(otpRecord.userId);
 
     const reqId = otpRecord.createReqId();
 

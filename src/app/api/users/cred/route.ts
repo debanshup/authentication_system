@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({
+        success: false,
         user_exist: false
       })
     }
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
     // if otprecord does not exist throw relevent error
     if (!otpRecord) {
       return NextResponse.json({
+        success: false,
         otp_record_exist: false
       })
     }

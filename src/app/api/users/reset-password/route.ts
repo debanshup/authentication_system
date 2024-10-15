@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         .update(token)
         .digest("hex");
 
-      console.log(hashedToken);
+      // console.log(hashedToken);
 
       const user = await User.findOne({
         passwordResetToken: hashedToken,
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      console.log(user);
+      // console.log(user);
       
 
       user.password = confirmPassword;
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
       await user.save();
 
-    console.log(user);
+    // console.log(user);
     
     
     

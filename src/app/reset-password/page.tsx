@@ -56,7 +56,7 @@ const Reset = () => {
             onChange={(e) => {
               setPassword(e.target.value);
             }}
-            className="form-control"
+            className="form-control form-control-lg"
             type="password"
             id="password"
             required
@@ -76,7 +76,7 @@ const Reset = () => {
             onChange={(e) => {
               setConfirmPassword(e.target.value);
             }}
-            className="form-control"
+            className="form-control form-control-lg"
             type="password"
             id="confirm-password"
             required
@@ -86,7 +86,7 @@ const Reset = () => {
         <div>
           <button
             type="button"
-            className="btn btn-primary w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
+            className="btn btn-primary btn-lg w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
             onClick={submitBtnClickHandler}
           >
             {loading ? (
