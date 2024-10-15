@@ -48,7 +48,7 @@ const Cred = () => {
         //  show unfilled error
         setShowFillPopup(true);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       // unexpected error
       setShowErrorPopup(true);
     }
@@ -68,6 +68,8 @@ const Cred = () => {
             className="form-control form-control-lg"
             value={credId}
             onChange={(e) => setCredId(e.target.value)}
+            autoComplete="email"
+
           />
         </div>
         <div className="row w-100">

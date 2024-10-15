@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
       .digest("hex");
 
     const otpRecord = await OTP.findOne({
-      // otp: encryptedOtp,
       otpExpires: { $gt: Date.now() },
       reqId: encryptedReqId,
       reqIdExpires: { $gt: Date.now() },

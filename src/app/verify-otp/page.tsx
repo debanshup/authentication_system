@@ -5,12 +5,17 @@ import axios from "axios";
 import FillPopup from "./components/pop-ups/FillPopup";
 import InvalidOtpPopup from "./components/pop-ups/InvalidOtpPopup";
 import ErrorPopup from "./components/pop-ups/ErrorPopup";
-
+import Spin from "./components/spinner/Spinner";
 const Page = () => {
   const router = useRouter();
+  // const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false)
+
   const [otp, setOtp] = useState("");
   const [reqId, setReqId] = useState("");
   const [email, setEmail] = useState("")
+
+
 
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const handleCloseShowErrorPopup = () => setShowErrorPopup(false);
@@ -22,14 +27,15 @@ const Page = () => {
   const handleCloseInvalidOtpPopup = () => setShowInvalidOtp(false);
 
 
-  async function getEmail() {
-    const emailRes = await axios.get("/api/users/get-email", { params: reqId })
+  async function getEmail(token: any) {
+    const emailRes = await axios.get("/api/users/get-email", { params: { token } })
     if (emailRes.data.email) {
       setEmail(emailRes.data.email)
     }
   }
 
   async function verifyBtnClickHandler() {
+    setLoading(true)
     const tokenRes = await axios.post("./api/users/token", { reqId: reqId });
     const verifyOtpRes = await axios.post("./api/users/verify-otp", {
       otp: otp,
@@ -47,23 +53,22 @@ const Page = () => {
     } else {
       setShowFillPopup(true);
     }
+    setLoading(false)
+
   }
 
   useEffect(() => {
     const token = window.location.search.split("req=")[1];
     if (token) {
       setReqId(token);
+      getEmail(token)
     }
+
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    getEmail()
 
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
 
   async function resendBtnClickHandler() { }
@@ -96,11 +101,19 @@ const Page = () => {
         <div className="d-flex justify-content-between">
           <button
             type="button"
-            className="btn btn-warning flex-grow-1 me-2"
+            className="btn btn-warning flex-grow-1 me-2 d-flex align-items-center justify-content-center"
             onClick={verifyBtnClickHandler}
           >
-            Verify
+            {loading ? (
+              <div className="d-flex align-items-center gap-2">
+                <Spin />
+                <span>Verifying...</span>
+              </div>
+            ) : (
+              "Verify"
+            )}
           </button>
+
           <button
             type="button"
             className="btn btn-outline-primary flex-grow-1"

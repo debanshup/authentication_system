@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
   try {
     const reqbody = await request.json();
     const { email } = reqbody;
-    // console.log(email);
 
     const user = await User.findOne({ email });
     if (!user) {
