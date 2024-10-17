@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { otp, reqId } = reqBody;
+console.log(otp);
 
 
     const encryptedReqId = crypto
@@ -38,7 +39,8 @@ export async function POST(request: NextRequest) {
     }
 
     const matched = otpRecord.compareOtp(otp)
-
+    console.log(matched);
+    
     if (!matched) {
 
       console.log('otp not matched');
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
     await otpRecord.save();
 
     return NextResponse.json({
+      isMatched: true,
       success: true,
       message: "OTP verified successfully",
     });

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import FillPopup from "./components/pop-ups/FillPopup";
 import InvalidOtpPopup from "./components/pop-ups/InvalidOtpPopup";
@@ -8,8 +8,8 @@ import ErrorPopup from "./components/pop-ups/ErrorPopup";
 import Spin from "./components/spinner/Spinner";
 import { IdentifierParams } from "@/types/enums";
 const Page = () => {
+  const searchParams = useSearchParams()
   const router = useRouter();
-  // const [success, setSuccess] = useState(false);
   const [loadingVerification, setLoadingVerification] = useState(false);
   const [loadingResend, setLoadingResend] = useState(false);
 
@@ -53,13 +53,20 @@ const Page = () => {
         });
 
         setLoadingVerification(false);
-        if (tokenRes.data.success && verifyOtpRes.data.success) {
+        alert(tokenRes.data.message)
+        if (tokenRes.data.success && verifyOtpRes.data.isMatched) {
+          
+          
           router.push(`./reset-password?token=${tokenRes.data.value}`);
-        } else if (!verifyOtpRes.data.isMatched) {
-          setShowInvalidOtp(true);
-        } else if (!tokenRes.data.success || !verifyOtpRes.data.success) {
-          setShowErrorPopup(true);
         }
+        
+        else if (!verifyOtpRes.data.isMatched) {
+          setShowInvalidOtp(true);
+        } 
+        
+        // else if (!tokenRes.data.success || !verifyOtpRes.data.success) {
+        //   setShowErrorPopup(true);
+        // }
       } else {
         setShowFillPopup(true);
       }
@@ -90,14 +97,15 @@ const Page = () => {
   }
 
   useEffect(() => {
-    const token = window.location.search.split("req=")[1];
+    const token = searchParams.get('req')
     if (token) {
       setReqId(token);
       getEmail(token);
+
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="container-fluid d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
