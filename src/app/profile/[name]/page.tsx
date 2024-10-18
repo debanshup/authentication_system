@@ -14,7 +14,7 @@ export default function Page() {
   const { name } = useParams();
 
   const [username, setUsername] = useState("");
-  const [professon, setProfession] = useState("");
+  const [profession, setProfession] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [website, setWebsite] = useState("");
@@ -37,7 +37,11 @@ export default function Page() {
       // alert(res.data.success)
       if (res.data.success) {
         setUsername(res.data.props.user.username);
-        setEmail(res.data.props.user.email);
+        setProfession(res.data.props.user.profession)
+        setEmail(res.data.props.user.email)
+        setPhone(res.data.props.user.phone)
+        setWebsite(res.data.props.user.website)
+        setAbout(res.data.props.user.about)
       } else {
         // alert(res.data.message);
       }
@@ -51,17 +55,17 @@ export default function Page() {
   async function editBtnClickHandler() {
     try {
       setIsEditing(true);
-      setEditedProfession(professon)
+      setEditedProfession(profession)
       setEditedEmail(email)
       setEditedPhone(phone)
       setEditedWebsite(about)
       setEditedWebsite(website)
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async function saveBtnClickHandler() {
     try {
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async function discardBtnClickHandler() {
@@ -69,13 +73,13 @@ export default function Page() {
   }
 
 
-// useEffect(() => {
-//   setEditedProfession(professon)
-//   setEditedEmail(email)
-//   setEditedPhone(phone)
-//   setEditedWebsite(about)
-//   setEditedWebsite(website)
-// }, [about, email, phone, professon, website])
+  // useEffect(() => {
+  //   setEditedProfession(professon)
+  //   setEditedEmail(email)
+  //   setEditedPhone(phone)
+  //   setEditedWebsite(about)
+  //   setEditedWebsite(website)
+  // }, [about, email, phone, professon, website])
 
 
   useEffect(() => {
@@ -122,7 +126,7 @@ export default function Page() {
                 {isEditing ? (
                   <input
                     className="form-control"
-                    value={professon}
+                    value={editedProfesson}
                     type="text"
                     placeholder="Profession"
                     name=""
@@ -159,6 +163,9 @@ export default function Page() {
                   <input
                     type="number"
                     className="form-control"
+                    onChange={(e) => {
+                      setEditedPhone(e.target.value);
+                    }}
                     value={editedPhone}
                     placeholder="Phone"
                     name=""
@@ -175,6 +182,9 @@ export default function Page() {
                 {isEditing ? (
                   <input
                     className="form-control"
+                    onChange={(e) => {
+                      setEditedWebsite(e.target.value);
+                    }}
                     value={editedWebsite}
                     placeholder="Website"
                     type="text"
@@ -195,6 +205,9 @@ export default function Page() {
             {isEditing ? (
               <textarea
                 className="form-control"
+                onChange={(e) => {
+                  setEditedAbout(e.target.value);
+                }}
                 value={editedAbout}
                 maxLength={500}
                 name=""

@@ -80,6 +80,8 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60,
       path: "/", // accessible throughout the site
     });
+    // console.log(response.cookies);
+    
 
     return response;
   } catch (error: any) {

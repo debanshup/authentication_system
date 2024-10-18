@@ -12,8 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { otp, reqId } = reqBody;
-console.log(otp);
-
+    console.log(otp);
 
     const encryptedReqId = crypto
       .createHash("sha256")
@@ -25,26 +24,28 @@ console.log(otp);
       reqId: encryptedReqId,
       reqIdExpires: { $gt: Date.now() },
     });
-
-
-    const user = await User.findById(otpRecord.userId.toString());
-
-
-    if (!otpRecord || !user) {
-
+    if (!otpRecord) {
       return NextResponse.json({
         message: "Unexpected error occured!",
         success: false,
       });
     }
 
-    const matched = otpRecord.compareOtp(otp)
-    console.log(matched);
-    
-    if (!matched) {
+    const user = await User.findById(otpRecord.userId.toString());
 
-      console.log('otp not matched');
-      
+    if (!user) {
+      return NextResponse.json({
+        message: "Unexpected error occured!",
+        success: false,
+      });
+    }
+
+    const matched = otpRecord.compareOtp(otp);
+    // console.log(matched);
+
+    if (!matched) {
+      console.log("otp not matched");
+
       return NextResponse.json({
         message: "OTP unmatched",
         isMatched: false,
