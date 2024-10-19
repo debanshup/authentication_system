@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
+import { sendVerificationEmail } from "@/helper/mailer";
 import Profile from "@/models/profileModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,39 +19,66 @@ export async function POST(request: NextRequest) {
     // if yes, update the details sent from profile
     const reqBody = await request.json();
     const {
-      email,
-      image,
-      editedProfesson,
-      editdEmail,
-      editedPhone,
-      editedWebsite,
-      editedAbout,
+      // email,
+      newImage,
+      newProfession,
+      newEmail,
+      newPhone,
+      newWebsite,
+      newAbout,
     } = reqBody;
+    console.log(newEmail);
 
-const user = await User.findOne({email})
-if (!user) {
+    const user = await User.findOne({ email: newEmail });
+    if (!user) {
+      return NextResponse.json({
+        message: "No user found",
+        success: false,
+      });
+    }
+
+    const profileRecord = await Profile.findOne({ userId: user._id });
+
+    if (!profileRecord) {
+      return NextResponse.json({
+        message: "No profile record found",
+        success: false,
+      });
+    }
+
+    // if email modified, change email in user
+
+    if (newEmail && newEmail !== user.email) {
+      console.log("email modified to" + newEmail);
+      user.email = newEmail;
+      const token = user.createEmailVerificationToken();
+      await sendVerificationEmail({ email: newEmail, token });
+      await user.save();
+    }
+    profileRecord.email = user.email;
+    profileRecord.image = newImage || "N/A";
+    profileRecord.profession = newProfession || "N/A";
+    profileRecord.phone = newPhone || "N/A";
+    profileRecord.website = newWebsite || "N/A";
+    profileRecord.about = newAbout || "N/A";
+
+    // update profile
+
+    const savedProfileRecord = await profileRecord.save();
+    console.log(savedProfileRecord);
+
+    // proceed....
     return NextResponse.json({
-        message: 'No user found',
-        success: false
-    })
-}
-
-const profileRecord = await Profile.findById(user._id)
-
-if (!profileRecord) {
+      new_profile: savedProfileRecord,
+      success: true,
+      profile_updated: true,
+      status: 200,
+    });
+  } catch (error: any) {
     return NextResponse.json({
-        message: 'No profile record found',
-        success: false
-    })
-}
-
-
-// if email modified, change email in user
-
-// proceed....
-
-
-
-
-  } catch (error) {}
+      message: error.message,
+      success: false,
+      status: 500,
+    });
+  }
 }
