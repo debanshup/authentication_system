@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { otp, reqId } = reqBody;
-
+    console.log(otp);
 
     const encryptedReqId = crypto
       .createHash("sha256")
@@ -20,30 +20,32 @@ export async function POST(request: NextRequest) {
       .digest("hex");
 
     const otpRecord = await OTP.findOne({
-      // otp: encryptedOtp,
       otpExpires: { $gt: Date.now() },
       reqId: encryptedReqId,
       reqIdExpires: { $gt: Date.now() },
     });
-
-
-    const user = await User.findById(otpRecord.userId.toString());
-
-
-    if (!otpRecord || !user) {
-
+    if (!otpRecord) {
       return NextResponse.json({
         message: "Unexpected error occured!",
         success: false,
       });
     }
 
-    const matched = otpRecord.compareOtp(otp)
+    const user = await User.findById(otpRecord.userId.toString());
+
+    if (!user) {
+      return NextResponse.json({
+        message: "Unexpected error occured!",
+        success: false,
+      });
+    }
+
+    const matched = otpRecord.compareOtp(otp);
+    // console.log(matched);
 
     if (!matched) {
+      console.log("otp not matched");
 
-      console.log('otp not matched');
-      
       return NextResponse.json({
         message: "OTP unmatched",
         isMatched: false,
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
     await otpRecord.save();
 
     return NextResponse.json({
+      isMatched: true,
       success: true,
       message: "OTP verified successfully",
     });

@@ -19,8 +19,16 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, 'Plaese provide a password']
+            required: [true, 'Please provide a password'],
+            // minlength: [8, 'Password must be at least 8 characters long'],
+            // validate: {
+            //     validator: function (value) {
+            //         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
+            //     },
+            //     message: 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+            // }
         },
+        
         isEmailVerified: {
             type: Boolean,
             default: false,
@@ -75,6 +83,25 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
+// userSchema.pre('save', async function (next) {
+//     try {
+//       // **Run validation**
+//       await this.validate();
+  
+//       // **Skip if password is not modified**
+//       if (!this.isModified('password')) {
+//         return next();
+//       }
+  
+//       // **Hash password**
+//       const salt = await bcryptjs.genSalt(10);
+//       this.password = await bcryptjs.hash(this.password, salt);
+  
+//       next();
+//     } catch (error) {
+//       next(error); // Pass validation or hashing errors to the next middleware
+//     }
+//   });
 
 // check password validity during login
 

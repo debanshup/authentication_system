@@ -1,14 +1,15 @@
 "use server";
 
 import { connect } from "@/dbConfig/dbConfig";
-import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 // import bcryptjs from "bcryptjs";
 import { sendVerificationEmail } from "@/helper/mailer";
 // import axios from "axios";
 // import { redirect } from "next/navigation";
 // import { revalidatePath } from "next/cache";
+import User from "@/models/userModel";
 import OTP from "@/models/otpModel";
+import Profile from "@/models/profileModel"
 
 connect();
 
@@ -55,7 +56,12 @@ export async function POST(request: NextRequest) {
       userId: savedUser._id,
     });
 
+    const profile = new Profile ({
+      userId: savedUser._id,
+    })
+
     const savedOtpDocument = await otpDocument.save();
+    const savedProfile = await profile.save()
 
     return NextResponse.json({
       message: "User created successfully",
@@ -63,6 +69,7 @@ export async function POST(request: NextRequest) {
       registration_status: user.isEmailVerified,
       user: savedUser,
       otpDocument: savedOtpDocument,
+      profile: savedProfile
       // email: savedUser.email
     });
   } catch (error: any) {

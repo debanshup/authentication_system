@@ -7,10 +7,13 @@ import { IdentifierParams } from "@/types/enums";
 import UserNotExistPopup from "./components/pop-ups/UserNotExistPopup";
 import ErrorPopup from "./components/pop-ups/ErrorPopup";
 import FillPopup from "./components/pop-ups/FillPopup";
+import Spin from "./components/spinner/Spinner";
 
 const Cred = () => {
   const router = useRouter();
   const [credId, setCredId] = useState("");
+
+  const [loadingNext, setLoadingNext] = useState(false);
 
   const [showUserNotExistPopup, setShowUserNotExistPopup] = useState(false);
   const handleCloseUserNotExistPopup = () => setShowUserNotExistPopup(false);
@@ -24,12 +27,14 @@ const Cred = () => {
   async function nextBtnClickHandler() {
     try {
       if (credId) {
-        const credRes = await axios.post("/api/users/cred", { email: credId });
+        setLoadingNext(true)
         const reqIdRes = await axios.post("/api/users/reqid", {
           email: credId,
         });
+        const credRes = await axios.post("/api/users/cred", { email: credId });
 
         // user and otp record exist
+        setLoadingNext(false)
         if (credRes.data.otp_sent_status && reqIdRes.data.success) {
           router.push(
             `./verify-otp?${IdentifierParams.R_ID}=${reqIdRes.data.id}`
@@ -48,8 +53,9 @@ const Cred = () => {
         //  show unfilled error
         setShowFillPopup(true);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       // unexpected error
+      setLoadingNext(false)
       setShowErrorPopup(true);
     }
   }
@@ -68,21 +74,32 @@ const Cred = () => {
             className="form-control form-control-lg"
             value={credId}
             onChange={(e) => setCredId(e.target.value)}
+            autoComplete="email"
+
           />
         </div>
         <div className="row w-100">
           <div className="col-6">
-            <Link className="btn btn-secondary w-100" href="/login">
+            <Link
+              className="btn btn-secondary w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
+              href="/login">
               Back
             </Link>
           </div>
           <div className="col-6 text-end">
             <button
               type="button"
-              className="btn btn-primary w-100"
+              className="btn btn-primary w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
               onClick={nextBtnClickHandler}
             >
-              Next
+              {loadingNext ? (
+                <div className="d-flex align-items-center gap-2">
+                  <Spin />
+                  <span>Sending email...</span>
+                </div>
+              ) : (
+                "Next"
+              )}
             </button>
           </div>
         </div>
@@ -105,6 +122,7 @@ const Cred = () => {
           handleClose={handleCloseErrorPopup}
         />
       )}
+
     </div>
   );
 };

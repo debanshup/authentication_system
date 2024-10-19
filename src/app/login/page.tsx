@@ -36,7 +36,7 @@ const[showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false)
         const response = await axios.post("./api/users/login", user);
 
         if (response.data.user_exist && response.data.verification_status) {
-          router.push(`/profile/dashboard/${response.data.username}`);
+          router.push(`/profile/${response.data.username}`);
         } else if (
           !response.data.verification_status &&
           response.data.user_exist

@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
   try {
     const reqbody = await request.json();
     const { email } = reqbody;
-    // console.log(email);
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -23,7 +22,6 @@ export async function POST(request: NextRequest) {
     }
 
     const otpRecord = await OTP.findOne({ userId: user._id });
-    // console.log(otpRecord.userId);
 
     const reqId = otpRecord.createReqId();
 

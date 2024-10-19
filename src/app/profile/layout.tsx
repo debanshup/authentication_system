@@ -25,10 +25,9 @@ export default function ProfileLayout({
   return (
     <section>
       {/* Include shared UI here e.g. a header or sidebar */}
-      <header className="border p-2 text-end">
-        <button onClick={logoutClickHandler} className="btn btn-danger">Logout</button>
+      <header className="p-2 text-end bg-light sticky-top shadow-sm">
+        <button onClick={logoutClickHandler} className="btn btn-sm btn-warning">Logout</button>
       </header>
-
       {children}
     </section>
   )
