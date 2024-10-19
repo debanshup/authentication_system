@@ -6,42 +6,62 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import axios from "axios";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Image from "next/image";
 
 export default function Page() {
   const [isEditing, setIsEditing] = useState(false);
-  const { name } = useParams();
+  const { username } = useParams();
 
-  const [username, setUsername] = useState("");
-  const [profession, setProfession] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [website, setWebsite] = useState("");
-  const [about, setAbout] = useState("");
+  // const [username, setUsername] = useState("");
+  // const [profession, setProfession] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [phone, setPhone] = useState("");
+  // const [website, setWebsite] = useState("");
+  // const [about, setAbout] = useState("");
 
-  const [editedProfesson, setEditedProfession] = useState("");
-  const [editdEmail, setEditedEmail] = useState("");
-  const [editedPhone, setEditedPhone] = useState("");
-  const [editedWebsite, setEditedWebsite] = useState("");
-  const [editedAbout, setEditedAbout] = useState("");
+  const [profile, setProfile] = useState({
+    image: '',
+    profession: '',
+    email: '',
+    phone: '',
+    website: '',
+    about: '',
+  })
+
+  // const [editedProfesson, setEditedProfession] = useState("");
+  // const [editdEmail, setEditedEmail] = useState("");
+  // const [editedPhone, setEditedPhone] = useState("");
+  // const [editedWebsite, setEditedWebsite] = useState("");
+  // const [editedAbout, setEditedAbout] = useState("");
+
+  const [editedProfile, setEditedProfile] = useState({
+    newImage: '',
+    newProfession: '',
+    newEmail: '',
+    // oldEmail: '',
+    newPhone: '',
+    newWebsite: '',
+    newAbout: ''
+  })
 
   // const [] = useState("")
   // const [] = useState("")
 
   async function getDetails() {
     try {
-      const res = await axios.get("/api/users/user-details", {
-        params: { name },
+      const detailsRes = await axios.get("/api/users/user-details", {
+        params: { username },
       });
-      // alert(res.data.success)
-      if (res.data.success) {
-        setUsername(res.data.props.user.username);
-        setProfession(res.data.props.user.profession)
-        setEmail(res.data.props.user.email)
-        setPhone(res.data.props.user.phone)
-        setWebsite(res.data.props.user.website)
-        setAbout(res.data.props.user.about)
+      if (detailsRes.data.success) {
+        setProfile({
+          email: detailsRes.data.props.profile.email,
+          image: detailsRes.data.props.profile.image,
+          profession: detailsRes.data.props.profile.profession,
+          phone: detailsRes.data.props.profile.phone,
+          website: detailsRes.data.props.profile.website,
+          about: detailsRes.data.props.profile.about,
+        });
       } else {
         // alert(res.data.message);
       }
@@ -53,18 +73,27 @@ export default function Page() {
   // edit btn click handler
 
   async function editBtnClickHandler() {
+    setIsEditing(true)
     try {
-      setIsEditing(true);
-      setEditedProfession(profession)
-      setEditedEmail(email)
-      setEditedPhone(phone)
-      setEditedWebsite(about)
-      setEditedWebsite(website)
+      setEditedProfile({
+        newImage: profile.image,
+        newProfession: profile.profession,
+        newEmail: profile.email,
+        // oldEmail: "",
+        newPhone: profile.phone,
+        newWebsite: profile.website,
+        newAbout: profile.about
+      })
     } catch (error) { }
   }
 
   async function saveBtnClickHandler() {
     try {
+      const profileRes = await axios.post('/api/users/edit-profile', editedProfile)
+      alert(profileRes.data.success)
+      setProfile(profileRes.data.new_profile)
+      setIsEditing(false);
+
     } catch (error) { }
   }
 
@@ -72,18 +101,10 @@ export default function Page() {
     setIsEditing(false);
   }
 
-
-  // useEffect(() => {
-  //   setEditedProfession(professon)
-  //   setEditedEmail(email)
-  //   setEditedPhone(phone)
-  //   setEditedWebsite(about)
-  //   setEditedWebsite(website)
-  // }, [about, email, phone, professon, website])
-
-
   useEffect(() => {
-    getDetails();
+    if (!isEditing) {
+      getDetails();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -126,14 +147,17 @@ export default function Page() {
                 {isEditing ? (
                   <input
                     className="form-control"
-                    value={editedProfesson}
+                    onChange={(e) => {
+                      setEditedProfile({ ...editedProfile, newProfession: e.target.value });
+                    }}
+                    value={editedProfile.newProfession}
                     type="text"
                     placeholder="Profession"
                     name=""
                     id=""
                   />
                 ) : (
-                  <span className="badge text-bg-primary">{"Profession"}</span>
+                  <span className="badge text-bg-primary">{profile.profession || "profession"}</span>
                 )}
               </p>
             </li>
@@ -145,15 +169,16 @@ export default function Page() {
                   <input
                     className="form-control"
                     onChange={(e) => {
-                      setEditedEmail(e.target.value);
+                      setEditedProfile({ ...editedProfile, newEmail: e.target.value });
                     }}
-                    value={editdEmail}
+                    value={editedProfile.newEmail}
                     type="email"
                     placeholder="Email"
+                    disabled
                   />
-                ) : (
-                  email
-                )}
+                ) :
+                  profile.email
+                }
               </p>
             </li>
             <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
@@ -164,16 +189,16 @@ export default function Page() {
                     type="number"
                     className="form-control"
                     onChange={(e) => {
-                      setEditedPhone(e.target.value);
+                      setEditedProfile({ ...editedProfile, newPhone: e.target.value });
                     }}
-                    value={editedPhone}
+                    value={editedProfile.newPhone}
                     placeholder="Phone"
                     name=""
                     id=""
                   />
-                ) : (
-                  "Phone"
-                )}
+                ) :
+                  profile.phone
+                }
               </p>
             </li>
             <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
@@ -183,16 +208,16 @@ export default function Page() {
                   <input
                     className="form-control"
                     onChange={(e) => {
-                      setEditedWebsite(e.target.value);
+                      setEditedProfile({ ...editedProfile, newWebsite: e.target.value });
                     }}
-                    value={editedWebsite}
+                    value={editedProfile.newWebsite}
                     placeholder="Website"
                     type="text"
                     name=""
                     id=""
                   />
                 ) : (
-                  "Website"
+                  profile.website
                 )}
               </p>
             </li>
@@ -206,9 +231,10 @@ export default function Page() {
               <textarea
                 className="form-control"
                 onChange={(e) => {
-                  setEditedAbout(e.target.value);
+                  setEditedProfile({ ...editedProfile, newAbout: e.target.value });
+
                 }}
-                value={editedAbout}
+                value={editedProfile.newAbout}
                 maxLength={500}
                 name=""
                 id=""
@@ -216,7 +242,7 @@ export default function Page() {
                 style={{ maxHeight: "500px" }}
               ></textarea>
             ) : (
-              "about"
+              profile.about
             )}
 
             {/* Lorem Ipsum is simply dummy text of the printing and typesetting industry.
