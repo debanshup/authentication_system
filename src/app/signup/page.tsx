@@ -13,7 +13,10 @@ import SignupErrorPopup from "./components/pop-ups/SignupErrorPopup";
 import UnknownErrorPopup from "./components/pop-ups/UnknownErrorPopup";
 
 const Signup = () => {
-  const router = useRouter();
+
+  // const router = useRouter();
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [showEmailSentPopUp, setShowEmailSentPopUp] = useState(false);
   const handleCloseEmailSentPopUp = () => setShowEmailSentPopUp(false);
@@ -61,6 +64,7 @@ const Signup = () => {
         const response = await axios.post("/api/users/signup", user);
 
         if (response.data.registration_status && response.data.user_exist) {
+          setErrorMessage(response.data.message);
           setShowUserExistPopup(true);
         } else if (!response.data.registration_status) {
           setShowEmailSentPopUp(true); // Show email sent popup if necessary
@@ -194,7 +198,7 @@ const Signup = () => {
         <UserExistPopup
           show={showUserExistPopup}
           handleClose={handleCloseUserExistPopup}
-          email={user.email}
+          message={errorMessage}
         />
       )}
       {showSignupErrorPopup && (
