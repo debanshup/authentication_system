@@ -3,42 +3,28 @@
 
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import EmailSentPopup from "./components/pop-ups/EmailSentPopup";
-import InputErrorPopup from "./components/pop-ups/InputErrorPopup";
-import PasswordMismatchPopUp from "./components/pop-ups/PasswordMismatchPopUp";
-import UserExistPopup from "./components/pop-ups/UserExistPopup";
-import SignupErrorPopup from "./components/pop-ups/SignupErrorPopup";
-import UnknownErrorPopup from "./components/pop-ups/UnknownErrorPopup";
+import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const Signup = () => {
-  const router = useRouter();
+  // const router = useRouter();
 
-  const [showEmailSentPopUp, setShowEmailSentPopUp] = useState(false);
-  const handleCloseEmailSentPopUp = () => setShowEmailSentPopUp(false);
+  const [conditions, setConditions] = useState({
+    hasUppercase: false ,
+    hasLowercase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+    minLength: false,
+  });
 
-  const [showInputErrorPopUp, setShowInputErrorPopUp] = useState(false);
-  const handleCloseInputErrorPopUp = () => setShowInputErrorPopUp(false);
+  const [isPasswordMatched, setIsPasswordMatched] = useState(false);
+  const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
-  const [showPasswordMismatchPopUp, setShowPasswordMismatchPopUp] =
-    useState(false);
-  const handleClosePasswordMismatchPopUp = () =>
-    setShowPasswordMismatchPopUp(false);
-
-  const [showUserExistPopup, setShowUserExistPopup] = useState(false);
-  const handleCloseUserExistPopup = () => setShowUserExistPopup(false);
-
-  const [showSignupErrorPopup, setShowSignupErrorPopup] = useState(false);
-  const handleCloseSignupErrorPopup = () => setShowSignupErrorPopup(false);
-
-  const [showUnknownErrorPopup, setShowUnknownErrorPopup] = useState(false);
-  const handleCloseUnknownErrorPopup = () => setShowUnknownErrorPopup(false);
   const [user, setUser] = useState({
     username: "",
     email: "",
     password: "",
-    confirmedPassword: "",
+    confirmPassword: "",
   });
   async function nextBtnClickHandler() {
     try {
@@ -46,175 +32,243 @@ const Signup = () => {
         !user.username ||
         !user.email ||
         !user.password ||
-        !user.confirmedPassword
+        !user.confirmPassword
       ) {
-        setShowInputErrorPopUp(true); // Show error if any field is empty
+        // setShowInputErrorPopUp(true);
+        toast.error("Please fill in all fields.");
         return;
       }
-
-      if (user.password !== user.confirmedPassword) {
-        setShowPasswordMismatchPopUp(true); // Show error if passwords don't match
-        return;
-      }
-
       try {
-        const response = await axios.post("/api/users/signup", user);
+        if (allValid) {
+          const signupRes = await axios.post("/api/users/signup", user);
+          if (signupRes.status) {
+            if (signupRes.data.email_exist) {
+              toast(
+                `An account with the email ${user.email} already exists.\n Please log in to continue, or use a different email to sign up.`,
+                {
+                  duration: 6000,
+                }
+              );
+            } else if (signupRes.data.username_exist) {
+              toast.error(`Username not available`);
+            }
+          }
 
-        if (response.data.registration_status && response.data.user_exist) {
-          setShowUserExistPopup(true);
-        } else if (!response.data.registration_status) {
-          setShowEmailSentPopUp(true); // Show email sent popup if necessary
+
+          else if (!signupRes
+            .data.registration_status) {
+
+
+            toast.success(
+              `A verification email has been sent to: ${user.email}`
+            );
+          }
+        } else {
+          toast.error("Bad request");
         }
       } catch (error) {
-        setShowSignupErrorPopup(true);
+        toast.error(
+          "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+        );
+        // setShowSignupErrorPopup(true);
       }
     } catch (error: any) {
-      setShowUnknownErrorPopup(true);
+      toast.error(
+        "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+      );
+
+      // setShowUnknownErrorPopup(true);
     }
   }
 
+  useEffect(() => {
+    // alert((confirmPassword === password) && confirmPassword.length>0)
+    setIsPasswordMatched(
+      user.confirmPassword === user.password && user.confirmPassword.length > 0
+    );
+    setIsPasswordNotMatched(!(user.confirmPassword === user.password));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.confirmPassword]);
+
+  useEffect(() => {
+    setConditions({
+      hasUppercase: /[A-Z]/.test(user.password),
+      hasLowercase: /[a-z]/.test(user.password),
+      hasNumber: /\d/.test(user.password),
+      hasSpecialChar: /[@$!%*?&]/.test(user.password),
+      minLength: user.password.length >= 8,
+    });
+  }, [user.password]);
+
+  const usernameValid = /^[^\s]{3,}$/.test(user.username.trim());
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email.trim());
+
+  const passwordValid = Object.values(conditions).every(Boolean);
+  const passwordConfirmed =
+    user.confirmPassword.length > 0 && user.password === user.confirmPassword;
+  const allValid =
+    usernameValid && emailValid && passwordValid && passwordConfirmed;
+
   return (
-    <div
-      className="container-fluid border d-flex flex-column justify-content-center align-items-center vh-100"
-      style={{ background: "white" }}
-    >
-      <form
-        style={{ backdropFilter: "blur(50px)" }}
-        className="shadow-lg rounded p-4  col-xxl-3 col-xl-4 col-lg-5 col-md-6 col-sm-8"
+    <>
+      <Toaster />
+      <div
+        className="container-fluid border d-flex flex-column justify-content-center align-items-center vh-100"
+        style={{ background: "white" }}
       >
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Username
-          </label>
-          <input
-            onChange={(e) => {
-              setUser({ ...user, username: e.target.value });
-            }}
-            type="text"
-            className="form-control"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Email
-          </label>
-          <input
-            onChange={(e) => {
-              setUser({ ...user, email: e.target.value });
-            }}
-            type="email"
-            className="form-control"
-            required
-          />
-          <div id="emailHelp" className="form-text">
-            We'll never share your email with anyone else.
+        <form
+          style={{ backdropFilter: "blur(50px)" }}
+          className="shadow-lg rounded p-4  col-xxl-3 col-xl-4 col-lg-5 col-md-6 col-sm-8"
+        >
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
+              Username
+            </label>
+            <input
+              onChange={(e) => {
+                setUser({ ...user, username: e.target.value });
+                
+              }}
+              type="text"
+              className={`form-control form-control-lg ${usernameValid ? "is-valid" : "is-invalid"
+                }`}
+              required
+            />
+            {!usernameValid && (
+              <p className="form-text text-danger">
+                Username must be at least 3 characters long.
+              </p>
+            )}
           </div>
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Password
-          </label>
-          <input
-            onChange={(e) => {
-              setUser({ ...user, password: e.target.value });
-            }}
-            type="password"
-            className="form-control"
-            minLength={8}
-            required
-          />
-
-          <div id="emailHelp" className="form-text">
-            Password must be at least 8 characters long and include at least one
-            uppercase letter, one lowercase letter, one number, and one special
-            character.
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
+              Email
+            </label>
+            <input
+              onChange={(e) => {
+                setUser({ ...user, email: e.target.value });
+              }}
+              type="email"
+              className={`form-control form-control-lg ${emailValid ? "is-valid" : "is-invalid"
+                }`}
+              required
+            />
+            <div id="emailHelp" className="form-text">
+              We'll never share your email with anyone else.
+            </div>
           </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Confirm password
-          </label>
-          <input
-            onChange={(e) => {
-              setUser({ ...user, confirmedPassword: e.target.value });
-            }}
-            type="password"
-            className="form-control"
-            minLength={8}
-            required
-          />
-        </div>
 
-        <div className="text-end">
-          <button
-            onClick={nextBtnClickHandler}
-            type="button"
-            className="btn btn-primary btn-lg"
-          >
-            Next
-          </button>
-        </div>
-        <hr />
-        <div className="m-3">
-          <div className="mb-3 text-center">
-            <span>
-              Already have an account?{" "}
-              <Link
-                className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                href={"/login"}
-              >
-                Log in
-              </Link>
-            </span>
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
+              Password
+            </label>
+            <input
+              onChange={(e) => {
+                setUser({ ...user, password: e.target.value });
+              }}
+              type="password"
+              className={`form-control form-control-lg ${passwordValid ? "is-valid" : "is-invalid"
+                }`}
+              minLength={8}
+              required
+            />
+
+            <div id="emailHelp" className="form-text">
+              <p>
+                Password must be at least{" "}
+                <span
+                  className={
+                    conditions.minLength ? "text-success" : "text-danger"
+                  }
+                >
+                  8 characters{" "}
+                </span>
+                long and include at least one{" "}
+                <span
+                  className={
+                    conditions.hasUppercase ? "text-success" : "text-danger"
+                  }
+                >
+                  uppercase letter
+                </span>
+                , one{" "}
+                <span
+                  className={
+                    conditions.hasLowercase ? "text-success" : "text-danger"
+                  }
+                >
+                  lowercase letter
+                </span>
+                , one{" "}
+                <span
+                  className={
+                    conditions.hasNumber ? "text-success" : "text-danger"
+                  }
+                >
+                  number
+                </span>
+                , and one{" "}
+                <span
+                  className={
+                    conditions.hasSpecialChar ? "text-success" : "text-danger"
+                  }
+                >
+                  special character (@$!%*?&)
+                </span>
+                .
+              </p>
+            </div>
           </div>
-        </div>
-      </form>
-      {showEmailSentPopUp && (
-        <EmailSentPopup
-          show={showEmailSentPopUp}
-          handleClose={handleCloseEmailSentPopUp}
-          email={user.email}
-        />
-      )}
-      {showInputErrorPopUp && (
-        <InputErrorPopup
-          show={showInputErrorPopUp}
-          handleClose={handleCloseInputErrorPopUp}
-        />
-      )}
-      {showPasswordMismatchPopUp && (
-        <PasswordMismatchPopUp
-          show={showPasswordMismatchPopUp}
-          handleClose={handleClosePasswordMismatchPopUp}
-        />
-      )}
-      {showUserExistPopup && (
-        <UserExistPopup
-          show={showUserExistPopup}
-          handleClose={handleCloseUserExistPopup}
-          email={user.email}
-        />
-      )}
-      {showSignupErrorPopup && (
-        <SignupErrorPopup
-          show={showSignupErrorPopup}
-          handleClose={handleCloseSignupErrorPopup}
-          email={user.email}
-        />
-      )}
-      {showUnknownErrorPopup && (
-        <UnknownErrorPopup
-          show={showUnknownErrorPopup}
-          handleClose={handleCloseUnknownErrorPopup}
-          email={user.email}
-        />
-      )}
-    </div>
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
+              Confirm password
+            </label>
+            <input
+              onChange={(e) => {
+                setUser({ ...user, confirmPassword: e.target.value });
+              }}
+              type="password"
+              className={`form-control form-control-lg ${
+                (passwordConfirmed ? 'is-valid' : 'is-invalid')
+              }`}
+              minLength={8}
+              required
+            />
+            {isPasswordNotMatched && (
+              <p className="form-text text-danger">Passwords do not match.</p>
+            )}
+            {isPasswordMatched && (
+              <p className="form-text text-success">Passwords match.</p>
+            )}
+          </div>
+
+          <div className="text-end">
+            <button
+              onClick={nextBtnClickHandler}
+              type="button"
+              className="btn btn-primary btn-lg"
+            >
+              Next
+            </button>
+          </div>
+          <hr />
+          <div className="m-3">
+            <div className="mb-3 text-center">
+              <span>
+                Already have an account?{" "}
+                <Link
+                  className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                  href={"/login"}
+                >
+                  Log in
+                </Link>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </>
   );
 };
 
 export default Signup;
-
-// apply password format matcher

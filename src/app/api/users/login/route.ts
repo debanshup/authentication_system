@@ -1,13 +1,8 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
-import bcryptjs from "bcryptjs";
-import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
-import { connected } from "process";
-import crypto from "crypto";
 import { sendVerificationEmail } from "@/helper/mailer";
 import jwt from "jsonwebtoken";
-import OTP from "@/models/otpModel";
 
 connect();
 

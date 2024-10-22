@@ -11,48 +11,47 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { password, confirmPassword, token } = reqBody;
-    
-    if (!token || !(password === confirmPassword)) {
-      return NextResponse.json({message: 'Bad request', success: false, status: 400})
-    }
-      // hash token
-      const hashedToken = crypto
-        .createHash("sha256")
-        .update(token)
-        .digest("hex");
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-      // console.log(hashedToken);
-
-      const user = await User.findOne({
-        passwordResetToken: hashedToken,
-        passwordResetTokenExpires: { $gt: Date.now() },
+    if (
+      !token ||
+      !(password === confirmPassword) ||
+      !passwordRegex.test(password) ||
+      !passwordRegex.test(confirmPassword)
+    ) {
+      return NextResponse.json({
+        message: "Bad request",
+        success: false,
+        status: 400,
       });
+    }
+    // hash token
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetTokenExpires: { $gt: Date.now() },
+    });
 
-      if (!user) {
-        return NextResponse.json({
-          message: "No user found",
-          status: 400,
-        });
-      }
+    if (!user) {
+      return NextResponse.json({
+        token_expired: true,
+        message:
+          "Your session has timed out. Please restart the password reset process.",
+        status: 400,
+      });
+    }
 
-      // console.log(user);
-      
+    user.password = confirmPassword;
 
-      user.password = confirmPassword;
+    user.clearPasswordResetToken();
 
-      user.clearPasswordResetToken();
-
-      await user.save();
-
-    // console.log(user);
-    
-    
-    
+    await user.save();
 
     return NextResponse.json({
       status: 200,
-      message: "password changed successfully"
+      message: "password changed successfully",
     });
   } catch (error: any) {
     console.log(error);

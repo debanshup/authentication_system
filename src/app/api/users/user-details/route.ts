@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       success: true,
       props: {
         profile: {
-          email: profileRecord.email,
+          email: user.email,
           image: profileRecord.image,
           username: user.username,
           profession: profileRecord.profession,
