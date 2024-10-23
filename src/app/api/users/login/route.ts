@@ -11,6 +11,20 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const { username, password } = reqBody;
 
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    const passwordValid = passwordRegex.test(password);
+
+    if (!passwordValid) {
+      // return NextResponse.json({
+      //   status: 400,
+      //   message: "Invalid username or password",
+      //   success: false,
+      //   user_exist: false,
+      // });
+    }
+
     // find user
     const user = await User.findOne({
       $or: [{ username: username }, { email: username }],
@@ -33,8 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: "Email is not verified, check inbox for verificaion email",
         verification_status: user.isEmailVerified,
-        email: user.email
-
+        email: user.email,
       });
     }
 
@@ -65,7 +78,6 @@ export async function POST(request: NextRequest) {
       email: user.email,
       verification_status: user.isEmailVerified,
       user_exist: true,
-
     });
 
     response.cookies.set("sessionId", token, {
@@ -76,7 +88,6 @@ export async function POST(request: NextRequest) {
       path: "/", // accessible throughout the site
     });
     // console.log(response.cookies);
-    
 
     return response;
   } catch (error: any) {

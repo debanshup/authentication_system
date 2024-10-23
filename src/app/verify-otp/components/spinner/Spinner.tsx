@@ -1,7 +1,13 @@
 import Spinner from "react-bootstrap/Spinner";
 
 const Spin = () => {
-  return <Spinner  style={{ width: '1rem', height: '1rem' }} variant="light" animation="grow" role="status" />;
+  return (
+    <Spinner
+      animation="border"
+      role="status"
+      style={{ height: "1rem", width: "1rem", borderWidth: "1px" }}
+    />
+  );
 };
 
 export default Spin;

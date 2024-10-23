@@ -8,13 +8,19 @@ import crypto from "crypto";
 connect();
 
 export async function POST(request: NextRequest) {
+  console.log("in token");
   try {
+
+    
     const reqBody = await request.json();
     const { reqId } = reqBody;
     const encryptedReqId = crypto
       .createHash("sha256")
       .update(reqId)
       .digest("hex");
+
+      console.log(encryptedReqId);
+      
     const otpRecord = await OTP.findOne({ reqId: encryptedReqId });
     if (!otpRecord) {
       return NextResponse.json({ message: "invalid req id", success: false });

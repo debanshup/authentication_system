@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       console.log("otp not matched");
 
       return NextResponse.json({
-        message: "OTP unmatched",
+        message: "The OTP does not match. Please try again.",
         isMatched: false,
       });
     }

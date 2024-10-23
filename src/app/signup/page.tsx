@@ -5,12 +5,17 @@ import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
+import useInputFocus from "./hooks/useInputFocus";
 const Signup = () => {
-  // const router = useRouter();
+
+  // const [loadingNext, setLoadingNext] = useState(false)
+  const usernameInput = useInputFocus();
+  const emailInput = useInputFocus();
+  const passwordInput = useInputFocus();
+  const confirmPasswordInput = useInputFocus();
 
   const [conditions, setConditions] = useState({
-    hasUppercase: false ,
+    hasUppercase: false,
     hasLowercase: false,
     hasNumber: false,
     hasSpecialChar: false,
@@ -47,24 +52,22 @@ const Signup = () => {
                 `An account with the email ${user.email} already exists.\n Please log in to continue, or use a different email to sign up.`,
                 {
                   duration: 6000,
+                  className: "bg-danger text-white p-3 rounded", // Bootstrap classes
+                  icon: "⚠️", // Optional: Add an icon to enhance the look
                 }
               );
             } else if (signupRes.data.username_exist) {
-              toast.error(`Username not available`);
+              toast.error(`Username not available`, {});
             }
-          }
-
-
-          else if (!signupRes
-            .data.registration_status) {
-
-
-            toast.success(
-              `A verification email has been sent to: ${user.email}`
-            );
+          } else if (!signupRes.data.registration_status) {
+            toast(`A verification email has been sent to: ${user.email}`, {
+              icon: "✅",
+            });
           }
         } else {
-          toast.error("Bad request");
+          toast(
+            "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)."
+          );
         }
       } catch (error) {
         toast.error(
@@ -88,7 +91,7 @@ const Signup = () => {
     );
     setIsPasswordNotMatched(!(user.confirmPassword === user.password));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.confirmPassword]);
+  }, [user.confirmPassword, user.password]);
 
   useEffect(() => {
     setConditions({
@@ -125,16 +128,21 @@ const Signup = () => {
               Username
             </label>
             <input
+              onFocus={usernameInput.handleFocus}
               onChange={(e) => {
                 setUser({ ...user, username: e.target.value });
-                
               }}
               type="text"
-              className={`form-control form-control-lg ${usernameValid ? "is-valid" : "is-invalid"
-                }`}
+              className={`form-control form-control-lg ${
+                usernameInput.isFocused
+                  ? usernameValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               required
             />
-            {!usernameValid && (
+            {!usernameValid && usernameInput.isFocused && (
               <p className="form-text text-danger">
                 Username must be at least 3 characters long.
               </p>
@@ -145,12 +153,18 @@ const Signup = () => {
               Email
             </label>
             <input
+              onFocus={emailInput.handleFocus}
               onChange={(e) => {
                 setUser({ ...user, email: e.target.value });
               }}
               type="email"
-              className={`form-control form-control-lg ${emailValid ? "is-valid" : "is-invalid"
-                }`}
+              className={`form-control form-control-lg ${
+                emailInput.isFocused
+                  ? emailValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               required
             />
             <div id="emailHelp" className="form-text">
@@ -163,12 +177,18 @@ const Signup = () => {
               Password
             </label>
             <input
+              onFocus={passwordInput.handleFocus}
               onChange={(e) => {
                 setUser({ ...user, password: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${passwordValid ? "is-valid" : "is-invalid"
-                }`}
+              className={`form-control form-control-lg ${
+                passwordInput.isFocused
+                  ? passwordValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               minLength={8}
               required
             />
@@ -178,7 +198,11 @@ const Signup = () => {
                 Password must be at least{" "}
                 <span
                   className={
-                    conditions.minLength ? "text-success" : "text-danger"
+                    passwordInput.isFocused
+                      ? conditions.minLength
+                        ? "text-success"
+                        : "text-danger"
+                      : ""
                   }
                 >
                   8 characters{" "}
@@ -186,7 +210,11 @@ const Signup = () => {
                 long and include at least one{" "}
                 <span
                   className={
-                    conditions.hasUppercase ? "text-success" : "text-danger"
+                    passwordInput.isFocused
+                      ? conditions.hasUppercase
+                        ? "text-success"
+                        : "text-danger"
+                      : ""
                   }
                 >
                   uppercase letter
@@ -194,7 +222,11 @@ const Signup = () => {
                 , one{" "}
                 <span
                   className={
-                    conditions.hasLowercase ? "text-success" : "text-danger"
+                    passwordInput.isFocused
+                      ? conditions.hasLowercase
+                        ? "text-success"
+                        : "text-danger"
+                      : ""
                   }
                 >
                   lowercase letter
@@ -202,7 +234,11 @@ const Signup = () => {
                 , one{" "}
                 <span
                   className={
-                    conditions.hasNumber ? "text-success" : "text-danger"
+                    passwordInput.isFocused
+                      ? conditions.hasNumber
+                        ? "text-success"
+                        : "text-danger"
+                      : ""
                   }
                 >
                   number
@@ -210,7 +246,11 @@ const Signup = () => {
                 , and one{" "}
                 <span
                   className={
-                    conditions.hasSpecialChar ? "text-success" : "text-danger"
+                    passwordInput.isFocused
+                      ? conditions.hasSpecialChar
+                        ? "text-success"
+                        : "text-danger"
+                      : ""
                   }
                 >
                   special character (@$!%*?&)
@@ -224,17 +264,22 @@ const Signup = () => {
               Confirm password
             </label>
             <input
+              onFocus={confirmPasswordInput.handleFocus}
               onChange={(e) => {
                 setUser({ ...user, confirmPassword: e.target.value });
               }}
               type="password"
               className={`form-control form-control-lg ${
-                (passwordConfirmed ? 'is-valid' : 'is-invalid')
+                confirmPasswordInput.isFocused
+                  ? passwordConfirmed
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
               }`}
               minLength={8}
               required
             />
-            {isPasswordNotMatched && (
+            {isPasswordNotMatched && confirmPasswordInput.isFocused && (
               <p className="form-text text-danger">Passwords do not match.</p>
             )}
             {isPasswordMatched && (

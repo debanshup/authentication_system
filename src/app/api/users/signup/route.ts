@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const passwordValid =
       passwordRegex.test(password) && password === confirmPassword;
 
-    if (!(usernameValid && passwordValid && emailValid)) {
+    if (!(usernameValid || passwordValid || emailValid)) {
       return NextResponse.json({ success: false, status: 400 });
     }
 
