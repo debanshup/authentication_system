@@ -6,13 +6,17 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import useInputFocus from "./hooks/useInputFocus";
-const Signup = () => {
+import Spin from "./components/spinner/Spinner";
 
-  // const [loadingNext, setLoadingNext] = useState(false)
+const Page = () => {
   const usernameInput = useInputFocus();
   const emailInput = useInputFocus();
   const passwordInput = useInputFocus();
   const confirmPasswordInput = useInputFocus();
+
+  const [usernameAvailable, setUsernameAvailable] = useState(false)
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [conditions, setConditions] = useState({
     hasUppercase: false,
@@ -31,58 +35,92 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-  async function nextBtnClickHandler() {
+  async function createAccountBtnClickHandler() {
     try {
+      setIsLoading(true);
       if (
         !user.username ||
         !user.email ||
         !user.password ||
         !user.confirmPassword
       ) {
-        // setShowInputErrorPopUp(true);
         toast.error("Please fill in all fields.");
         return;
       }
-      try {
-        if (allValid) {
-          const signupRes = await axios.post("/api/users/signup", user);
-          if (signupRes.status) {
-            if (signupRes.data.email_exist) {
-              toast(
-                `An account with the email ${user.email} already exists.\n Please log in to continue, or use a different email to sign up.`,
-                {
-                  duration: 6000,
-                  className: "bg-danger text-white p-3 rounded", // Bootstrap classes
-                  icon: "⚠️", // Optional: Add an icon to enhance the look
-                }
-              );
-            } else if (signupRes.data.username_exist) {
-              toast.error(`Username not available`, {});
-            }
+      if (allValid) {
+        const signupRes = await axios.post("/api/users/signup", user);
+        if (signupRes.status) {
+          if (signupRes.data.email_exist) {
+            toast(
+              `An account with the email ${user.email} already exists.\n Please log in to continue, or use a different email to sign up.`,
+              {
+                duration: 6000,
+                className: "bg-danger text-white p-3 rounded", // Bootstrap classes
+                icon: "⚠️", // Optional: Add an icon to enhance the look
+              }
+            );
+          } else if (signupRes.data.username_exist) {
+            toast.error(`Username not available. Please select another username`, {});
           } else if (!signupRes.data.registration_status) {
-            toast(`A verification email has been sent to: ${user.email}`, {
+            toast(`A verification email has been sent to ${user.email}`, {
               icon: "✅",
+              duration: 6000
             });
           }
-        } else {
-          toast(
-            "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)."
-          );
         }
-      } catch (error) {
-        toast.error(
-          "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+      } else if (!passwordValid) {
+        toast(
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).",
+          {
+            className: "bg-danger text-white rounded",
+            duration: 6000,
+          }
         );
-        // setShowSignupErrorPopup(true);
+      } else if (!passwordConfirmed) {
+        toast("Passwords do not match.", {
+          className: "bg-danger text-white rounded",
+        });
+      } else {
+        toast(
+          "Something went wrong",
+          {
+            className: "bg-danger text-white rounded"
+          }
+        );
       }
+
     } catch (error: any) {
       toast.error(
         "An unexpected error occurred. Please try again later, or contact support if the issue persists."
       );
 
-      // setShowUnknownErrorPopup(true);
+    } finally {
+      setIsLoading(false)
     }
   }
+
+  async function isUsernameAvailable() {
+    try {
+      if (usernameValid) {
+        const usernameAvailableRes = await axios.get("/api/users/username-available", {
+          params: { username: user.username },
+        });
+
+        setUsernameAvailable(usernameAvailableRes.data.username_available)
+
+      }
+    } catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+
+    isUsernameAvailable()
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.username])
+
 
   useEffect(() => {
     // alert((confirmPassword === password) && confirmPassword.length>0)
@@ -116,7 +154,7 @@ const Signup = () => {
     <>
       <Toaster />
       <div
-        className="container-fluid border d-flex flex-column justify-content-center align-items-center vh-100"
+        className="container-fluid d-flex flex-column justify-content-center align-items-center vh-100"
         style={{ background: "white" }}
       >
         <form
@@ -133,20 +171,27 @@ const Signup = () => {
                 setUser({ ...user, username: e.target.value });
               }}
               type="text"
-              className={`form-control form-control-lg ${
-                usernameInput.isFocused
-                  ? usernameValid
-                    ? "is-valid"
-                    : "is-invalid"
-                  : ""
-              }`}
+              className={`form-control form-control-lg ${usernameInput.isFocused
+                ? usernameValid && usernameAvailable
+                  ? "is-valid"
+                  : "is-invalid"
+                : ""
+                }`}
+              disabled={isLoading}
               required
             />
             {!usernameValid && usernameInput.isFocused && (
               <p className="form-text text-danger">
-                Username must be at least 3 characters long.
+                Username must be at least 3 characters long and must not contain spaces.
               </p>
             )}
+            {
+              usernameValid ? usernameAvailable ? (
+                <p className="form-text text-success">Username available</p>
+              ) : (
+                <p className="form-text text-danger">Username not available!</p>
+              ) :""
+            }
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
@@ -158,16 +203,16 @@ const Signup = () => {
                 setUser({ ...user, email: e.target.value });
               }}
               type="email"
-              className={`form-control form-control-lg ${
-                emailInput.isFocused
-                  ? emailValid
-                    ? "is-valid"
-                    : "is-invalid"
-                  : ""
-              }`}
+              className={`form-control form-control-lg ${emailInput.isFocused
+                ? emailValid
+                  ? "is-valid"
+                  : "is-invalid"
+                : ""
+                }`}
+              disabled={isLoading}
               required
             />
-            <div id="emailHelp" className="form-text">
+            <div id="" className="form-text">
               We'll never share your email with anyone else.
             </div>
           </div>
@@ -182,18 +227,19 @@ const Signup = () => {
                 setUser({ ...user, password: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${
-                passwordInput.isFocused
-                  ? passwordValid
-                    ? "is-valid"
-                    : "is-invalid"
-                  : ""
-              }`}
+              className={`form-control form-control-lg ${passwordInput.isFocused
+                ? passwordValid
+                  ? "is-valid"
+                  : "is-invalid"
+                : ""
+                }`}
               minLength={8}
+              disabled={isLoading}
+
               required
             />
 
-            <div id="emailHelp" className="form-text">
+            <div id="" className="form-text">
               <p>
                 Password must be at least{" "}
                 <span
@@ -269,14 +315,15 @@ const Signup = () => {
                 setUser({ ...user, confirmPassword: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${
-                confirmPasswordInput.isFocused
-                  ? passwordConfirmed
-                    ? "is-valid"
-                    : "is-invalid"
-                  : ""
-              }`}
+              className={`form-control form-control-lg ${confirmPasswordInput.isFocused
+                ? passwordConfirmed
+                  ? "is-valid"
+                  : "is-invalid"
+                : ""
+                }`}
               minLength={8}
+              disabled={isLoading}
+
               required
             />
             {isPasswordNotMatched && confirmPasswordInput.isFocused && (
@@ -289,12 +336,21 @@ const Signup = () => {
 
           <div className="text-end">
             <button
-              onClick={nextBtnClickHandler}
               type="button"
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary btn-lg w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
+              onClick={createAccountBtnClickHandler}
+              disabled={isLoading}
+              style={{ height: "50px", minHeight: "50px" }} // Fixed height
             >
-              Next
+              {isLoading ? (
+                <div className="d-flex align-items-center gap-2">
+                  <Spin />
+                </div>
+              ) : (
+                "Create account"
+              )}
             </button>
+
           </div>
           <hr />
           <div className="m-3">
@@ -316,4 +372,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Page;

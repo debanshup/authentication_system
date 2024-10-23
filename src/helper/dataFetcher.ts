@@ -34,3 +34,12 @@ export async function getUserFromReqId(reqId: any) {
     throw new Error(error.message);
   }
 }
+
+export async function isUsernameAvailable(username: any) {
+  try {
+    const user = await User.findOne({username})
+    return user? true : false
+  } catch (error) {
+    
+  }
+}

@@ -32,8 +32,9 @@ const Page = () => {
         ) {
           setEmail(response.data.email);
           // setshowEmailSentPopup(true);
-          toast(`A verification email has been sent to: ${email}`, {
+          toast(`A verification email has been sent to ${email}`, {
             icon: "✅",
+            duration: 6000,
           });
           return;
         } else if (!response.data.user_exist) {
@@ -102,6 +103,7 @@ const Page = () => {
               onClick={loginBtnClickHandler}
               type="button"
               className="btn btn-lg btn-primary w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
+              style={{ height: "50px", minHeight: "50px" }} 
             >
               {isLoading ? (
                 <div className="d-flex align-items-center gap-2">

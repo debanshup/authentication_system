@@ -14,15 +14,21 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { email } = reqBody;
-
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!emailValid) {
+      return NextResponse.json({
+        success: false,
+       email_valid: false,
+      });
+    }
     // find if user exists
     const user = await User.findOne({ email });
 
     if (!user) {
       return NextResponse.json({
         success: false,
-        user_exist: false
-      })
+        user_exist: false,
+      });
     }
 
     // find otprecord based on user Id
@@ -32,8 +38,8 @@ export async function POST(request: NextRequest) {
     if (!otpRecord) {
       return NextResponse.json({
         success: false,
-        otp_record_exist: false
-      })
+        otp_record_exist: false,
+      });
     }
 
     // create new otp
@@ -49,7 +55,6 @@ export async function POST(request: NextRequest) {
       status: 200,
       otp_sent_status: true,
     });
-
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({

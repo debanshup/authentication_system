@@ -6,8 +6,8 @@ import Spin from "./components/spinner/Spinner";
 import useInputFocus from "./hooks/useInputFocus";
 import toast, { Toaster } from "react-hot-toast";
 
-const Reset = () => {
-  const [loading, setLoading] = useState(false);
+const Page = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const [isPasswordMatched, setIsPasswordMatched] = useState(false);
@@ -31,14 +31,14 @@ const Reset = () => {
 
   async function submitBtnClickHandler() {
     try {
-      setLoading(true);
+      setIsLoading(true);
       if (!password || !confirmPassword) {
         toast.error("Please fill in all fields.");
         return;
       }
       if (allValid) {
         // alert(true);
-        const res = await axios.post("./api/users/reset-password", {
+        const res = await axios.post("/api/users/reset-password", {
           password: password,
           confirmPassword: confirmPassword,
           token: token,
@@ -47,13 +47,35 @@ const Reset = () => {
           setErrorMessage(res.data.message);
           return;
         }
+        toast.success("Your password has been changed successfully!", {
+          icon: "🔒",
+          duration: 5000,
+          className: "bg-success text-white p-3 rounded",
+          style: { border: "1px solid #28a745", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" },
+        });
+
         router.push("./login");
+      } else if (!passwordValid) {
+        toast(
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).",
+          {
+            className: "bg-danger text-white rounded",
+            duration: 6000,
+          }
+        );
+      } else if (!passwordConfirmed) {
+        toast("Passwords do not match.", {
+          className: "bg-danger text-white rounded",
+        });
       } else {
-        setErrorMessage("Bad request!");
+        setErrorMessage(
+          "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+        );
       }
-      setLoading(false);
     } catch (error: any) {
       setErrorMessage("Something went wrong!");
+    } finally {
+      setIsLoading(false);
     }
   }
   useEffect(() => {
@@ -65,7 +87,6 @@ const Reset = () => {
   }, []);
 
   useEffect(() => {
-    // alert((confirmPassword === password) && confirmPassword.length>0)
     setIsPasswordMatched(
       confirmPassword === password && confirmPassword.length > 0
     );
@@ -87,10 +108,7 @@ const Reset = () => {
   const passwordConfirmed =
     confirmPassword.length > 0 && password === confirmPassword;
 
-  const allValid =
-    Object.values(conditions).every(Boolean) &&
-    password === confirmPassword &&
-    Boolean(token);
+  const allValid = passwordValid && Boolean(token) && passwordConfirmed
 
   useEffect(() => {
     // alert((confirmPassword === password) && confirmPassword.length>0)
@@ -128,6 +146,7 @@ const Reset = () => {
                     : ""
                 }`}
                 minLength={8}
+                disabled={isLoading}
                 required
               />
 
@@ -215,6 +234,7 @@ const Reset = () => {
                     : ""
                 }`}
                 minLength={8}
+                disabled={isLoading}
                 required
               />
               {isPasswordNotMatched && confirmPasswordInput.isFocused && (
@@ -230,8 +250,9 @@ const Reset = () => {
                 type="button"
                 className="btn btn-primary btn-lg w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
                 onClick={submitBtnClickHandler}
+                disabled={isLoading}
               >
-                {loading ? (
+                {isLoading ? (
                   <div className="d-flex align-items-center gap-2">
                     <Spin />
                     <span>Creating new password...</span>
@@ -252,4 +273,4 @@ const Reset = () => {
   );
 };
 
-export default Reset;
+export default Page;
