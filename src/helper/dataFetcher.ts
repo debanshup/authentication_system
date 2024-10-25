@@ -35,6 +35,21 @@ export async function getUserFromReqId(reqId: any) {
   }
 }
 
+
+// get avatar from profile
+export async function getProfileAvatar(request: NextRequest) {
+  try {
+    
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+
+
+
+
+
 export async function isUsernameAvailable(username: any) {
   try {
     const user = await User.findOne({username})

@@ -17,12 +17,12 @@ export async function POST(request: NextRequest) {
     const passwordValid = passwordRegex.test(password);
 
     if (!passwordValid) {
-      // return NextResponse.json({
-      //   status: 400,
-      //   message: "Invalid username or password",
-      //   success: false,
-      //   user_exist: false,
-      // });
+      return NextResponse.json({
+        status: 400,
+        message: "Invalid username or password",
+        success: false,
+        user_exist: false,
+      });
     }
 
     // find user
@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
       await user.save();
       await sendVerificationEmail({ email: user.email, token: token });
       return NextResponse.json({
-        message: "Email is not verified, check inbox for verificaion email",
+        message: `Your email is not verified. A new verification email has been sent to ${user.email}. Please check your inbox.`,
+        user_exist: true,
         verification_status: user.isEmailVerified,
         email: user.email,
       });

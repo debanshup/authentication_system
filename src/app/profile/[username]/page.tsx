@@ -81,10 +81,10 @@ export default function Page() {
         editedProfile
       );
       // alert(profileRes.data.success);
-      toast.success("Profile updated");
+      toast.success("Profile updated successfully");
       setProfile(profileRes.data.new_profile);
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Something went wrong!");
     } finally {
       setIsEditing(false);
       setIsLoading(false);
@@ -147,27 +147,32 @@ export default function Page() {
             {/* Contact Information */}
             <ul className="list-group list-group-flush text-center mt-3">
               <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <i className="bi bi-envelope-at text-primary"></i>
                 <p className="mb-0">
                   {isEditing ? (
-                    <input
-                      className="form-control"
-                      onChange={(e) => {
-                        setEditedProfile({
-                          ...editedProfile,
-                          newProfession: e.target.value,
-                        });
-                      }}
-                      value={editedProfile.newProfession}
-                      type="text"
-                      placeholder="Profession"
-                      name=""
-                      id=""
-                    />
+
+                    <form action="" className="form-floating">
+                      <input
+                        className="form-control"
+                        onChange={(e) => {
+                          setEditedProfile({
+                            ...editedProfile,
+                            newProfession: e.target.value,
+                          });
+                        }}
+                        value={editedProfile.newProfession}
+                        type="text"
+                        placeholder="Profession"
+                        name=""
+                        id="profession"
+                      />
+                      <label htmlFor="profession">Profession</label>
+                    </form>
                   ) : (
-                    <span className="badge text-bg-success">
-                      {profile.profession || "profession"}
+                    <span className="badge text-bg-success d-flex align-items-center gap-2">
+                      <i className="bi bi-briefcase-fill"></i>
+                      {profile.profession || "Profession"}
                     </span>
+
                   )}
                 </p>
               </li>
@@ -176,19 +181,24 @@ export default function Page() {
                 <i className="bi bi-envelope-at text-primary"></i>
                 <p className="mb-0">
                   {isEditing ? (
-                    <input
-                      className="form-control"
-                      onChange={(e) => {
-                        setEditedProfile({
-                          ...editedProfile,
-                          newEmail: e.target.value,
-                        });
-                      }}
-                      value={editedProfile.newEmail}
-                      type="email"
-                      placeholder="Email"
-                      disabled
-                    />
+                    <form action="" className="form-floating">
+                      <input
+                        id="email"
+                        className="form-control"
+                        onChange={(e) => {
+                          setEditedProfile({
+                            ...editedProfile,
+                            newEmail: e.target.value,
+                          });
+                        }}
+                        value={editedProfile.newEmail}
+                        type="email"
+                        placeholder="Email"
+                        disabled
+                      />
+                      <label htmlFor="email">Email</label>
+
+                    </form>
                   ) : (
                     profile.email
                   )}
@@ -198,22 +208,27 @@ export default function Page() {
                 <i className="bi bi-phone text-primary"></i>
                 <p className="mb-0">
                   {isEditing ? (
-                    <input
-                      type="number"
-                      className="form-control"
-                      onChange={(e) => {
-                        setEditedProfile({
-                          ...editedProfile,
-                          newPhone: e.target.value,
-                        });
-                      }}
-                      value={editedProfile.newPhone}
-                      placeholder="Phone"
-                      name=""
-                      id=""
-                    />
+                    <form action="" className="form-floating">
+                      <input
+
+                        type="tel"
+                        className="form-control"
+                        onChange={(e) => {
+                          setEditedProfile({
+                            ...editedProfile,
+                            newPhone: e.target.value,
+                          });
+                        }}
+                        value={editedProfile.newPhone}
+                        placeholder="Phone"
+                        name=""
+                        id="phone"
+                      />
+                      <label htmlFor="phone">Phone</label>
+
+                    </form>
                   ) : (
-                    profile.phone
+                    <span>profile.phone</span>
                   )}
                 </p>
               </li>
@@ -221,20 +236,24 @@ export default function Page() {
                 <i className="bi bi-globe text-primary"></i>
                 <p className="mb-0">
                   {isEditing ? (
-                    <input
-                      className="form-control"
-                      onChange={(e) => {
-                        setEditedProfile({
-                          ...editedProfile,
-                          newWebsite: e.target.value,
-                        });
-                      }}
-                      value={editedProfile.newWebsite}
-                      placeholder="Website"
-                      type="text"
-                      name=""
-                      id=""
-                    />
+                    <form action="" className="form-floating">
+                      <input
+                        className="form-control"
+                        onChange={(e) => {
+                          setEditedProfile({
+                            ...editedProfile,
+                            newWebsite: e.target.value,
+                          });
+                        }}
+                        value={editedProfile.newWebsite}
+                        placeholder="Website"
+                        type="text"
+                        name=""
+                        id="website"
+                      />
+                      <label htmlFor="website">Website</label>
+
+                    </form>
                   ) : (
                     profile.website
                   )}
@@ -244,24 +263,23 @@ export default function Page() {
           </div>
 
           {/* Right Section: About */}
-          <div className="col-md-8 border-0">
+          <div className="col-md-8 border-0 text-center">
             <p className="text-muted mt-4">
               {isEditing ? (
-                <textarea
-                  className="form-control"
-                  onChange={(e) => {
-                    setEditedProfile({
-                      ...editedProfile,
-                      newAbout: e.target.value,
-                    });
-                  }}
-                  value={editedProfile.newAbout}
-                  maxLength={500}
-                  name=""
-                  id=""
-                  placeholder="About(500 chars)"
-                  style={{ maxHeight: "500px" }}
-                ></textarea>
+                <form className="form-floating">
+                  <textarea
+                    className="form-control"
+                    id="about"
+                    placeholder="Write about yourself (max 500 characters)"
+                    value={editedProfile.newAbout}
+                    onChange={(e) =>
+                      setEditedProfile({ ...editedProfile, newAbout: e.target.value })
+                    }
+                    maxLength={500}
+                    style={{ maxHeight: "500px", minHeight: "150px" }} // Ensures better usability
+                  ></textarea>
+                  <label htmlFor="about">About</label>
+                </form>
               ) : (
                 profile.about
               )}
@@ -302,7 +320,6 @@ export default function Page() {
                   "Save"
                 )}
               </button>
-
             </div>
           </div>
         )}

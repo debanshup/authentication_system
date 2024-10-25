@@ -141,8 +141,8 @@ const Page = () => {
     });
   }, [user.password]);
 
-  const usernameValid = /^[^\s]{3,}$/.test(user.username.trim());
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email.trim());
+  const usernameValid = /^[^\s]{3,}$/.test(user.username);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email);
 
   const passwordValid = Object.values(conditions).every(Boolean);
   const passwordConfirmed =

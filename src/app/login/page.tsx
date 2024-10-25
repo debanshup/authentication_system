@@ -10,9 +10,6 @@ import Spin from "./components/spinner/Spinner";
 const Page = () => {
   const router = useRouter();
 
-  // const usernameInput = useInputFocus();
-  // const passwordInput = useInputFocus();
-
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({ username: "", password: "" });
 
@@ -22,27 +19,29 @@ const Page = () => {
     setIsLoading(true);
     try {
       if (user.password && user.username) {
-        const response = await axios.post("./api/users/login", user);
-
-        if (response.data.user_exist && response.data.verification_status) {
-          router.push(`/profile/${response.data.username}`);
-        } else if (
-          !response.data.verification_status &&
-          response.data.user_exist
-        ) {
-          setEmail(response.data.email);
-          // setshowEmailSentPopup(true);
-          toast(`A verification email has been sent to ${email}`, {
-            icon: "✅",
-            duration: 6000,
-          });
-          return;
-        } else if (!response.data.user_exist) {
-          toast.error(
+        const loginRes = await axios.post("./api/users/login", user);
+// alert(loginRes.data.email)
+        if (loginRes.data.user_exist ) {
+          if ( loginRes.data.verification_status) {
+            router.push(`/profile/${loginRes.data.username}`);
+          }
+          else if (
+            !loginRes.data.verification_status
+          ) {
+            setEmail(loginRes.data.email);
+            // setshowEmailSentPopup(true);
+            toast(loginRes.data.message, {
+              icon: "✅",
+              duration: 6000,
+            });
+            return;
+          }
+        }  else if (!loginRes.data.user_exist) {
+          toast(
             "User not found. Please check your credentials and try again.",
             {
               duration: 5000,
-              className: "rounded shadow",
+              className: "bg-danger text-white rounded shadow",
             }
           );
         }
