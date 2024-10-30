@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60,
+      maxAge: 24 * 60 * 60,
       path: "/", // accessible throughout the site
     });
     // console.log(response.cookies);

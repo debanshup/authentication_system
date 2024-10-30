@@ -118,7 +118,7 @@ const Page = () => {
 
     isUsernameAvailable()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.username])
 
 
@@ -190,7 +190,7 @@ const Page = () => {
                 <p className="form-text text-success">Username available</p>
               ) : (
                 <p className="form-text text-danger">Username not available!</p>
-              ) :""
+              ) : ""
             }
           </div>
           <div className="mb-3">

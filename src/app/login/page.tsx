@@ -1,14 +1,21 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
+// import useUserDataStore from "../store/userDataStore";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import React, { useState } from "react";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import Spin from "./components/spinner/Spinner";
+import { userAgent } from "next/server";
+import { useUser } from "@/context/UserContext";
+
 
 const Page = () => {
+  const { globalUser, setGlobalUser }: any = useUser()
   const router = useRouter();
+  // const userData = useUserDataStore((state)=> state.userData)
+  // const setUserData = useUserDataStore((state: any) => state.setUserData)
 
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({ username: "", password: "" });
@@ -20,10 +27,16 @@ const Page = () => {
     try {
       if (user.password && user.username) {
         const loginRes = await axios.post("./api/users/login", user);
-// alert(loginRes.data.email)
-        if (loginRes.data.user_exist ) {
-          if ( loginRes.data.verification_status) {
-            router.push(`/profile/${loginRes.data.username}`);
+        // alert(loginRes.data.email)
+        if (loginRes.data.user_exist) {
+          if (loginRes.data.verification_status) {
+
+           
+              // setGlobalUser(user.username)
+            // localStorage.setItem("name", user.username)
+
+
+            router.push(`profile/${loginRes.data.username}`);
           }
           else if (
             !loginRes.data.verification_status
@@ -36,7 +49,7 @@ const Page = () => {
             });
             return;
           }
-        }  else if (!loginRes.data.user_exist) {
+        } else if (!loginRes.data.user_exist) {
           toast(
             "User not found. Please check your credentials and try again.",
             {
@@ -102,7 +115,7 @@ const Page = () => {
               onClick={loginBtnClickHandler}
               type="button"
               className="btn btn-lg btn-primary w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
-              style={{ height: "50px", minHeight: "50px" }} 
+              style={{ height: "50px", minHeight: "50px" }}
             >
               {isLoading ? (
                 <div className="d-flex align-items-center gap-2">

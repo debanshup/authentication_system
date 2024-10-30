@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs"
 import crypto from 'crypto'
-
+      
 
 const userSchema = new mongoose.Schema(
     {
@@ -175,11 +175,6 @@ userSchema.methods.setAccountStatus = function (status) {
 /**
  * more implementations...
  */
-
-
-
-
-
 
 
 

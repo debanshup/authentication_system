@@ -1,52 +1,74 @@
 "use client";
 
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import Example from "./components/off-canvas/ProfileMenuOffCanvas";
 import Link from "next/link";
+import { useContext, useEffect, useState } from "react";
+import ProfileMenu from "./components/off-canvas/ProfileMenuOffCanvas";
+import axios from "axios";
 
 interface ProfileLayoutProps {
   children: React.ReactNode;
-  username: String; // Example user object
-  isLoggedIn: boolean;
 }
+
 
 export default function ProfileLayout({
   children,
-  username,
-  isLoggedIn,
 }: ProfileLayoutProps) {
-  const router = useRouter();
-  // async function logoutClickHandler() {
-  //   try {
-  //     const res = await axios.get('/api/users/logout')
-  //     if (res.data.success) {
-  //       router.push('/login')
-  //     }
-  //   } catch (error: any) {
-  //     alert(error.message)
-  //   }
-  // }
+
+  const [userProps, setUserProps] = useState({ username: "", fullname: "", image: "" })
+
+
+  async function getUserProps() {
+    try {
+      const propRes = await axios.get("/api/users/get-userprops")
+      setUserProps({
+        username: propRes.data.username,
+        fullname: propRes.data.fullname,
+        image: propRes.data.image,
+      })
+    } catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+    getUserProps()
+  }, [])
 
   return (
     <section>
       {/* Include shared UI here e.g. a header or sidebar */}
       <header className="p-2 text-end bg-light sticky-top shadow-sm">
-        <Example>
-          <ul>
-            <li>
-              <a href={`/profile/${username}`}>Your Profile</a>
+        <ProfileMenu username={userProps.username} fullname={userProps.fullname} image={userProps.image}>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">
+              <a
+                className="text-decoration-none"
+                href={`/profile/${userProps.username}`}
+              >
+                <i className="bi bi-person-circle me-2"></i> Your Profile
+              </a>
             </li>
-            <li>
-              <Link href={""}>Settings</Link>
+            <li className="list-group-item">
+              <Link
+                className="text-decoration-none"
+                href={`/profile/${userProps.username}/settings/edit`}
+              >
+                <i className="bi bi-gear-fill me-2"></i> Settings
+              </Link>
             </li>
-            <li>
-              <Link href={""}>Log out</Link>
+            <li className="list-group-item">
+              <Link
+                className="text-decoration-none text-danger"
+                href="/logout"
+              >
+                <i className="bi bi-box-arrow-right me-2"></i> Log out
+              </Link>
             </li>
           </ul>
-        </Example>
+        </ProfileMenu>
       </header>
       {children}
     </section>
   );
 }
+

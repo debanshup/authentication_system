@@ -9,6 +9,7 @@ import axios from "axios";
 import { Button } from "react-bootstrap";
 import Image from "next/image";
 import Spin from "../components/spinner/Spinner";
+import { useContext } from "react";
 
 export default function Page() {
   const { username } = useParams();
@@ -18,7 +19,7 @@ export default function Page() {
   const [isErrorOccured, setIsErrorOccured] = useState(false);
 
   const [profile, setProfile] = useState({
-    image: "",
+    // image: "",
     profession: "",
     email: "",
     phone: "",
@@ -27,7 +28,7 @@ export default function Page() {
   });
 
   const [editedProfile, setEditedProfile] = useState({
-    newImage: "",
+    // newImage: "",
     newProfession: "",
     newEmail: "",
     newPhone: "",
@@ -43,7 +44,7 @@ export default function Page() {
       if (detailsRes.data.success) {
         setProfile({
           email: detailsRes.data.props.profile.email,
-          image: detailsRes.data.props.profile.image,
+          // image: detailsRes.data.props.profile.image,
           profession: detailsRes.data.props.profile.profession,
           phone: detailsRes.data.props.profile.phone,
           website: detailsRes.data.props.profile.website,
@@ -63,7 +64,7 @@ export default function Page() {
     setIsEditing(true);
     try {
       setEditedProfile({
-        newImage: profile.image,
+        // newImage: profile.image,
         newProfession: profile.profession,
         newEmail: profile.email,
         newPhone: profile.phone,
@@ -228,7 +229,7 @@ export default function Page() {
 
                     </form>
                   ) : (
-                    <span>profile.phone</span>
+                    <span>{profile.phone}</span>
                   )}
                 </p>
               </li>

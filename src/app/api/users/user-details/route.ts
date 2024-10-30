@@ -10,9 +10,8 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const username = request.nextUrl.searchParams.get("username");
-
     const decodedUser = await getDataFromToken(request);
-    // console.log(decodedUser.id);
+    // console.log(decodedUser);
     const user = await User.findOne({
       username: username,
       _id: decodedUser.id,
@@ -33,8 +32,8 @@ export async function GET(request: NextRequest) {
         message: "Something went wrong",
       });
     }
-    console.log(profileRecord.email);
-    
+    // console.log(profileRecord.email);
+
     return NextResponse.json({
       success: true,
       props: {

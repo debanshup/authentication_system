@@ -47,7 +47,6 @@ function ProfileMenu({
                     </div>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
-
                     {children}
                 </Offcanvas.Body>
             </Offcanvas>
