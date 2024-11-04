@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import useInputFocus from "./hooks/useInputFocus";
 import Spin from "./components/spinner/Spinner";
+import User from "@/models/userModel";
 
 const Page = () => {
   const usernameInput = useInputFocus();
@@ -141,7 +142,7 @@ const Page = () => {
     });
   }, [user.password]);
 
-  const usernameValid = /^[^\s]{3,}$/.test(user.username);
+  const usernameValid = /^[a-z\d]{3,}$/.test(user.username);
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email);
 
   const passwordValid = Object.values(conditions).every(Boolean);
@@ -168,8 +169,9 @@ const Page = () => {
             <input
               onFocus={usernameInput.handleFocus}
               onChange={(e) => {
-                setUser({ ...user, username: e.target.value });
+                setUser({ ...user, username: e.target.value.toLowerCase() });
               }}
+              value={user.username}
               type="text"
               className={`form-control form-control-lg ${usernameInput.isFocused
                 ? usernameValid && usernameAvailable
@@ -182,7 +184,7 @@ const Page = () => {
             />
             {!usernameValid && usernameInput.isFocused && (
               <p className="form-text text-danger">
-                Username must be at least 3 characters long and must not contain spaces.
+                Username must be at least 3 characters long and must not contain spaces and any special character.
               </p>
             )}
             {
@@ -200,7 +202,7 @@ const Page = () => {
             <input
               onFocus={emailInput.handleFocus}
               onChange={(e) => {
-                setUser({ ...user, email: e.target.value });
+                setUser({ ...user, email: e.target.value.toLowerCase() });
               }}
               type="email"
               className={`form-control form-control-lg ${emailInput.isFocused
@@ -210,6 +212,8 @@ const Page = () => {
                 : ""
                 }`}
               disabled={isLoading}
+              value={user.email}
+
               required
             />
             <div id="" className="form-text">
@@ -233,6 +237,7 @@ const Page = () => {
                   : "is-invalid"
                 : ""
                 }`}
+                value={user.password}
               minLength={8}
               disabled={isLoading}
 
@@ -322,6 +327,7 @@ const Page = () => {
                 : ""
                 }`}
               minLength={8}
+              value={user.confirmPassword}
               disabled={isLoading}
 
               required

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import OTP from "@/models/otpModel";
+import OTP from "@/models/OTPModel";
 import User from "@/models/userModel";
 
 export async function getDataFromToken(request: NextRequest) {

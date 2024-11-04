@@ -29,26 +29,19 @@ const Page = () => {
         const loginRes = await axios.post("./api/users/login", user);
         // alert(loginRes.data.email)
         if (loginRes.data.user_exist) {
-          if (loginRes.data.verification_status) {
-
-           
-              // setGlobalUser(user.username)
-            // localStorage.setItem("name", user.username)
-
-
-            router.push(`profile/${loginRes.data.username}`);
-          }
-          else if (
-            !loginRes.data.verification_status
-          ) {
-            setEmail(loginRes.data.email);
-            // setshowEmailSentPopup(true);
-            toast(loginRes.data.message, {
-              icon: "✅",
-              duration: 6000,
-            });
-            return;
-          }
+          router.push(`profile/${loginRes.data.username}`);
+          
+          // else if (
+          //   !loginRes.data.verification_status
+          // ) {
+          //   setEmail(loginRes.data.email);
+          //   // setshowEmailSentPopup(true);
+          //   toast(loginRes.data.message, {
+          //     icon: "✅",
+          //     duration: 6000,
+          //   });
+          //   return;
+          // }
         } else if (!loginRes.data.user_exist) {
           toast(
             "User not found. Please check your credentials and try again.",
@@ -87,8 +80,9 @@ const Page = () => {
             </label>
             <input
               onChange={(e) => {
-                setUser({ ...user, username: e.target.value });
+                setUser({ ...user, username: e.target.value.toLowerCase() });
               }}
+              value={user.username}
               type="text"
               className="form-control form-control-lg"
               id="exampleInputEmail1"

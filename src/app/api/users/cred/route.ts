@@ -6,7 +6,7 @@ import User from "@/models/userModel";
 import { sendPasswordResetEmail } from "@/helper/mailer";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import OTP from "@/models/otpModel";
+import OTP from "@/models/OTPModel";
 
 connect();
 

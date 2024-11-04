@@ -10,6 +10,8 @@ import { Button } from "react-bootstrap";
 import Image from "next/image";
 import Spin from "../components/spinner/Spinner";
 import { useContext } from "react";
+import Overlay from "@/app/components/NotVerifiedOverlay";
+import Link from "next/link";
 
 export default function Page() {
   const { username } = useParams();
@@ -17,9 +19,10 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isErrorOccured, setIsErrorOccured] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
-    // image: "",
+    image: "",
     profession: "",
     email: "",
     phone: "",
@@ -44,12 +47,15 @@ export default function Page() {
       if (detailsRes.data.success) {
         setProfile({
           email: detailsRes.data.props.profile.email,
-          // image: detailsRes.data.props.profile.image,
+          image: detailsRes.data.props.profile.image,
           profession: detailsRes.data.props.profile.profession,
           phone: detailsRes.data.props.profile.phone,
           website: detailsRes.data.props.profile.website,
           about: detailsRes.data.props.profile.about,
         });
+        if (detailsRes.data.props.profile.isEmailVerified) {
+          setIsEmailVerified(true)
+        }
       } else {
         setIsErrorOccured(true);
       }
@@ -201,7 +207,23 @@ export default function Page() {
 
                     </form>
                   ) : (
-                    profile.email
+                   
+
+                      <span className="">
+                        {profile.email + " "}
+                        {isEmailVerified ? (
+                           
+                            <i className="bi bi-check-circle-fill text-success"></i>
+                         
+                        ) : (
+                          <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>
+                          <Overlay>
+                          <i className="bi bi-exclamation-circle fs-6 text-danger"></i> 
+                          </Overlay>
+                          </Link>
+                        )}
+                      </span>
+
                   )}
                 </p>
               </li>
@@ -284,10 +306,6 @@ export default function Page() {
               ) : (
                 profile.about
               )}
-
-              {/* Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            It has been the industry's standard dummy text ever since the 1500s, when an
-            unknown printer took a galley of type and scrambled it to make a type specimen book. */}
             </p>
           </div>
         </div>

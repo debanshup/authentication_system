@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs"
 import crypto from 'crypto'
-      
+import Profile from "@/models/profileModel";
+import OTP from "@/models/OTPModel";
 
 const userSchema = new mongoose.Schema(
     {
@@ -28,7 +29,7 @@ const userSchema = new mongoose.Schema(
             //     message: 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.'
             // }
         },
-        
+
         isEmailVerified: {
             type: Boolean,
             default: false,
@@ -45,7 +46,7 @@ const userSchema = new mongoose.Schema(
         emailVerificationTokenExpires: Date,
 
 
-        
+
         mfaSecret: String,
 
         accountStatus: {
@@ -75,28 +76,69 @@ const userSchema = new mongoose.Schema(
 // hash password before saving
 
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        return next()
+    try {
+        if (!this.isModified('password')) {
+            return next()
+        }
+        const salt = await bcryptjs.genSalt(10);
+        this.password = await bcryptjs.hash(this.password, salt);
+        // console.log("user created");
+        next();
+
+    } catch (error) {
+        console.error("Error: ", error)
+        next(error)
     }
-    const salt = await bcryptjs.genSalt(10);
-    this.password = await bcryptjs.hash(this.password, salt);
-    next();
 })
+
+
+// userSchema.post('save', async function (doc, next) {
+//     try {
+//         if (doc.isNew) {
+//             console.log("Creating new profile and OTP...");
+//             await OTP.create({
+//                 userId: doc._id,
+//                 // Add any other initial OTP fields here
+//             });
+//             await Profile.create({
+//                 userId: doc._id,
+//                 email: doc.email,
+//                 // Add any other initial profile fields here
+//             });
+//             console.log("Profile and OTP created successfully.");
+//         }
+//     } catch (error) {
+//         console.error("Error creating Profile or OTP:", error);
+//     }
+//     next();
+// });
+
+
+// userSchema.post('save', async function (doc, next) {
+//     if (doc.isNew) {
+//         // Create a new Profile for the newly created User
+
+//     }
+//     next();
+// });
+
+
+
 
 // userSchema.pre('save', async function (next) {
 //     try {
 //       // **Run validation**
 //       await this.validate();
-  
+
 //       // **Skip if password is not modified**
 //       if (!this.isModified('password')) {
 //         return next();
 //       }
-  
+
 //       // **Hash password**
 //       const salt = await bcryptjs.genSalt(10);
 //       this.password = await bcryptjs.hash(this.password, salt);
-  
+
 //       next();
 //     } catch (error) {
 //       next(error); // Pass validation or hashing errors to the next middleware
@@ -107,7 +149,7 @@ userSchema.pre('save', async function (next) {
 
 // check account status and email verification
 userSchema.methods.comparePassword = async function (enteredPassword) {
-    
+
     const result = await bcryptjs.compare(enteredPassword, this.password)
 
     return result

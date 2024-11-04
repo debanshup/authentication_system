@@ -1,5 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
-import OTP from "@/models/otpModel";
+import OTP from "@/models/OTPModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";

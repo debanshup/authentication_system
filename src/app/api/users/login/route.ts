@@ -40,17 +40,17 @@ export async function POST(request: NextRequest) {
     }
 
     // check if email verified or not
-    if (!user.isEmailVerified) {
-      const token = user.createEmailVerificationToken();
-      await user.save();
-      await sendVerificationEmail({ email: user.email, token: token });
-      return NextResponse.json({
-        message: `Your email is not verified. A new verification email has been sent to ${user.email}. Please check your inbox.`,
-        user_exist: true,
-        verification_status: user.isEmailVerified,
-        email: user.email,
-      });
-    }
+    // if (!user.isEmailVerified) {
+    //   const token = user.createEmailVerificationToken();
+    //   await user.save();
+    //   await sendVerificationEmail({ email: user.email, token: token });
+    //   return NextResponse.json({
+    //     message: `Your email is not verified. A new verification email has been sent to ${user.email}. Please check your inbox.`,
+    //     user_exist: true,
+    //     verification_status: user.isEmailVerified,
+    //     email: user.email,
+    //   });
+    // }
 
     const matched = await user.comparePassword(password);
     if (!matched) {
