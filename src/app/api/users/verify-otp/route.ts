@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import OTP from "@/models/otpModel";
+import OTP from "@/models/OTPModel";
 import User from "@/models/userModel";
 import crypto from "crypto";
 import { connect } from "@/dbConfig/dbConfig";
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       console.log("otp not matched");
 
       return NextResponse.json({
-        message: "OTP unmatched",
+        message: "The OTP does not match. Please try again.",
         isMatched: false,
       });
     }

@@ -13,13 +13,10 @@ export async function POST(request: NextRequest) {
     const { password, confirmPassword, token } = reqBody;
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordValid =
+      passwordRegex.test(password) && password === confirmPassword;
 
-    if (
-      !token ||
-      !(password === confirmPassword) ||
-      !passwordRegex.test(password) ||
-      !passwordRegex.test(confirmPassword)
-    ) {
+    if (!(token || passwordValid)) {
       return NextResponse.json({
         message: "Bad request",
         success: false,

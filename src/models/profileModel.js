@@ -10,6 +10,9 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  fullname: {
+    type: String,
+  },
   image: String,
   profession: String,
   phone: String,

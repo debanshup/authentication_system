@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
+import { getDataFromToken } from "@/helper/dataFetcher";
 import { sendVerificationEmail } from "@/helper/mailer";
 import Profile from "@/models/profileModel";
 import User from "@/models/userModel";
@@ -9,9 +10,10 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     // first check if req has cookies
-    if (!request.cookies) {
+    const decodedUser = await getDataFromToken(request);
+    if (!decodedUser) {
       return NextResponse.json({
-        message: "Invalid request",
+        message: "Error!",
         success: false,
       });
     }
@@ -27,9 +29,10 @@ export async function POST(request: NextRequest) {
       newWebsite,
       newAbout,
     } = reqBody;
-    console.log(newEmail);
+    // console.log(newEmail);
 
-    const user = await User.findOne({ email: newEmail });
+    const user = await User.findOne({ email: decodedUser.email });
+
     if (!user) {
       return NextResponse.json({
         message: "No user found",
@@ -46,16 +49,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // if email modified, change email in user
 
-    if (newEmail && newEmail !== user.email) {
-      console.log("email modified to" + newEmail);
-      user.email = newEmail;
-      const token = user.createEmailVerificationToken();
-      await sendVerificationEmail({ email: newEmail, token });
-      await user.save();
-    }
-    profileRecord.email = user.email;
+
+    // if email modified, change email in user
+    // const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail.trim());
+    // if (newEmail && newEmail !== user.email) {
+    //   console.log("email modified to" + newEmail);
+    //   user.email = newEmail;
+    //   const token = user.createEmailVerificationToken();
+    //   await sendVerificationEmail({ email: newEmail, token });
+    //   await user.save();
+    // }
+    // profileRecord.email = user.email;
+
+
     profileRecord.image = newImage || "N/A";
     profileRecord.profession = newProfession || "N/A";
     profileRecord.phone = newPhone || "N/A";
@@ -65,7 +72,7 @@ export async function POST(request: NextRequest) {
     // update profile
 
     const savedProfileRecord = await profileRecord.save();
-    console.log(savedProfileRecord);
+    // console.log(savedProfileRecord);
 
     // proceed....
     return NextResponse.json({

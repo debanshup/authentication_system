@@ -4,16 +4,22 @@
 import React from "react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import Image from "next/image";
+import Spin from "../components/spinner/Spinner";
+import { useContext } from "react";
+import Overlay from "@/app/global/components/NotVerifiedOverlay";
+import Link from "next/link";
 
 export default function Page() {
   const { username } = useParams();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isErrorOccured, setIsErrorOccured] = useState(false)
+  const [isErrorOccured, setIsErrorOccured] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
     image: "",
@@ -25,7 +31,7 @@ export default function Page() {
   });
 
   const [editedProfile, setEditedProfile] = useState({
-    newImage: "",
+    // newImage: "",
     newProfession: "",
     newEmail: "",
     newPhone: "",
@@ -47,10 +53,11 @@ export default function Page() {
           website: detailsRes.data.props.profile.website,
           about: detailsRes.data.props.profile.about,
         });
+        if (detailsRes.data.props.profile.isEmailVerified) {
+          setIsEmailVerified(true)
+        }
       } else {
-
-        setIsErrorOccured(true)
-
+        setIsErrorOccured(true);
       }
     } catch (error: any) {
       alert(error.message);
@@ -63,7 +70,7 @@ export default function Page() {
     setIsEditing(true);
     try {
       setEditedProfile({
-        newImage: profile.image,
+        // newImage: profile.image,
         newProfession: profile.profession,
         newEmail: profile.email,
         newPhone: profile.phone,
@@ -75,14 +82,20 @@ export default function Page() {
 
   async function saveBtnClickHandler() {
     try {
+      setIsLoading(true);
       const profileRes = await axios.post(
         "/api/users/edit-profile",
         editedProfile
       );
-      alert(profileRes.data.success);
+      // alert(profileRes.data.success);
+      toast.success("Profile updated successfully");
       setProfile(profileRes.data.new_profile);
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
       setIsEditing(false);
-    } catch (error) { }
+      setIsLoading(false);
+    }
   }
 
   async function discardBtnClickHandler() {
@@ -96,51 +109,55 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    isErrorOccured ? (<>
+  return isErrorOccured ? (
+    <>
       <div className="text-center">
         <h1 className="display-1 fw-bold text-danger">404</h1>
         <h3 className="mb-3">An unexpected error occured</h3>
         {/* <p className="lead mb-4">The user you are looking for does not exist or might have been removed.</p> */}
       </div>
-    </>) : (
-      <>
-        <div className="container-lg p-4 bg-white" style={{ maxWidth: "1280px" }}>
-          <div className="row">
-            {/* Left Section: Profile Info */}
-            <div className="col-md-4 text-center border-end">
-              {/* Profile Image */}
-              <div className="mb-3">
-                <Image
-                  src="" // Or use an external image with proper config
-                  alt="profile"
-                  width={100}
-                  height={100}
-                  className="img-fluid rounded border"
-                />
-              </div>
+    </>
+  ) : (
+    <>
+      <Toaster />
+      <div className="container-lg p-4 bg-white" style={{ maxWidth: "1280px" }}>
+        <div className="row">
+          {/* Left Section: Profile Info */}
+          <div className="col-md-4 text-center border-end">
+            {/* Profile Image */}
+            <div className="mb-3">
+              <Image
+                src="" // Or use an external image with proper config
+                alt="profile"
+                width={100}
+                height={100}
+                className="img-fluid rounded border"
+              />
+            </div>
 
-              {/* Name & Username */}
-              <div className="mb-3">
-                <h5 className="display-6 mb-0">{"Debanshu Panigrahi"}</h5>
-                <p className="text-muted mb-0">{username}</p>
-              </div>
+            {/* Name & Username */}
+            <div className="mb-3">
+              <h5 className="display-6 mb-0">{"Debanshu Panigrahi"}</h5>
+              <p className="text-muted mb-0">{username}</p>
+            </div>
 
-              {/* Edit Button */}
-              <Button
-                onClick={editBtnClickHandler}
-                variant="outline-secondary"
-                className={`mb-3 ${isEditing && "disabled"}`}
-              >
-                Edit Profile
-              </Button>
+            {/* Edit Button */}
+            <Button
+              onClick={editBtnClickHandler}
+              variant="outline-primary"
+              className={`mb-3`}
+              disabled={isEditing || isLoading}
+            >
+              Edit Profile
+            </Button>
 
-              {/* Contact Information */}
-              <ul className="list-group list-group-flush text-center mt-3">
-                <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                  <i className="bi bi-envelope-at text-primary"></i>
-                  <p className="mb-0">
-                    {isEditing ? (
+            {/* Contact Information */}
+            <ul className="list-group list-group-flush text-center mt-3">
+              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
+                <p className="mb-0">
+                  {isEditing ? (
+
+                    <form action="" className="form-floating">
                       <input
                         className="form-control"
                         onChange={(e) => {
@@ -153,21 +170,27 @@ export default function Page() {
                         type="text"
                         placeholder="Profession"
                         name=""
-                        id=""
+                        id="profession"
                       />
-                    ) : (
-                      <span className="badge text-bg-primary">
-                        {profile.profession || "profession"}
-                      </span>
-                    )}
-                  </p>
-                </li>
+                      <label htmlFor="profession">Profession</label>
+                    </form>
+                  ) : (
+                    <span className="badge text-bg-success d-flex align-items-center gap-2">
+                      <i className="bi bi-briefcase-fill"></i>
+                      {profile.profession || "Profession"}
+                    </span>
 
-                <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                  <i className="bi bi-envelope-at text-primary"></i>
-                  <p className="mb-0">
-                    {isEditing ? (
+                  )}
+                </p>
+              </li>
+
+              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
+                <i className="bi bi-envelope-at text-primary"></i>
+                <p className="mb-0">
+                  {isEditing ? (
+                    <form action="" className="form-floating">
                       <input
+                        id="email"
                         className="form-control"
                         onChange={(e) => {
                           setEditedProfile({
@@ -180,17 +203,38 @@ export default function Page() {
                         placeholder="Email"
                         disabled
                       />
-                    ) : (
-                      profile.email
-                    )}
-                  </p>
-                </li>
-                <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                  <i className="bi bi-phone text-primary"></i>
-                  <p className="mb-0">
-                    {isEditing ? (
+                      <label htmlFor="email">Email</label>
+
+                    </form>
+                  ) : (
+                   
+
+                      <span className="">
+                        {profile.email + " "}
+                        {isEmailVerified ? (
+                           
+                            <i className="bi bi-check-circle text-success"></i>
+                         
+                        ) : (
+                          <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>
+                          <Overlay>
+                          <i className="bi bi-exclamation-circle fs-6 text-danger"></i> 
+                          </Overlay>
+                          </Link>
+                        )}
+                      </span>
+
+                  )}
+                </p>
+              </li>
+              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
+                <i className="bi bi-phone text-primary"></i>
+                <p className="mb-0">
+                  {isEditing ? (
+                    <form action="" className="form-floating">
                       <input
-                        type="number"
+
+                        type="tel"
                         className="form-control"
                         onChange={(e) => {
                           setEditedProfile({
@@ -201,17 +245,21 @@ export default function Page() {
                         value={editedProfile.newPhone}
                         placeholder="Phone"
                         name=""
-                        id=""
+                        id="phone"
                       />
-                    ) : (
-                      profile.phone
-                    )}
-                  </p>
-                </li>
-                <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                  <i className="bi bi-globe text-primary"></i>
-                  <p className="mb-0">
-                    {isEditing ? (
+                      <label htmlFor="phone">Phone</label>
+
+                    </form>
+                  ) : (
+                    <span>{profile.phone}</span>
+                  )}
+                </p>
+              </li>
+              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
+                <i className="bi bi-globe text-primary"></i>
+                <p className="mb-0">
+                  {isEditing ? (
+                    <form action="" className="form-floating">
                       <input
                         className="form-control"
                         onChange={(e) => {
@@ -224,62 +272,77 @@ export default function Page() {
                         placeholder="Website"
                         type="text"
                         name=""
-                        id=""
+                        id="website"
                       />
-                    ) : (
-                      profile.website
-                    )}
-                  </p>
-                </li>
-              </ul>
-            </div>
+                      <label htmlFor="website">Website</label>
 
-            {/* Right Section: About */}
-            <div className="col-md-8 border-0">
-              <p className="text-muted mt-4">
-                {isEditing ? (
+                    </form>
+                  ) : (
+                    profile.website
+                  )}
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          {/* Right Section: About */}
+          <div className="col-md-8 border-0 text-center">
+            <p className="text-muted mt-4">
+              {isEditing ? (
+                <form className="form-floating">
                   <textarea
                     className="form-control"
-                    onChange={(e) => {
-                      setEditedProfile({
-                        ...editedProfile,
-                        newAbout: e.target.value,
-                      });
-                    }}
+                    id="about"
+                    placeholder="Write about yourself (max 500 characters)"
                     value={editedProfile.newAbout}
+                    onChange={(e) =>
+                      setEditedProfile({ ...editedProfile, newAbout: e.target.value })
+                    }
                     maxLength={500}
-                    name=""
-                    id=""
-                    placeholder="About(500 chars)"
-                    style={{ maxHeight: "500px" }}
+                    style={{ maxHeight: "500px", minHeight: "150px" }} // Ensures better usability
                   ></textarea>
+                  <label htmlFor="about">About</label>
+                </form>
+              ) : (
+                profile.about
+              )}
+            </p>
+          </div>
+        </div>
+        {isEditing && (
+          <div className="row mt-4">
+            <div className="col d-flex justify-content-center align-items-center gap-3">
+              <button
+                onClick={discardBtnClickHandler}
+                className="btn btn-outline-secondary"
+                style={{ height: "50px", minHeight: "50px" }}
+                disabled={isLoading}
+              >
+                Discard
+              </button>
+              <button
+                onClick={saveBtnClickHandler}
+                className="btn btn-success d-flex align-items-center justify-content-center"
+                style={{
+                  height: "50px",
+                  width: "100px",
+                  minWidth: "100px",
+                  minHeight: "50px",
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="d-flex align-items-center gap-2">
+                    <Spin />
+                  </div>
                 ) : (
-                  profile.about
+                  "Save"
                 )}
-
-                {/* Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            It has been the industry's standard dummy text ever since the 1500s, when an
-            unknown printer took a galley of type and scrambled it to make a type specimen book. */}
-              </p>
+              </button>
             </div>
           </div>
-          {isEditing && (
-            <div className="row mt-4">
-              <div className="col d-flex justify-content-center align-items-center gap-3">
-                <button
-                  onClick={discardBtnClickHandler}
-                  className="btn btn-outline-secondary"
-                >
-                  Discard
-                </button>
-                <button onClick={saveBtnClickHandler} className="btn btn-primary">
-                  Save
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </>
-    )
+        )}
+      </div>
+    </>
   );
 }

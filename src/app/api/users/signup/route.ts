@@ -4,7 +4,7 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import { sendVerificationEmail } from "@/helper/mailer";
 import User from "@/models/userModel";
-import OTP from "@/models/otpModel";
+import OTP from "@/models/OTPModel";
 import Profile from "@/models/profileModel";
 
 connect();
@@ -18,12 +18,12 @@ export async function POST(request: NextRequest) {
 
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    const usernameValid = /^[^\s]{3,}$/.test(username.trim());
+    const usernameValid = /^[a-z\d]{3,}$/.test(username.trim());
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
     const passwordValid =
       passwordRegex.test(password) && password === confirmPassword;
 
-    if (!(usernameValid && passwordValid && emailValid)) {
+    if (!usernameValid || !passwordValid || !emailValid) {
       return NextResponse.json({ success: false, status: 400 });
     }
 
@@ -49,33 +49,23 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const newUser = new User({
+    const savedUser = await User.create({
       username: username,
       email: email,
       password: confirmPassword,
     });
-
-    const token = newUser.createEmailVerificationToken();
-
-    // send verification email
-
-    await sendVerificationEmail({ email, token });
-
-    // save user
-    const savedUser = await newUser.save();
-
-    const otpDocument = new OTP({
-      userId: savedUser._id,
-    });
-
-    const profile = new Profile({
+    // console.log(savedUser);
+    const savedProfile = await Profile.create({
       userId: savedUser._id,
       email: savedUser.email,
     });
+    const savedOtpDocument = await OTP.create({
+      userId: savedUser._id,
+    });
+    // send verification email
+    const token = savedUser.createEmailVerificationToken();
 
-    const savedOtpDocument = await otpDocument.save();
-    const savedProfile = await profile.save();
-    console.log(savedProfile.email);
+    await sendVerificationEmail({ email, token });
 
     return NextResponse.json({
       message: "User created successfully",
@@ -84,9 +74,11 @@ export async function POST(request: NextRequest) {
       user: savedUser,
       otpDocument: savedOtpDocument,
       profile: savedProfile,
-      // email: savedUser.email
+      email: savedUser.email,
     });
   } catch (error: any) {
+    console.log(error.message);
+
     return NextResponse.json({
       error: error.message,
       status: 500,

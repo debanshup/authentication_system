@@ -2,7 +2,7 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import User from "@/models/userModel";
-
+import { generateCookie, updateCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
@@ -43,11 +43,14 @@ export async function POST(request: NextRequest) {
 
     await user.save();
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       status: 200,
       message: "Email successfully verified",
     });
+    return response
+
+
   } catch (error) {
     return NextResponse.json({
       success: false,

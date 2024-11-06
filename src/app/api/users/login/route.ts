@@ -3,13 +3,27 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import { sendVerificationEmail } from "@/helper/mailer";
 import jwt from "jsonwebtoken";
-
+import { generateCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { username, password } = reqBody;
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    const passwordValid = passwordRegex.test(password);
+
+    if (!passwordValid) {
+      return NextResponse.json({
+        status: 400,
+        message: "Invalid username or password",
+        success: false,
+        user_exist: false,
+      });
+    }
 
     // find user
     const user = await User.findOne({
@@ -26,17 +40,17 @@ export async function POST(request: NextRequest) {
     }
 
     // check if email verified or not
-    if (!user.isEmailVerified) {
-      const token = user.createEmailVerificationToken();
-      await user.save();
-      await sendVerificationEmail({ email: user.email, token: token });
-      return NextResponse.json({
-        message: "Email is not verified, check inbox for verificaion email",
-        verification_status: user.isEmailVerified,
-        email: user.email
-
-      });
-    }
+    // if (!user.isEmailVerified) {
+    //   const token = user.createEmailVerificationToken();
+    //   await user.save();
+    //   await sendVerificationEmail({ email: user.email, token: token });
+    //   return NextResponse.json({
+    //     message: `Your email is not verified. A new verification email has been sent to ${user.email}. Please check your inbox.`,
+    //     user_exist: true,
+    //     verification_status: user.isEmailVerified,
+    //     email: user.email,
+    //   });
+    // }
 
     const matched = await user.comparePassword(password);
     if (!matched) {
@@ -46,7 +60,16 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const response = NextResponse.json({
+      success: true,
+      username: user.username,
+      email: user.email,
+      verification_status: user.isEmailVerified,
+      user_exist: true,
+    });
+
     // generate cookie
+
     const payload = {
       id: user._id,
       email: user.email,
@@ -54,31 +77,7 @@ export async function POST(request: NextRequest) {
       verified: user.isEmailVerified,
     };
 
-    // sign jwt
-    const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
-      //   algorithm: "none",   will be changed later
-      expiresIn: "1d",
-    });
-    const response = NextResponse.json({
-      success: true,
-      username: user.username,
-      email: user.email,
-      verification_status: user.isEmailVerified,
-      user_exist: true,
-
-    });
-
-    response.cookies.set("sessionId", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60,
-      path: "/", // accessible throughout the site
-    });
-    // console.log(response.cookies);
-    
-
-    return response;
+    return await generateCookie({ payload, response });
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({
