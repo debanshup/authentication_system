@@ -1,22 +1,39 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
-import InputForm from "@/app/components/InputForm";
-import TextAreaForm from "@/app/components/TextAreaForm";
+import InputForm from "@/app/global/components/InputForm";
+import TextAreaForm from "@/app/global/components/TextAreaForm";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
-import Spin from "@/app/components/Spinner";
-import useInputFocus from "@/app/hooks/useInputFocus";
+import Spin from "@/app/global/components/Spinner";
+import useInputFocus from "@/app/global/hooks/useInputFocus";
+import AlertDismissible from "@/app/global/alerts/Alert";
+// import useInputFocus from "@/app/global/hooks/useInputFocus";
 
 const Page = () => {
     const usernameInput = useInputFocus();
     const emailInput = useInputFocus();
     const [isLoadingVerify, setIsLoadingVerify] = useState(false);
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    const [usernameAvailable, setUsernameAvailable] = useState(false)
+    const [usernameAvailable, setUsernameAvailable] = useState(false);
+    const [isProfileUpdated, setIsProfileUpdated] = useState(false)
+    const [isEmailSent, setIsEmailSent] = useState(false);
 
     const [isEmailVerified, setIsEmailVerified] = useState(false);
+    // const[isEmailAlreadyUsed, setIsEmailAlreadyUsed]= useState(false)
+
+    const [showAlert, setShowAlert] = useState(false);
+
+    // const handleShowAlert = () => setShowAlert(true);
+    const handleCloseAlert = () => setShowAlert(false);
+
+
+
+
+
+
+
     const [profile, setProfile] = useState({
         image: "",
         profession: "",
@@ -30,7 +47,7 @@ const Page = () => {
 
     const usernameValid = /^[a-z\d]{3,}$/.test(profile.username);
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email);
-    const allValid = usernameValid && emailValid
+    const allValid = usernameValid && emailValid;
     async function getDetails() {
         try {
             const detailsRes = await axios.get("/api/users/get-details-from-request");
@@ -48,106 +65,130 @@ const Page = () => {
                 setIsEmailVerified(detailsRes.data.field.profile.verified);
             } else {
                 // setIsErrorOccured(true);
+                toast.error("Error updating profile");
             }
-        } catch (error) { }
+        } catch (error: any) {
+            toast.error(error.message);
+        }
     }
 
     async function updateDetails() {
-        setIsLoadingUpdate(true)
+        setIsLoadingUpdate(true);
         try {
             if (allValid) {
-                const updateRes = await axios.post("/api/users/update-details", profile);
+                const updateRes = await axios.post(
+                    "/api/users/update-details",
+                    profile
+                );
                 if (updateRes.data.success) {
-                    toast.success("Profile updated successfully")
-                }
-                else {
-                    toast("Error saving details")
+                    setIsProfileUpdated(true)
+                    setShowAlert(true)
+                    toast.success("Profile updated successfully");
+                } else {
+                    toast("Error saving details");
                 }
             } else {
-                toast("Please fill up all the required fields")
+                toast("Please fill up all the required fields");
             }
         } catch (error) {
-            toast("Something went wrong")
-            setIsLoadingUpdate(true)
+            toast("Something went wrong");
+            setIsLoadingUpdate(true);
         } finally {
-            setIsLoadingUpdate(false)
-            window.location.reload()
+            setIsLoadingUpdate(false);
         }
     }
 
     useEffect(() => {
         getDetails();
-
     }, []);
-
 
     async function isUsernameAvailable() {
         try {
             if (usernameValid) {
-                const usernameAvailableRes = await axios.get("/api/users/username-available", {
-                    params: { username: profile.username },
-                });
-                setUsernameAvailable(usernameAvailableRes.data.username_available)
+                const usernameAvailableRes = await axios.get(
+                    "/api/users/username-available",
+                    {
+                        params: { username: profile.username },
+                    }
+                );
+                setUsernameAvailable(usernameAvailableRes.data.username_available);
             }
-        } catch (error) {
-
-        }
+        } catch (error) { }
     }
 
     useEffect(() => {
-
-        isUsernameAvailable()
+        isUsernameAvailable();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [profile.username])
-
+    }, [profile.username]);
 
     //
     useEffect(() => { }, []);
 
     async function verifyBtnClickHandler(): Promise<void> {
-        setIsLoadingVerify(true)
+        setIsLoadingVerify(true);
         try {
-
-
             if (!emailValid) {
                 toast("Please enter a valid email address!", {
                     className: "bg-danger text-white rounded",
                 });
                 return;
-            }
-
-            else if (emailValid) {
+            } else if (emailValid) {
                 const verificationEmailRes = await axios.post(
                     "/api/users/send-verification-email",
                     { email: profile.email }
                 );
                 if (verificationEmailRes.data.success) {
+                    // setIsEmailSent(true);
+                    
                     toast(verificationEmailRes.data.message, {
                         icon: "✅",
                         duration: 6000,
+                    });
+                } else if (verificationEmailRes.data.already_verified) {
+                    setIsEmailVerified(true);
+                    toast(verificationEmailRes.data.message, {
+                        icon: "⚠️",
+                    });
+                } else if (verificationEmailRes.data.already_used) {
+                    toast(verificationEmailRes.data.message, {
+                        icon: "⚠️",
                     });
                 } else {
                     toast(verificationEmailRes.data.message);
                 }
             } else {
-                toast("Please fill up all the required fields")
+                toast("Please provide a valid email address");
             }
         } catch (error) {
             toast("Something went wrong!", {
                 className: "bg-danger text-white rounded",
             });
             return;
-        }
-        finally {
-            setIsLoadingVerify(false)
-            window.location.reload()
+        } finally {
+            // setIsEmailSent(false);
+            setIsLoadingVerify(false);
+            // window.location.reload()
         }
     }
 
     return (
         <>
             <Toaster />
+            {isProfileUpdated && (<AlertDismissible show={showAlert}
+                onClose={handleCloseAlert} heading={"Profile updated successfully"} >
+                <p>
+                    view your <a href={`/profile/${profile.username}`}>profile</a>
+                </p>
+            </AlertDismissible>)}
+
+            {/* {isEmailSent && (<AlertDismissible show={showAlert}
+                onClose={handleCloseAlert} heading={"Email sent successfully successfully"} >
+                <p>
+                    A verification email has been sent to {profile.email}
+                </p>
+            </AlertDismissible>)} */}
+
             <div className="container form-control border-0 p-5 bg-light">
                 <div className="row mb-4">
                     <div className="col-md-9">
@@ -163,7 +204,6 @@ const Page = () => {
                                 id="fullname"
                                 label="Full Name"
                                 disabled={isLoadingUpdate || isLoadingVerify}
-
                             />
                         </div>
 
@@ -190,11 +230,10 @@ const Page = () => {
                                     }`}
                                 feedbackText={{
                                     message: usernameAvailable ? "" : "Username not available!",
-                                    isValid: usernameAvailable
+                                    isValid: usernameAvailable,
                                 }}
                                 disabled={isLoadingUpdate || isLoadingVerify}
                             />
-
                         </div>
 
                         <div className="d-flex align-items-center gap-2 mb-4">
@@ -203,7 +242,7 @@ const Page = () => {
                                 changeHandler={(
                                     e: React.ChangeEvent<HTMLInputElement>
                                 ): void => {
-                                    setIsEmailVerified(false)
+                                    setIsEmailVerified(false);
                                     setProfile({ ...profile, email: e.target.value });
                                 }}
                                 inputValue={profile.email}
@@ -211,7 +250,6 @@ const Page = () => {
                                 id="email"
                                 label="Email"
                                 disabled={isLoadingUpdate || isLoadingVerify}
-
                             />
                             {isEmailVerified ? (
                                 <>
@@ -222,6 +260,7 @@ const Page = () => {
                                     <button
                                         onClick={verifyBtnClickHandler}
                                         className="btn btn-sm btn-primary"
+                                        disabled={isLoadingUpdate || isLoadingVerify}
                                     >
                                         {isLoadingVerify ? <Spin /> : "Verify"}
                                     </button>
@@ -241,7 +280,6 @@ const Page = () => {
                                 id="phone"
                                 label="Phone"
                                 disabled={isLoadingUpdate || isLoadingVerify}
-
                             />
                         </div>
 
@@ -257,7 +295,6 @@ const Page = () => {
                                 id="profession"
                                 label="Profession"
                                 disabled={isLoadingUpdate || isLoadingVerify}
-
                             />
                         </div>
 
@@ -272,7 +309,6 @@ const Page = () => {
                                 }}
                                 label="About"
                                 disabled={isLoadingUpdate || isLoadingVerify}
-
                             />
                         </div>
                     </div>
@@ -291,9 +327,12 @@ const Page = () => {
                 </div>
                 <div className="d-flex justify-content-end gap-2">
                     {/* <button onClick={handleCancel} className="btn btn-sm btn-secondary">Cancel</button> */}
-                    <button onClick={updateDetails} className="btn btn-sm btn-success">
-                        {"Update details"}
-
+                    <button
+                        onClick={updateDetails}
+                        className="btn btn-sm btn-success"
+                        disabled={isLoadingUpdate || isLoadingVerify}
+                    >
+                        {isLoadingUpdate ? <Spin /> : "Update details"}
                     </button>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import useInputFocus from "@/app/hooks/useInputFocus";
+import useInputFocus from "@/app/global/hooks/useInputFocus";
 import Spin from "./components/spinner/Spinner";
 import User from "@/models/userModel";
 

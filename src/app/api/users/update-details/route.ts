@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
+import { generateCookie } from "@/helper/cookieManager";
 import { getDataFromToken } from "@/helper/dataFetcher";
 import { sendVerificationEmail } from "@/helper/mailer";
 import Profile from "@/models/profileModel";
@@ -52,16 +53,29 @@ export async function POST(request: NextRequest) {
     profileRecord.phone = phone || "N/A";
     profileRecord.website = website || "N/A";
     profileRecord.about = about || "N/A";
+    profileRecord.email = email || "N/A";
     user.fullname = fullname || "N/A";
     user.username = username || "N/A";
     user.email = email || "N/A";
 
-    await user.save()
-    await profileRecord.save()
-
-    return NextResponse.json({
+    const modifiedUser = await user.save();
+    const modifiedProfileRecord = await profileRecord.save();
+    const response = NextResponse.json({
       message: "Profile updated successfully",
       success: true,
     });
+
+    if (user.username !== modifiedUser.username) {
+      const payload = {
+        id: modifiedUser._id,
+        email: modifiedUser.email,
+        role: modifiedUser.role,
+        verified: modifiedUser.isEmailVerified,
+      };
+
+      return await generateCookie({ payload, response });
+    }
+
+    return response;
   } catch (error) {}
 }

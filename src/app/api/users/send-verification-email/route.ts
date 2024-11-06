@@ -35,10 +35,12 @@ export async function POST(request: NextRequest) {
       if (user.username === savedUser.username && savedUser.isEmailVerified) {
         return NextResponse.json({
           message: `Email already verified`,
+          already_verified: true,
         });
       } else if (user.username !== savedUser.username) {
         return NextResponse.json({
-          message: "Email already exists",
+          message: "Email already used",
+          already_used: true,
           success: false,
         });
       }

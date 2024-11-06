@@ -10,7 +10,7 @@ import { Button } from "react-bootstrap";
 import Image from "next/image";
 import Spin from "../components/spinner/Spinner";
 import { useContext } from "react";
-import Overlay from "@/app/components/NotVerifiedOverlay";
+import Overlay from "@/app/global/components/NotVerifiedOverlay";
 import Link from "next/link";
 
 export default function Page() {
