@@ -213,7 +213,7 @@ export default function Page() {
                         {profile.email + " "}
                         {isEmailVerified ? (
                            
-                            <i className="bi bi-check-circle-fill text-success"></i>
+                            <i className="bi bi-check-circle text-success"></i>
                          
                         ) : (
                           <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>

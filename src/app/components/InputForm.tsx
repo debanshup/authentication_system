@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ChangeEvent, FormEvent } from 'react';
+import React, { FC, ChangeEvent, FormEvent, FocusEvent } from 'react';
 
 interface InputFormProps {
   changeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -12,6 +12,9 @@ interface InputFormProps {
   required?: boolean;
   disabled?: boolean;
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
+  onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
+  className?: string;
+  feedbackText?: { message: string; isValid: boolean }; // New feedbackText prop
 }
 
 const InputForm: FC<InputFormProps> = ({
@@ -19,29 +22,41 @@ const InputForm: FC<InputFormProps> = ({
   inputValue,
   type,
   id,
-  placeholder, 
+  placeholder,
   label,
   required,
-  disabled
+  disabled,
+  onSubmit,
+  onFocus,
+  className,
+  feedbackText
 }) => {
   return (
     <form 
       className="form-floating"
-    //   onSubmit={onSubmit}
-      noValidate // Avoid browser-native validation styling (optional)
+      onSubmit={onSubmit}
+      noValidate
     >
       <input
         id={id}
-        className="form-control"
+        className={`form-control ${className || ''}`}
         onChange={changeHandler}
         value={inputValue}
         type={type}
-        placeholder={placeholder || `Enter ${label}`} // Default placeholder
+        placeholder={placeholder || `Enter ${label}`}
         required={required}
         disabled={disabled}
-        aria-label={label} // For accessibility
+        aria-label={label}
+        onFocus={onFocus}
       />
       <label htmlFor={id}>{label}</label>
+
+      {/* Conditionally render feedback text */}
+      {feedbackText && (
+        <p className={`form-text text-center ${feedbackText.isValid ? 'text-success' : 'text-danger'}`}>
+          {feedbackText.message}
+        </p>
+      )}
     </form>
   );
 };

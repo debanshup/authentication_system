@@ -25,7 +25,10 @@ export async function GET(request:NextRequest) {
             success: true,
             username: user.username
         })
-    } catch (error) {
-        
+    } catch (error: any) {
+      return NextResponse.json({
+        success: false,
+        error: error.message
+    })
     }
 }

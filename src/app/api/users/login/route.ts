@@ -3,7 +3,7 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import { sendVerificationEmail } from "@/helper/mailer";
 import jwt from "jsonwebtoken";
-
+import { generateCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
@@ -60,19 +60,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // generate cookie
-    const payload = {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-      verified: user.isEmailVerified,
-    };
-
-    // sign jwt
-    const token = jwt.sign(payload, process.env.TOKEN_SECRET as string, {
-      //   algorithm: "none",   will be changed later
-      expiresIn: "1d",
-    });
     const response = NextResponse.json({
       success: true,
       username: user.username,
@@ -81,16 +68,16 @@ export async function POST(request: NextRequest) {
       user_exist: true,
     });
 
-    response.cookies.set("sessionId", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60,
-      path: "/", // accessible throughout the site
-    });
-    // console.log(response.cookies);
+    // generate cookie
 
-    return response;
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      verified: user.isEmailVerified,
+    };
+
+    return await generateCookie({ payload, response });
   } catch (error: any) {
     console.log(error.message);
     return NextResponse.json({

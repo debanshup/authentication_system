@@ -5,6 +5,7 @@ import { connect } from "@/dbConfig/dbConfig";
 import { URL } from "url";
 import Profile from "@/models/profileModel";
 import { sendVerificationEmail } from "@/helper/mailer";
+import { generateCookie } from "@/helper/cookieManager";
 
 connect();
 
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
     }
     const reqBody = await request.json();
     const { email } = reqBody;
+    console.log(email);
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailValid) {
       return NextResponse.json({
@@ -26,24 +28,44 @@ export async function POST(request: NextRequest) {
         success: false,
       });
     }
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     const savedUser = await User.findOne({ email: decodedUser.email });
+
     if (user) {
-      // apply some validtion
-    }
-    if (!savedUser) {
-      // apply some validtion
+      if (user.username === savedUser.username && savedUser.isEmailVerified) {
+        return NextResponse.json({
+          message: `Email already verified`,
+        });
+      } else if (user.username !== savedUser.username) {
+        return NextResponse.json({
+          message: "Email already exists",
+          success: false,
+        });
+      }
     }
 
-    const token = user.createEmailVerificationToken();
+    const token = savedUser.createEmailVerificationToken();
     await sendVerificationEmail({ email, token });
-    await user.save();
-    return NextResponse.json({
+    savedUser.email = email;
+    savedUser.isEmailVerified = false;
+    const modifiedUser = await savedUser.save();
+    // console.log("saving user:");
+
+    // console.log(x);
+
+    const payload = {
+      id: modifiedUser._id,
+      email: modifiedUser.email,
+      role: modifiedUser.role,
+      verified: modifiedUser.isEmailVerified,
+    };
+    const response = NextResponse.json({
       message: `A verification email has been sent to ${email}`,
       success: true,
     });
+    return await generateCookie({ payload, response });
   } catch (error: any) {
-    console.log(error);
+    console.log(error.message);
 
     return NextResponse.json({
       status: 500,

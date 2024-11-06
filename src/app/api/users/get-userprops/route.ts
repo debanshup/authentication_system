@@ -10,7 +10,7 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const decodedUser = await getDataFromToken(request);
-    console.log(decodedUser);
+    // console.log(decodedUser);
     const user = await User.findById(decodedUser.id).select("-password");
     
     if (!user) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         status: 400,
       });
     }
-    console.log(user);
+    // console.log(user);
     // console.log(decodedUser);
 
     return NextResponse.json({

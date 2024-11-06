@@ -55,5 +55,13 @@ export async function POST(request: NextRequest) {
     user.fullname = fullname || "N/A";
     user.username = username || "N/A";
     user.email = email || "N/A";
+
+    await user.save()
+    await profileRecord.save()
+
+    return NextResponse.json({
+      message: "Profile updated successfully",
+      success: true,
+    });
   } catch (error) {}
 }

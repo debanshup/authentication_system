@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
         });
       }
       // console.log(profileRecord.email);
-
       // await User.deleteMany({})
       // await Profile.deleteMany({})
       // await OTP.deleteMany({})
@@ -46,6 +45,7 @@ export async function GET(request: NextRequest) {
             fullname: user.fullname,
             username: user.username,
             email: user.email,
+            verified: user.isEmailVerified,
             phone: profileRecord.phone,
             image: profileRecord.image,
             profession: profileRecord.profession,

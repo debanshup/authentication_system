@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       email: email,
       password: confirmPassword,
     });
-    console.log(savedUser);
+    // console.log(savedUser);
     const savedProfile = await Profile.create({
       userId: savedUser._id,
       email: savedUser.email,
