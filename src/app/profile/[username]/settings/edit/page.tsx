@@ -140,7 +140,7 @@ const Page = () => {
                 );
                 if (verificationEmailRes.data.success) {
                     // setIsEmailSent(true);
-                    
+
                     toast(verificationEmailRes.data.message, {
                         icon: "✅",
                         duration: 6000,
@@ -320,9 +320,6 @@ const Page = () => {
                             className="img-fluid rounded-circle mb-3 border"
                             style={{ maxWidth: "150px" }}
                         />
-                        <button className="btn btn-sm btn-outline-secondary">
-                            Change Avatar
-                        </button>
                     </div>
                 </div>
                 <div className="d-flex justify-content-end gap-2">

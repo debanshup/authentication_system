@@ -17,9 +17,9 @@ const Page = ({ children }: any) => {
           <div className="col-md-4 border-end pe-4">
             <ul className="list-group list-group-flush">
               <li className="list-group-item border-0 py-3">
-                <Link href="" id="edit" className="text-decoration-none">
+                <a href="" id="edit" className="text-decoration-none">
                   Edit Profile
-                </Link>
+                </a>
               </li>
               <li className="list-group-item border-0 py-3">
                 <Link href="" id="verify" className="text-decoration-none">

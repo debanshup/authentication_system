@@ -22,6 +22,7 @@ export default function Page() {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
+    fullName:"",
     image: "",
     profession: "",
     email: "",
@@ -52,6 +53,7 @@ export default function Page() {
           phone: detailsRes.data.props.profile.phone,
           website: detailsRes.data.props.profile.website,
           about: detailsRes.data.props.profile.about,
+          fullName: detailsRes.data.props.profile.fullname
         });
         if (detailsRes.data.props.profile.isEmailVerified) {
           setIsEmailVerified(true)
@@ -137,7 +139,7 @@ export default function Page() {
 
             {/* Name & Username */}
             <div className="mb-3">
-              <h5 className="display-6 mb-0">{"Debanshu Panigrahi"}</h5>
+              <h5 className="display-6 mb-0">{profile.fullName}</h5>
               <p className="text-muted mb-0">{username}</p>
             </div>
 

@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
           website: profileRecord.website,
           about: profileRecord.about,
           isEmailVerified: user.isEmailVerified,
+          fullname: profileRecord.fullname
         },
       },
     });
