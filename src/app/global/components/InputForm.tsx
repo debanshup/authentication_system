@@ -5,7 +5,30 @@ import React, { FC, ChangeEvent, FormEvent, FocusEvent } from 'react';
 interface InputFormProps {
   changeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
   inputValue: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'tel';
+  type:
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'search'
+  | 'date'
+  | 'datetime-local'
+  | 'month'
+  | 'week'
+  | 'time'
+  | 'color'
+  | 'checkbox'
+  | 'radio'
+  | 'file'
+  | 'hidden'
+  | 'image'
+  | 'range'
+  | 'reset'
+  | 'button'
+  | 'submit';
+
   id: string;
   placeholder?: string;
   label: string;
@@ -15,9 +38,11 @@ interface InputFormProps {
   onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
   className?: string;
   feedbackText?: { message: string; isValid: boolean }; // New feedbackText prop
+  style?: React.CSSProperties;
 }
 
 const InputForm: FC<InputFormProps> = ({
+  style = {},
   changeHandler,
   inputValue,
   type,
@@ -32,7 +57,7 @@ const InputForm: FC<InputFormProps> = ({
   feedbackText
 }) => {
   return (
-    <form 
+    <form
       className="form-floating"
       onSubmit={onSubmit}
       noValidate
@@ -48,6 +73,7 @@ const InputForm: FC<InputFormProps> = ({
         disabled={disabled}
         aria-label={label}
         onFocus={onFocus}
+        style={style}
       />
       <label htmlFor={id}>{label}</label>
 

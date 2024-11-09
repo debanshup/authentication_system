@@ -11,11 +11,12 @@ import User from "@/models/userModel";
 
 const Page = () => {
   const usernameInput = useInputFocus();
+  const fullnameInput = useInputFocus();
   const emailInput = useInputFocus();
   const passwordInput = useInputFocus();
   const confirmPasswordInput = useInputFocus();
 
-  const [usernameAvailable, setUsernameAvailable] = useState(false)
+  const [usernameAvailable, setUsernameAvailable] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,6 +32,7 @@ const Page = () => {
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
   const [user, setUser] = useState({
+    fullname: "",
     username: "",
     email: "",
     password: "",
@@ -61,11 +63,14 @@ const Page = () => {
               }
             );
           } else if (signupRes.data.username_exist) {
-            toast.error(`Username not available. Please select another username`, {});
+            toast.error(
+              `Username not available. Please select another username`,
+              {}
+            );
           } else if (!signupRes.data.registration_status) {
             toast(`A verification email has been sent to ${user.email}`, {
               icon: "✅",
-              duration: 6000
+              duration: 6000,
             });
           }
         }
@@ -82,46 +87,39 @@ const Page = () => {
           className: "bg-danger text-white rounded",
         });
       } else {
-        toast(
-          "Something went wrong",
-          {
-            className: "bg-danger text-white rounded"
-          }
-        );
+        toast("Something went wrong", {
+          className: "bg-danger text-white rounded",
+        });
       }
-
     } catch (error: any) {
       toast.error(
         "An unexpected error occurred. Please try again later, or contact support if the issue persists."
       );
-
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   async function isUsernameAvailable() {
     try {
       if (usernameValid) {
-        const usernameAvailableRes = await axios.get("/api/users/username-available", {
-          params: { username: user.username },
-        });
+        const usernameAvailableRes = await axios.get(
+          "/api/users/username-available",
+          {
+            params: { username: user.username },
+          }
+        );
 
-        setUsernameAvailable(usernameAvailableRes.data.username_available)
-
+        setUsernameAvailable(usernameAvailableRes.data.username_available);
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {
-
-    isUsernameAvailable()
+    isUsernameAvailable();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.username])
-
+  }, [user.username]);
 
   useEffect(() => {
     // alert((confirmPassword === password) && confirmPassword.length>0)
@@ -144,12 +142,17 @@ const Page = () => {
 
   const usernameValid = /^[a-z\d]{3,}$/.test(user.username);
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email);
+  const fullnameValid = /^[a-zA-Z\s]{1,}$/.test(user.fullname);
 
   const passwordValid = Object.values(conditions).every(Boolean);
   const passwordConfirmed =
     user.confirmPassword.length > 0 && user.password === user.confirmPassword;
   const allValid =
-    usernameValid && emailValid && passwordValid && passwordConfirmed;
+    usernameValid &&
+    emailValid &&
+    passwordValid &&
+    passwordConfirmed &&
+    fullnameValid;
 
   return (
     <>
@@ -164,6 +167,31 @@ const Page = () => {
         >
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
+              Full name
+            </label>
+            <input
+              onFocus={fullnameInput.handleFocus}
+              onChange={(e) => {
+                setUser({ ...user, fullname: e.target.value });
+              }}
+              type="text"
+              className={`form-control form-control-lg ${
+                fullnameInput.isFocused
+                  ? fullnameValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
+              disabled={isLoading}
+              value={user.fullname}
+              required
+            />
+            <div id="" className="form-text">
+              Full name will be publicly displayed.
+            </div>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="exampleInputEmail1" className="form-label">
               Username
             </label>
             <input
@@ -173,27 +201,31 @@ const Page = () => {
               }}
               value={user.username}
               type="text"
-              className={`form-control form-control-lg ${usernameInput.isFocused
-                ? usernameValid && usernameAvailable
-                  ? "is-valid"
-                  : "is-invalid"
-                : ""
-                }`}
+              className={`form-control form-control-lg ${
+                usernameInput.isFocused
+                  ? usernameValid && usernameAvailable
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               disabled={isLoading}
               required
             />
             {!usernameValid && usernameInput.isFocused && (
               <p className="form-text text-danger">
-                Username must be at least 3 characters long and must not contain spaces and any special character.
+                Username must be at least 3 characters long and must not contain
+                spaces and any special character.
               </p>
             )}
-            {
-              usernameValid ? usernameAvailable ? (
+            {usernameValid ? (
+              usernameAvailable ? (
                 <p className="form-text text-success">Username available</p>
               ) : (
                 <p className="form-text text-danger">Username not available!</p>
-              ) : ""
-            }
+              )
+            ) : (
+              ""
+            )}
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
@@ -205,19 +237,19 @@ const Page = () => {
                 setUser({ ...user, email: e.target.value.toLowerCase() });
               }}
               type="email"
-              className={`form-control form-control-lg ${emailInput.isFocused
-                ? emailValid
-                  ? "is-valid"
-                  : "is-invalid"
-                : ""
-                }`}
+              className={`form-control form-control-lg ${
+                emailInput.isFocused
+                  ? emailValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               disabled={isLoading}
               value={user.email}
-
               required
             />
             <div id="" className="form-text">
-              We'll never share your email with anyone else.
+              Email will be publicly displayed.
             </div>
           </div>
 
@@ -231,16 +263,16 @@ const Page = () => {
                 setUser({ ...user, password: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${passwordInput.isFocused
-                ? passwordValid
-                  ? "is-valid"
-                  : "is-invalid"
-                : ""
-                }`}
-                value={user.password}
+              className={`form-control form-control-lg ${
+                passwordInput.isFocused
+                  ? passwordValid
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
+              value={user.password}
               minLength={8}
               disabled={isLoading}
-
               required
             />
 
@@ -320,16 +352,16 @@ const Page = () => {
                 setUser({ ...user, confirmPassword: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${confirmPasswordInput.isFocused
-                ? passwordConfirmed
-                  ? "is-valid"
-                  : "is-invalid"
-                : ""
-                }`}
+              className={`form-control form-control-lg ${
+                confirmPasswordInput.isFocused
+                  ? passwordConfirmed
+                    ? "is-valid"
+                    : "is-invalid"
+                  : ""
+              }`}
               minLength={8}
               value={user.confirmPassword}
               disabled={isLoading}
-
               required
             />
             {isPasswordNotMatched && confirmPasswordInput.isFocused && (
@@ -356,7 +388,6 @@ const Page = () => {
                 "Create account"
               )}
             </button>
-
           </div>
           <hr />
           <div className="m-3">

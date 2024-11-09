@@ -52,14 +52,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    profileRecord.image = image || "N/A";
+    profileRecord.image =
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        fullname
+      )}&background=random&color=random&size=128` || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=random&size=128`;
     profileRecord.profession = profession || "N/A";
     profileRecord.phone = phone || "N/A";
     profileRecord.website = website || "N/A";
     profileRecord.about = about || "N/A";
     profileRecord.email = email || "N/A";
     profileRecord.fullname = fullname || "N/A";
-    user.username = username || "N/A";
+    user.username = username ;
     user.email = email || "N/A";
     user.isEmailVerified = !(emailChanged || !emailVerified);
     const modifiedUser = await user.save();

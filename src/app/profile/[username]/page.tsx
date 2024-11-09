@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
@@ -128,12 +129,12 @@ export default function Page() {
           <div className="col-md-4 text-center border-end">
             {/* Profile Image */}
             <div className="mb-3">
-              <Image
-                src="" // Or use an external image with proper config
-                alt="profile"
-                width={100}
-                height={100}
-                className="img-fluid rounded border"
+              <img
+                src={profile.image} // Or use an external image with proper config
+                alt="avatar"
+                // width={100}
+                // height={100}
+                className="img-fluid rounded-circle border"
               />
             </div>
 

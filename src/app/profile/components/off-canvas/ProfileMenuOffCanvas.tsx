@@ -22,8 +22,8 @@ function ProfileMenu({
 
     return (
         <>
-            <Button variant="light" className="rounded-circle" onClick={handleShow}>
-                <img src={image} alt={username} className="rounded-circle" width="40" height="40" />
+            <Button variant="light" className="rounded-circle p-0" onClick={handleShow}>
+                <img src={image} alt={fullname} className="rounded-circle" width="40" height="40" />
             </Button>
 
             <Offcanvas show={show} onHide={handleClose} placement="end" >

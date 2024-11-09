@@ -12,6 +12,7 @@ const profileSchema = new mongoose.Schema({
   },
   fullname: {
     type: String,
+    required: true,
   },
   image: String,
   profession: String,
@@ -28,6 +29,19 @@ profileSchema.methods.validatePhone = function (phone) {
   const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 format
   return phoneRegex.test(phone);
 };
+
+// profileSchema.post("save", async function (doc) {
+//   if (!doc.image) {
+//     // Default avatar logic
+//     const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.fullname)}&background=FF5733&color=ffffff&size=128`;
+    
+//     // Set the default avatar URL
+//     doc.avatar = defaultAvatar;
+    
+//     // Save the updated document
+//     await doc.save();
+//   }
+// })
 
 const Profile =
   mongoose.models.Profile || mongoose.model("Profile", profileSchema);
