@@ -9,6 +9,8 @@ import toast, { Toaster } from "react-hot-toast";
 import Spin from "@/app/global/components/Spinner";
 import useInputFocus from "@/app/global/hooks/useInputFocus";
 import AlertDismissible from "@/app/global/alerts/Alert";
+import Link from "next/link";
+import PopUp from "@/app/global/alerts/PopUp";
 // import useInputFocus from "@/app/global/hooks/useInputFocus";
 
 const Page = () => {
@@ -19,18 +21,21 @@ const Page = () => {
     const [usernameAvailable, setUsernameAvailable] = useState(false);
     const [isProfileUpdated, setIsProfileUpdated] = useState(false)
     const [isEmailSent, setIsEmailSent] = useState(false);
+    const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
 
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     // const[isEmailAlreadyUsed, setIsEmailAlreadyUsed]= useState(false)
 
-    const [showAlert, setShowAlert] = useState(false);
-
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const handleCloseUpdateAlert = () => setShowUpdateAlert(false);
     // const handleShowAlert = () => setShowAlert(true);
-    const handleCloseAlert = () => setShowAlert(false);
 
+    const [showEmailSentAlert, setShowEmailSentAlert] = useState(false)
+    const handleCloseEmailSentAlert = () => setShowEmailSentAlert(false);
 
-
-
+    const [showEmailNotVerifiedAlert, setShowEmailNotVerifiedAlert] = useState(false)
+    const handleCloseEmailNotVerifiedAlert = () => setShowEmailNotVerifiedAlert(false);
 
 
 
@@ -45,6 +50,7 @@ const Page = () => {
         fullname: "",
     });
 
+    
     const usernameValid = /^[a-z\d]{3,}$/.test(profile.username);
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email);
     const allValid = usernameValid && emailValid;
@@ -82,7 +88,8 @@ const Page = () => {
                 );
                 if (updateRes.data.success) {
                     setIsProfileUpdated(true)
-                    setShowAlert(true)
+                    setShowUpdateAlert(true)
+                    setUsername(profile.username)
                     toast.success("Profile updated successfully");
                 } else {
                     toast("Error saving details");
@@ -123,7 +130,12 @@ const Page = () => {
     }, [profile.username]);
 
     //
-    useEffect(() => { }, []);
+    useEffect(() => {
+        if (!isEmailVerified) {
+            setShowEmailNotVerifiedAlert(true)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     async function verifyBtnClickHandler(): Promise<void> {
         setIsLoadingVerify(true);
@@ -139,8 +151,10 @@ const Page = () => {
                     { email: profile.email }
                 );
                 if (verificationEmailRes.data.success) {
-                    // setIsEmailSent(true);
-                    
+                    setEmail(profile.email)
+                    setIsEmailSent(true);
+                    setShowEmailSentAlert(true)
+                    setShowEmailNotVerifiedAlert(false)
                     toast(verificationEmailRes.data.message, {
                         icon: "✅",
                         duration: 6000,
@@ -175,19 +189,30 @@ const Page = () => {
     return (
         <>
             <Toaster />
-            {isProfileUpdated && (<AlertDismissible show={showAlert}
-                onClose={handleCloseAlert} heading={"Profile updated successfully"} >
+            {isProfileUpdated && (<AlertDismissible type="success" show={showUpdateAlert}
+                onClose={handleCloseUpdateAlert} heading={"Profile updated successfully"} >
                 <p>
-                    view your <a href={`/profile/${profile.username}`}>profile</a>
+                    view your <a href={`/profile/${username}`}>profile</a>
                 </p>
             </AlertDismissible>)}
 
-            {/* {isEmailSent && (<AlertDismissible show={showAlert}
-                onClose={handleCloseAlert} heading={"Email sent successfully successfully"} >
+            {isEmailSent && (<AlertDismissible type="success" show={showEmailSentAlert}
+                onClose={handleCloseEmailSentAlert} heading={"Email sent successfully"} >
                 <p>
-                    A verification email has been sent to {profile.email}
+                    A verification email has been sent to {email}
                 </p>
-            </AlertDismissible>)} */}
+            </AlertDismissible>)}
+            {!isEmailVerified && (<AlertDismissible type="danger" show={showEmailNotVerifiedAlert}
+                onClose={handleCloseEmailNotVerifiedAlert} heading={"Email not verified!"} >
+                <p>
+                    Email is not verified. Please <Link href={""} onClick={verifyBtnClickHandler}>verify</Link>
+                </p>
+            </AlertDismissible>)}
+            {/* <PopUp show={true} handleClose={function (): void {
+                ;
+            } } >
+                <p>Alert</p>
+            </PopUp> */}
 
             <div className="container form-control border-0 p-5 bg-light">
                 <div className="row mb-4">
@@ -259,7 +284,7 @@ const Page = () => {
                                 <>
                                     <button
                                         onClick={verifyBtnClickHandler}
-                                        className="btn btn-sm btn-primary"
+                                        className="btn btn-sm btn-warning"
                                         disabled={isLoadingUpdate || isLoadingVerify}
                                     >
                                         {isLoadingVerify ? <Spin /> : "Verify"}
@@ -297,6 +322,20 @@ const Page = () => {
                                 disabled={isLoadingUpdate || isLoadingVerify}
                             />
                         </div>
+                        <div className="mb-4">
+                            <InputForm
+                                changeHandler={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ): void => {
+                                    setProfile({ ...profile, website: e.target.value });
+                                }}
+                                inputValue={profile.website}
+                                type="url"
+                                id="website"
+                                label="website"
+                                disabled={isLoadingUpdate || isLoadingVerify}
+                            />
+                        </div>
 
                         <div className="mb-4">
                             <TextAreaForm
@@ -315,17 +354,14 @@ const Page = () => {
 
                     <div className="col-md-3 text-center">
                         <img
-                            src="google.com"
+                            src={profile.image}
                             alt="avatar"
-                            className="img-fluid rounded-circle mb-3 border"
-                            style={{ maxWidth: "150px" }}
+                            className="img-fluid rounded-circle border"
+                            // style={{ maxWidth: "150px" }}
                         />
-                        <button className="btn btn-sm btn-outline-secondary">
-                            Change Avatar
-                        </button>
                     </div>
                 </div>
-                <div className="d-flex justify-content-end gap-2">
+                <div className="d-flex justify-content-start gap-2">
                     {/* <button onClick={handleCancel} className="btn btn-sm btn-secondary">Cancel</button> */}
                     <button
                         onClick={updateDetails}

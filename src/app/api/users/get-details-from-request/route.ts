@@ -11,7 +11,7 @@ connect();
 export async function GET(request: NextRequest) {
     try {
       const decodedUser = await getDataFromToken(request);
-      // console.log(decodedUser);
+      console.log(decodedUser);
       const user = await User.findOne({
         email: decodedUser.email,
         _id: decodedUser.id,
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         field: {
           profile: {
             isEmailVerified: user.isEmailVerified,
-            fullname: user.fullname,
+            fullname: profileRecord.fullname,
             username: user.username,
             email: user.email,
             verified: user.isEmailVerified,

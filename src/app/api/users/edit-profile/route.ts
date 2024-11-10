@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const {
       // email,
-      newImage,
+      // newImage,
       newProfession,
       newEmail,
       newPhone,
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     // profileRecord.email = user.email;
 
 
-    profileRecord.image = newImage || "N/A";
+    // profileRecord.image = newImage || "N/A";
     profileRecord.profession = newProfession || "N/A";
     profileRecord.phone = newPhone || "N/A";
     profileRecord.website = newWebsite || "N/A";

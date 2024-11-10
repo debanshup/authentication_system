@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       about,
       username,
       fullname,
-      isEmailVerified,
+      // isEmailVerified,
     } = reqBody;
 
     const user = await User.findOne({ email: decodedUser.email });
@@ -38,6 +38,10 @@ export async function POST(request: NextRequest) {
         success: false,
       });
     }
+    const emailChanged = email !== user.email;
+    const emailVerified = user.isEmailVerified;
+
+    console.log(emailChanged + " " + emailVerified);
 
     const profileRecord = await Profile.findOne({ userId: user._id });
 
@@ -48,16 +52,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    profileRecord.image = image || "N/A";
+    profileRecord.image =
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        fullname
+      )}&background=random&color=random&size=128` || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=random&size=128`;
     profileRecord.profession = profession || "N/A";
     profileRecord.phone = phone || "N/A";
     profileRecord.website = website || "N/A";
     profileRecord.about = about || "N/A";
     profileRecord.email = email || "N/A";
-    user.fullname = fullname || "N/A";
-    user.username = username || "N/A";
+    profileRecord.fullname = fullname || "N/A";
+    user.username = username ;
     user.email = email || "N/A";
-
+    user.isEmailVerified = !(emailChanged || !emailVerified);
     const modifiedUser = await user.save();
     const modifiedProfileRecord = await profileRecord.save();
     const response = NextResponse.json({
@@ -65,7 +72,7 @@ export async function POST(request: NextRequest) {
       success: true,
     });
 
-    if (user.username !== modifiedUser.username) {
+    if (email !== decodedUser.email) {
       const payload = {
         id: modifiedUser._id,
         email: modifiedUser.email,

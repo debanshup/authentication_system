@@ -12,10 +12,18 @@ export async function GET(request: NextRequest) {
     const decodedUser = await getDataFromToken(request);
     // console.log(decodedUser);
     const user = await User.findById(decodedUser.id).select("-password");
+    const profile = await Profile.findOne({ userId: user._id });
     
     if (!user) {
       return NextResponse.json({
         message: "no user found",
+        success: false,
+        status: 400,
+      });
+    }
+    if (!profile) {
+      return NextResponse.json({
+        message: "Something went wrong!",
         success: false,
         status: 400,
       });
@@ -26,8 +34,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       username: user.username,
-      fullname: user.fullname,
-      image: user.image,
+      fullname: profile.fullname,
+      image: profile.image,
     });
   } catch (error: any) {
     console.log(error.message);

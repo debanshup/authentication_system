@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
@@ -22,6 +23,7 @@ export default function Page() {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
+    fullName:"",
     image: "",
     profession: "",
     email: "",
@@ -52,6 +54,7 @@ export default function Page() {
           phone: detailsRes.data.props.profile.phone,
           website: detailsRes.data.props.profile.website,
           about: detailsRes.data.props.profile.about,
+          fullName: detailsRes.data.props.profile.fullname
         });
         if (detailsRes.data.props.profile.isEmailVerified) {
           setIsEmailVerified(true)
@@ -126,18 +129,18 @@ export default function Page() {
           <div className="col-md-4 text-center border-end">
             {/* Profile Image */}
             <div className="mb-3">
-              <Image
-                src="" // Or use an external image with proper config
-                alt="profile"
-                width={100}
-                height={100}
-                className="img-fluid rounded border"
+              <img
+                src={profile.image} // Or use an external image with proper config
+                alt="avatar"
+                // width={100}
+                // height={100}
+                className="img-fluid rounded-circle border"
               />
             </div>
 
             {/* Name & Username */}
             <div className="mb-3">
-              <h5 className="display-6 mb-0">{"Debanshu Panigrahi"}</h5>
+              <h5 className="display-6 mb-0">{profile.fullName}</h5>
               <p className="text-muted mb-0">{username}</p>
             </div>
 

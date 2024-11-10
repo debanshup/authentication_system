@@ -10,10 +10,12 @@ import { useRouter } from 'next/navigation'
 const Page = () => {
   const router = useRouter()
   const [username, setUsername] = useState("")
+  const[image, setImage] = useState("")
   async function getUsername() {
     try {
       const usernameRes = await axios.get("/api/users/get-username")
       setUsername(usernameRes.data.username)
+      setImage(usernameRes.data.image)
     } catch (error) {
 
     }
@@ -41,7 +43,7 @@ const Page = () => {
       <div className="card shadow-lg bg-light border-0 p-3" style={{ width: "300px" }}>
         <div className="card-body text-center">
           <img
-            src="https://via.placeholder.com/50"
+            src={image}
             alt="User Avatar"
             className="rounded-circle mb-3"
             width="50"

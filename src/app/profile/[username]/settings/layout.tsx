@@ -6,44 +6,61 @@ import User from '@/models/userModel'
 import { ListGroup } from 'react-bootstrap'
 import Link from 'next/link'
 const Page = ({ children }: any) => {
+ async function deleteBtnClickHandler() {
+    try {
+      throw new Error('Function not implemented.')
+    } catch (error) {
+      
+    }
+  }
+
   // const username = useUsername()
   // alert(username)
   return (
 
     <>
-      <div className="container-lg mt-5">
-        <div className="row">
-          {/* Sidebar */}
-          <div className="col-md-4 border-end pe-4">
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item border-0 py-3">
-                <Link href="" id="edit" className="text-decoration-none">
-                  Edit Profile
-                </Link>
-              </li>
-              <li className="list-group-item border-0 py-3">
-                <Link href="" id="verify" className="text-decoration-none">
-                  Verify Email
-                </Link>
-              </li>
-              <li className="list-group-item border-0 py-3">
-                <Link href="" id="delete" className="text-decoration-none text-danger">
-                  Delete Account
-                </Link>
-              </li>
-              <li className="list-group-item border-0 py-3">A fourth item</li>
-              <li className="list-group-item border-0 py-3">And a fifth one</li>
-            </ul>
-          </div>
+<div className="container-sm bg-white mt-5 p-4 rounded shadow-sm">
+  <div className="row">
+    {/* Sidebar */}
+    <div className="col-md-4 bg-light pe-4 d-flex flex-column">
+      <div>
+        {/* <h5 className="mb-4 text-primary">Account Settings</h5> */}
 
-          {/* Main content */}
-          <div className="col-md-8">
-            <div className="p-4 bg-white border-0 rounded ">
-              {children}
-            </div>
-          </div>
+        <div className="py-2">
+          <a href="#" id="edit" className="text-decoration-none text-dark fw-semibold">
+            Profile
+          </a>
+        </div>
+        
+        <div className="py-2">
+          <Link href="./account" id="verify" className="text-decoration-none text-dark fw-semibold">
+            Account
+          </Link>
         </div>
       </div>
+
+      {/* Delete Account Section */}
+      <div className="mt-auto pt-4">
+        <div className="border-top pt-3">
+          <h6 className="text-danger mb-2">Danger Zone</h6>
+          <p className="text-muted small">
+            This action is irreversible. Please proceed with caution.
+          </p>
+          <button onClick={deleteBtnClickHandler} id="delete" className="btn btn-outline-danger w-100">
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Main content */}
+    <div className="col-md-8">
+      <div className="p-4 bg-light rounded shadow-sm">
+        {children}
+      </div>
+    </div>
+  </div>
+</div>
 
     </>
 

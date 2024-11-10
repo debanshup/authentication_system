@@ -12,7 +12,7 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
-    const { username, email, password, confirmPassword } = reqBody;
+    const { username, fullname, email, password, confirmPassword } = reqBody;
 
     // check if both passwords match
 
@@ -20,10 +20,12 @@ export async function POST(request: NextRequest) {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const usernameValid = /^[a-z\d]{3,}$/.test(username.trim());
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const fullnameValid = /^[a-zA-Z\s]{1,}$/.test(fullname);
+
     const passwordValid =
       passwordRegex.test(password) && password === confirmPassword;
 
-    if (!usernameValid || !passwordValid || !emailValid) {
+    if (!usernameValid || !passwordValid || !emailValid || !fullnameValid) {
       return NextResponse.json({ success: false, status: 400 });
     }
 
@@ -57,7 +59,11 @@ export async function POST(request: NextRequest) {
     // console.log(savedUser);
     const savedProfile = await Profile.create({
       userId: savedUser._id,
+      fullname: fullname,
       email: savedUser.email,
+      image: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        fullname || username
+      )}&background=random&color=random&size=128`,
     });
     const savedOtpDocument = await OTP.create({
       userId: savedUser._id,
