@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const profileSchema = new mongoose.Schema({
   userId: {
@@ -6,6 +7,10 @@ const profileSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  // isEmailVerifiedL: {
+  //   type: Boolean,
+  //   required: true,
+  // },
   email: {
     type: String,
     required: true,

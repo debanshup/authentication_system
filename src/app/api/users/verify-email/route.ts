@@ -2,7 +2,8 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import User from "@/models/userModel";
-import { generateCookie, updateCookie } from "@/helper/cookieManager";
+import { getDataFromToken } from "@/helper/dataFetcher";
+import { clearCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
@@ -27,8 +28,6 @@ export async function POST(request: NextRequest) {
       isEmailVerified: false,
     });
 
-    // console.log(user);
-
     if (!user) {
       throw new Error("invalid or expired token");
     }
@@ -48,9 +47,18 @@ export async function POST(request: NextRequest) {
       status: 200,
       message: "Email successfully verified",
     });
-    return response
+    try {
+      const decodedUser = await getDataFromToken(request);
 
+      if (decodedUser) {
+        return clearCookie(response);
+      }
+    } catch (error) {
+      console.log("This is not unexpected");
+      console.log("got it");
+    }
 
+    return response;
   } catch (error) {
     return NextResponse.json({
       success: false,

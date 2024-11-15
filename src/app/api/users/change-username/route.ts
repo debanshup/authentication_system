@@ -21,9 +21,6 @@ export async function POST(request: NextRequest) {
 
     const reqBody = await request.json();
     const { username } = reqBody;
-    console.log(username);
-
-    console.log(username);
     
     // validate username format using regex
     const usernameValid = /^[a-z\d]{3,}$/.test(username.trim());
@@ -46,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
     if (username === savedUser.username) {
         return NextResponse.json({
-            message: "Username must be changed",
+            message: "Username must be different",
             success: false,
         });
     }
@@ -55,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     if (user) {
         return NextResponse.json({
-            message: "User already available. Please use a different username",
+            message: "This username is already used. Please use a different username",
             success: false,
         });
     }

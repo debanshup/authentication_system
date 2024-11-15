@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
 
         },
+    newEmail: {
+            type: String,
+            unique: true,
+            lowercase: true,
+        },
         password: {
             type: String,
             required: [true, 'Please provide a password'],
@@ -44,6 +49,9 @@ const userSchema = new mongoose.Schema(
         passwordResetTokenExpires: Date,
         emailVerificationToken: String,  // Token for email verification
         emailVerificationTokenExpires: Date,
+
+        newEmailVerificationToken: String,
+        newEmailVerificationTokenExpires: Date,
 
 
 
@@ -190,6 +198,20 @@ userSchema.methods.createEmailVerificationToken = function () {
     // returns to user
     return verificationToken;
 }
+userSchema.methods.createNewEmailVerificationToken = function () {
+    const verificationToken = crypto.randomBytes(32).toString('hex')
+
+    this.newEmailVerificationToken = crypto
+        .createHash('sha256')
+        .update(verificationToken)
+        .digest('hex')
+
+    // token expiration (10 mins)
+    this.newEmailVerificationTokenExpires = Date.now() + 10 * 60 * 1000;
+
+    // returns to user
+    return this.newEmailVerificationToken;
+}
 
 
 // clear tokens
@@ -197,6 +219,10 @@ userSchema.methods.createEmailVerificationToken = function () {
 userSchema.methods.clearEmailVerificationToken = function () {
     this.emailVerificationToken = undefined;
     this.emailVerificationTokenExpires = undefined;
+}
+userSchema.methods.clearNewEmailVerificationToken = function () {
+    this.newEmailVerificationToken = undefined;
+    this.newEmailVerificationTokenExpires = undefined;
 }
 
 userSchema.methods.clearPasswordResetToken = function () {

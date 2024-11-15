@@ -98,6 +98,12 @@ export async function sendVerificationEmail({ email, token }: any) {
   }
 }
 
+// create a method to send verification email if changed
+
+
+
+
+
 export async function sendPasswordResetEmail({ email, otp, username }: any) {
   try {
     const mailOptions = {
