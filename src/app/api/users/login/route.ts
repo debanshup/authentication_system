@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       $or: [{ username: username }, { email: username }],
     });
 
-    if (!user) {
+    if (!user || !await user.comparePassword(password)) {
       return NextResponse.json({
         status: 400,
         message: "Invalid username or password",
@@ -40,25 +40,21 @@ export async function POST(request: NextRequest) {
     }
 
     // check if email verified or not
-    // if (!user.isEmailVerified) {
-    //   const token = user.createEmailVerificationToken();
-    //   await user.save();
-    //   await sendVerificationEmail({ email: user.email, token: token });
-    //   return NextResponse.json({
-    //     message: `Your email is not verified. A new verification email has been sent to ${user.email}. Please check your inbox.`,
-    //     user_exist: true,
-    //     verification_status: user.isEmailVerified,
-    //     email: user.email,
-    //   });
-    // }
-
-    const matched = await user.comparePassword(password);
-    if (!matched) {
+    if (!user.isEmailVerified) {
+      console.log("Not verified");
+      
+      // const token = user.createEmailVerificationToken();
+      // await user.save();
+      // await sendVerificationEmail({ email: user.email, token: token });
       return NextResponse.json({
-        message: "Invalid password",
-        success: false,
+        message: `Your email is not verified. A verification email has been sent to ${user.email}. Please check your inbox.`,
+        user_exist: true,
+        verification_status: user.isEmailVerified,
+        email: user.email,
       });
     }
+
+
 
     const response = NextResponse.json({
       success: true,

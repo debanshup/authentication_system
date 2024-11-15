@@ -8,14 +8,15 @@ import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import Spin from "./components/spinner/Spinner";
 import { userAgent } from "next/server";
-import { useUser } from "@/context/UserContext";
+import EmailVerificationAlert from "./components/alerts/EmailVerificationAlert";
 
 
 const Page = () => {
-  const { globalUser, setGlobalUser }: any = useUser()
   const router = useRouter();
   // const userData = useUserDataStore((state)=> state.userData)
   // const setUserData = useUserDataStore((state: any) => state.setUserData)
+  const [showEmailVerificationAlert, setShowEmailVerificationAlert] = useState(false);
+  const handleCloseEmailVerificationAlert = () => setShowEmailVerificationAlert(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({ username: "", password: "" });
@@ -29,19 +30,18 @@ const Page = () => {
         const loginRes = await axios.post("./api/users/login", user);
         // alert(loginRes.data.email)
         if (loginRes.data.user_exist) {
+
+          if (
+            !loginRes.data.verification_status
+          ) {
+            
+            setEmail(loginRes.data.email)
+
+            setShowEmailVerificationAlert(true)
+            return
+          }
           router.push(`profile/${loginRes.data.username}`);
-          
-          // else if (
-          //   !loginRes.data.verification_status
-          // ) {
-          //   setEmail(loginRes.data.email);
-          //   // setshowEmailSentPopup(true);
-          //   toast(loginRes.data.message, {
-          //     icon: "✅",
-          //     duration: 6000,
-          //   });
-          //   return;
-          // }
+
         } else if (!loginRes.data.user_exist) {
           toast(
             "User not found. Please check your credentials and try again.",
@@ -66,6 +66,7 @@ const Page = () => {
   return (
     <>
       <Toaster />
+      <EmailVerificationAlert show={showEmailVerificationAlert} close={handleCloseEmailVerificationAlert} email={email} />
       <div
         className="container-fluid d-flex flex-column justify-content-center align-items-center vh-100"
         style={{ background: "white" }}

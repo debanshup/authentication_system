@@ -23,7 +23,7 @@ export default function Page() {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
-    fullName:"",
+    fullName: "",
     image: "",
     profession: "",
     email: "",
@@ -130,10 +130,9 @@ export default function Page() {
             {/* Profile Image */}
             <div className="mb-3">
               <img
-                src={profile.image} // Or use an external image with proper config
+                src={profile.image || "def"}// Or use an external image with proper config
                 alt="avatar"
-                // width={100}
-                // height={100}
+                loading="lazy"
                 className="img-fluid rounded-circle border"
               />
             </div>
@@ -157,7 +156,7 @@ export default function Page() {
             {/* Contact Information */}
             <ul className="list-group list-group-flush text-center mt-3">
               <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <p className="mb-0">
+                <div className="mb-0">
                   {isEditing ? (
 
                     <form action="" className="form-floating">
@@ -184,12 +183,12 @@ export default function Page() {
                     </span>
 
                   )}
-                </p>
+                </div>
               </li>
 
               <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
                 <i className="bi bi-envelope-at text-primary"></i>
-                <p className="mb-0">
+                <div className="mb-0">
                   {isEditing ? (
                     <form action="" className="form-floating">
                       <input
@@ -210,29 +209,29 @@ export default function Page() {
 
                     </form>
                   ) : (
-                   
 
-                      <span className="">
-                        {profile.email + " "}
-                        {isEmailVerified ? (
-                           
-                            <i className="bi bi-check-circle text-success"></i>
-                         
-                        ) : (
-                          <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>
+
+                    <span className="">
+                      {profile.email + " "}
+                      {isEmailVerified ? (
+
+                        <i className="bi bi-check-circle text-success"></i>
+
+                      ) : (
+                        <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>
                           <Overlay>
-                          <i className="bi bi-exclamation-circle fs-6 text-danger"></i> 
+                            <i className="bi bi-exclamation-circle fs-6 text-danger"></i>
                           </Overlay>
-                          </Link>
-                        )}
-                      </span>
+                        </Link>
+                      )}
+                    </span>
 
                   )}
-                </p>
+                </div>
               </li>
               <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
                 <i className="bi bi-phone text-primary"></i>
-                <p className="mb-0">
+                <div className="mb-0">
                   {isEditing ? (
                     <form action="" className="form-floating">
                       <input
@@ -256,11 +255,11 @@ export default function Page() {
                   ) : (
                     <span>{profile.phone}</span>
                   )}
-                </p>
+                </div>
               </li>
               <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
                 <i className="bi bi-globe text-primary"></i>
-                <p className="mb-0">
+                <div className="mb-0">
                   {isEditing ? (
                     <form action="" className="form-floating">
                       <input
@@ -283,14 +282,14 @@ export default function Page() {
                   ) : (
                     profile.website
                   )}
-                </p>
+                </div>
               </li>
             </ul>
           </div>
 
           {/* Right Section: About */}
           <div className="col-md-8 border-0 text-center">
-            <p className="text-muted mt-4">
+            <div className="text-muted mt-4">
               {isEditing ? (
                 <form className="form-floating">
                   <textarea
@@ -309,7 +308,7 @@ export default function Page() {
               ) : (
                 profile.about
               )}
-            </p>
+            </div>
           </div>
         </div>
         {isEditing && (

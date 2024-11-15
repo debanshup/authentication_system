@@ -20,9 +20,9 @@ const Page = () => {
 
   async function verify(token: String) {
     try {
-      const response = await axios.post("./api/users/verify-email", { token });
+      const response = await axios.post("/api/users/verify-email", { token });
       setSuccess(response.data.success);
-      if (response.data.success || response.data.already_verified) {
+      if (response.data.success) {
         setTimeout(() => {
           router.push("/login");
         }, 2000);

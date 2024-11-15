@@ -5,14 +5,14 @@ import { useContext, useEffect, useState } from "react";
 import ProfileMenu from "./components/off-canvas/ProfileMenuOffCanvas";
 import axios from "axios";
 
-interface ProfileLayoutProps {
-  children: React.ReactNode;
-}
+// interface ProfileLayoutProps {
+//   children: React.ReactNode;
+// }
 
 
 export default function ProfileLayout({
   children,
-}: ProfileLayoutProps) {
+}: {children: React.ReactNode}) {
 
   const [userProps, setUserProps] = useState({ username: "", fullname: "", image: "" })
 

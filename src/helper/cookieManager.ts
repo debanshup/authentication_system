@@ -81,6 +81,14 @@ export async function updateCookie({
   }
 }
 
-export function generatePayload({}) {
-  
+export function clearCookie(response: NextResponse) {
+  response.cookies.set("sessionId", "", {
+    maxAge: -1, // expires immediately
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  return response;
 }

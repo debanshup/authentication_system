@@ -14,6 +14,7 @@ import PopUp from "@/app/global/alerts/PopUp";
 // import useInputFocus from "@/app/global/hooks/useInputFocus";
 
 const Page = () => {
+    const router = useRouter()
     const usernameInput = useInputFocus();
     const emailInput = useInputFocus();
     const [isLoadingVerify, setIsLoadingVerify] = useState(false);
@@ -50,7 +51,7 @@ const Page = () => {
         fullname: "",
     });
 
-    
+
     const usernameValid = /^[a-z\d]{3,}$/.test(profile.username);
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email);
     const allValid = usernameValid && emailValid;
@@ -186,6 +187,10 @@ const Page = () => {
         }
     }
 
+    function changeBtnClickHandler(): void {
+        router.push(`/profile/${profile.username}/settings/account`)
+    }
+
     return (
         <>
             <Toaster />
@@ -274,23 +279,11 @@ const Page = () => {
                                 type="email"
                                 id="email"
                                 label="Email"
-                                disabled={isLoadingUpdate || isLoadingVerify}
+                                disabled={true}
                             />
-                            {isEmailVerified ? (
-                                <>
-                                    <i className="bi bi-check-circle text-success"></i>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={verifyBtnClickHandler}
-                                        className="btn btn-sm btn-warning"
-                                        disabled={isLoadingUpdate || isLoadingVerify}
-                                    >
-                                        {isLoadingVerify ? <Spin /> : "Verify"}
-                                    </button>
-                                </>
-                            )}
+                            <button className="btn btn-sm btn-warning" onClick={changeBtnClickHandler}>
+                                Change
+                            </button>
                         </div>
 
                         <div className="mb-4">
@@ -357,7 +350,7 @@ const Page = () => {
                             src={profile.image}
                             alt="avatar"
                             className="img-fluid rounded-circle border"
-                            // style={{ maxWidth: "150px" }}
+                        // style={{ maxWidth: "150px" }}
                         />
                     </div>
                 </div>

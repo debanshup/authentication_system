@@ -213,7 +213,7 @@ const Page = () => {
             />
             {!usernameValid && usernameInput.isFocused && (
               <p className="form-text text-danger">
-                Username must be at least 3 characters long and must not contain
+                Username must contain at least 3 characters long and must not contain
                 spaces and any special character.
               </p>
             )}
