@@ -19,7 +19,7 @@ const Page = () => {
     const emailInput = useInputFocus();
     const [isLoadingVerify, setIsLoadingVerify] = useState(false);
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    const [usernameAvailable, setUsernameAvailable] = useState(false);
+    // const [usernameAvailable, setUsernameAvailable] = useState(false);
     const [isProfileUpdated, setIsProfileUpdated] = useState(false)
     const [isEmailSent, setIsEmailSent] = useState(false);
     const [email, setEmail] = useState("")
@@ -110,25 +110,25 @@ const Page = () => {
         getDetails();
     }, []);
 
-    async function isUsernameAvailable() {
-        try {
-            if (usernameValid) {
-                const usernameAvailableRes = await axios.get(
-                    "/api/users/username-available",
-                    {
-                        params: { username: profile.username },
-                    }
-                );
-                setUsernameAvailable(usernameAvailableRes.data.username_available);
-            }
-        } catch (error) { }
-    }
+    // async function isUsernameAvailable() {
+    //     try {
+    //         if (usernameValid) {
+    //             const usernameAvailableRes = await axios.get(
+    //                 "/api/users/username-available",
+    //                 {
+    //                     params: { username: profile.username },
+    //                 }
+    //             );
+    //             // setUsernameAvailable(usernameAvailableRes.data.username_available);
+    //         }
+    //     } catch (error) { }
+    // }
 
-    useEffect(() => {
-        isUsernameAvailable();
+    // useEffect(() => {
+    //     isUsernameAvailable();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [profile.username]);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [profile.username]);
 
     //
     useEffect(() => {
@@ -237,7 +237,7 @@ const Page = () => {
                             />
                         </div>
 
-                        <div className="mb-4">
+                        <div className="d-flex align-items-center gap-2 mb-4">
                             <InputForm
                                 onFocus={usernameInput.handleFocus}
                                 changeHandler={(
@@ -252,18 +252,22 @@ const Page = () => {
                                 type="text"
                                 id="username"
                                 label="Username"
-                                className={`${usernameInput.isFocused
-                                    ? usernameValid && usernameAvailable
-                                        ? "is-valid"
-                                        : "is-invalid"
-                                    : ""
-                                    }`}
-                                feedbackText={{
-                                    message: usernameAvailable ? "" : "Username not available!",
-                                    isValid: usernameAvailable,
-                                }}
-                                disabled={isLoadingUpdate || isLoadingVerify}
+                                // className={`${usernameInput.isFocused
+                                //     ? usernameValid && usernameAvailable
+                                //         ? "is-valid"
+                                //         : "is-invalid"
+                                //     : ""
+                                //     }`}
+                                // feedbackText={{
+                                //     message: usernameAvailable ? "" : "Username not available!",
+                                //     isValid: usernameAvailable,
+                                // }}
+                                disabled
                             />
+
+                            <button className="btn btn-sm btn-warning" onClick={changeBtnClickHandler}>
+                                Change
+                            </button>
                         </div>
 
                         <div className="d-flex align-items-center gap-2 mb-4">

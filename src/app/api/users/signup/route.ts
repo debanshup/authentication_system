@@ -51,36 +51,37 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const savedUser = await User.create({
+    const user = await User.create({
       username: username,
       email: email,
       password: confirmPassword,
     });
     // console.log(savedUser);
-    const savedProfile = await Profile.create({
-      userId: savedUser._id,
+    const profile = await Profile.create({
+      userId: user._id,
       fullname: fullname,
-      email: savedUser.email,
+      email: user.email,
       image: `https://ui-avatars.com/api/?name=${encodeURIComponent(
         fullname || username
       )}&background=random&color=random&size=128`,
     });
-    const savedOtpDocument = await OTP.create({
-      userId: savedUser._id,
+    const otpDocument = await OTP.create({
+      userId: user._id,
     });
     // send verification email
-    const token = savedUser.createEmailVerificationToken();
+    const token = user.createEmailVerificationToken();
 
-    await sendVerificationEmail({ email, token });
+    await sendVerificationEmail({ email, token, emailType: "new" });
+    await user.save();
 
     return NextResponse.json({
       message: "User created successfully",
       success: true,
-      registration_status: savedUser.isEmailVerified,
-      user: savedUser,
-      otpDocument: savedOtpDocument,
-      profile: savedProfile,
-      email: savedUser.email,
+      registration_status: user.isEmailVerified,
+      user: user,
+      otpDocument: otpDocument,
+      profile: profile,
+      email: user.email,
     });
   } catch (error: any) {
     console.log(error.message);

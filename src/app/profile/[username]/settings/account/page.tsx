@@ -50,11 +50,11 @@ const Page = () => {
 
   return (
     <>
-    <UsernameChangeAlert show={showUsernameAlert} close={handleCloseUsernameAlert} />
-    <EmailChangeAlert show={showEmailAlert} close={handleCloseEmailAlert}/>
+      <UsernameChangeAlert show={showUsernameAlert} close={handleCloseUsernameAlert} />
+      <EmailChangeAlert show={showEmailAlert} close={handleCloseEmailAlert} />
       <PasswordChangeAlert show={showPasswordAlert} close={handleClosePasswordAlert} />
       <DeleteAccountAlert show={showDeleteAlert} close={handleCloseDeleteAlert} />
-      
+
       <div className="mt-3">
         <p className="h4">Change username</p>
         <hr />

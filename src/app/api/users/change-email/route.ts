@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 connect();
 
-
 export async function POST(request: NextRequest) {
   try {
     const decodedUser = await getDataFromToken(request);
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
         message: "Please enter a new email id.",
       });
     }
-    
+
     const user = await User.findOne({
       email: newEmail,
     });
@@ -57,9 +56,11 @@ export async function POST(request: NextRequest) {
 
     existedUser.newEmail = newEmail;
     const token = existedUser.createNewEmailVerificationToken();
-    await sendVerificationEmail({ newEmail, token });
+    console.log(token);
+    
+    await sendVerificationEmail({ email: newEmail, token, emailType: "updated" });
     await existedUser.save();
-    const response =  NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: `A verification email has been sent to ${newEmail}. Please check your inbox.`,
     });
@@ -67,11 +68,10 @@ export async function POST(request: NextRequest) {
     // return clearCookie(response);
     return response;
 
-// change cookie
-
+    // change cookie
   } catch (error: any) {
     console.log(error.message);
-    
+
     return NextResponse.json({
       success: false,
       status: 500,

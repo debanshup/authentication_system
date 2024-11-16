@@ -73,15 +73,26 @@ const transporter = nodemailer.createTransport({
   ignoreTLS: true,
 });
 
-export async function sendVerificationEmail({ email, token }: any) {
+export async function sendVerificationEmail({
+  email,
+  token,
+  emailType,
+}: {
+  email: string;
+  token: string;
+  emailType: "new" | "updated";
+}) {
   try {
+    const route =
+      (emailType === "updated" && "verify-update") ||
+      (emailType === "new" && "verify-email");
     const mailOptions = {
       from: "test@mail.com",
       to: email,
       subject: "Email verification",
       text: `Thank you for registering. Please verify your email by clicking the link ${
         process.env.DOMAIN
-      }/verify-email?token=${encodeURIComponent(
+      }/${route}?token=${encodeURIComponent(
         token
       )}. Link valid for 10 minutes.`,
     };
@@ -99,10 +110,6 @@ export async function sendVerificationEmail({ email, token }: any) {
 }
 
 // create a method to send verification email if changed
-
-
-
-
 
 export async function sendPasswordResetEmail({ email, otp, username }: any) {
   try {

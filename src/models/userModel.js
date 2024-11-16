@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             unique: true,
             lowercase: true,
+            default: "example@x.com"
         },
         password: {
             type: String,
@@ -210,7 +211,7 @@ userSchema.methods.createNewEmailVerificationToken = function () {
     this.newEmailVerificationTokenExpires = Date.now() + 10 * 60 * 1000;
 
     // returns to user
-    return this.newEmailVerificationToken;
+    return verificationToken;
 }
 
 

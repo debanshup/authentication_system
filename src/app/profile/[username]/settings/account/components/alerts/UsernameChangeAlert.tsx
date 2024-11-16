@@ -89,7 +89,7 @@ const UsernameChangeAlert = ({
           </div>
           <div>
             <button
-              type="submit"
+              type="button"
               onClick={changeBtnClickHandler}
               className="btn btn-sm btn-success"
             >
