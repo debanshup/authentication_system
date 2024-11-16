@@ -110,6 +110,27 @@ const Page = () => {
         getDetails();
     }, []);
 
+    // async function isUsernameAvailable() {
+    //     try {
+    //         if (usernameValid) {
+    //             const usernameAvailableRes = await axios.get(
+    //                 "/api/users/username-available",
+    //                 {
+    //                     params: { username: profile.username },
+    //                 }
+    //             );
+    //             // setUsernameAvailable(usernameAvailableRes.data.username_available);
+    //         }
+    //     } catch (error) { }
+    // }
+
+    // useEffect(() => {
+    //     isUsernameAvailable();
+
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [profile.username]);
+
+    //
     useEffect(() => {
         if (!isEmailVerified) {
             setShowEmailNotVerifiedAlert(true)
@@ -198,144 +219,89 @@ const Page = () => {
                 <p>Alert</p>
             </PopUp> */}
 
-            <div className="container form-control border-0 p-5 bg-light">
-                <div className="row mb-4">
-                    <div className="col-md-9">
-                        <div className="mb-4">
-                            <InputForm
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setProfile({ ...profile, fullname: e.target.value });
-                                }}
-                                inputValue={profile.fullname}
-                                type="text"
-                                id="fullname"
-                                label="Full Name"
-                                disabled={isLoadingUpdate || isLoadingVerify}
-                            />
-                        </div>
-
-                        <div className="d-flex align-items-center gap-2 mb-4">
-                            <InputForm
-                                onFocus={usernameInput.handleFocus}
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setProfile({
-                                        ...profile,
-                                        username: e.target.value.toLowerCase(),
-                                    });
-                                }}
-                                inputValue={profile.username}
-                                type="text"
-                                id="username"
-                                label="Username"
-                                disabled
-                            />
-
-                            <button className="btn btn-sm btn-warning" onClick={changeBtnClickHandler}>
-                                Change
-                            </button>
-                        </div>
-
-                        <div className="d-flex align-items-center gap-2 mb-4">
-                            <InputForm
-                                onFocus={emailInput.handleFocus}
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setIsEmailVerified(false);
-                                    setProfile({ ...profile, email: e.target.value });
-                                }}
-                                inputValue={profile.email}
-                                type="email"
-                                id="email"
-                                label="Email"
-                                disabled={true}
-                            />
-                            <button className="btn btn-sm btn-warning" onClick={changeBtnClickHandler}>
-                                Change
-                            </button>
-                        </div>
-
-                        <div className="mb-4">
-                            <InputForm
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setProfile({ ...profile, phone: e.target.value });
-                                }}
-                                inputValue={profile.phone}
-                                type="tel"
-                                id="phone"
-                                label="Phone"
-                                disabled={isLoadingUpdate || isLoadingVerify}
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <InputForm
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setProfile({ ...profile, profession: e.target.value });
-                                }}
-                                inputValue={profile.profession}
-                                type="text"
-                                id="profession"
-                                label="Profession"
-                                disabled={isLoadingUpdate || isLoadingVerify}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <InputForm
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void => {
-                                    setProfile({ ...profile, website: e.target.value });
-                                }}
-                                inputValue={profile.website}
-                                type="url"
-                                id="website"
-                                label="website"
-                                disabled={isLoadingUpdate || isLoadingVerify}
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <TextAreaForm
-                                id="about"
-                                inputValue={profile.about}
-                                changeHandler={(
-                                    e: React.ChangeEvent<HTMLTextAreaElement>
-                                ): void => {
-                                    setProfile({ ...profile, about: e.target.value });
-                                }}
-                                label="About"
-                                disabled={isLoadingUpdate || isLoadingVerify}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="col-md-3 text-center">
-                        <img
-                            src={profile.image}
-                            alt="avatar"
-                            className="img-fluid rounded-circle border"
-                        // style={{ maxWidth: "150px" }}
-                        />
-                    </div>
-                </div>
-                <div className="d-flex justify-content-start gap-2">
-                    {/* <button onClick={handleCancel} className="btn btn-sm btn-secondary">Cancel</button> */}
-                    <button
-                        onClick={updateDetails}
-                        className="btn btn-sm btn-success"
-                        disabled={isLoadingUpdate || isLoadingVerify}
+            <div
+                className="my-4"
+                style={{
+                    borderRadius: "20px",
+                    padding: "20px",
+                }}
+            >
+                <div
+                    className="card shadow-lg"
+                    style={{
+                        maxWidth: "800px",
+                        margin: "0 auto",
+                        border: "none",
+                        borderRadius: "20px",
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* Header with Gradient */}
+                    <div
+                        className="card-header text-white text-center"
+                        style={{
+                            background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+                            padding: "30px 20px",
+                        }}
                     >
-                        {isLoadingUpdate ? <Spin /> : "Update details"}
-                    </button>
+                        <h3 className="mb-0">Edit Profile</h3>
+                        <p className="text-light">Update your personal details</p>
+                    </div>
+
+                    {/* Form Section */}
+                    <div className="card-body bg-light p-4">
+                        {/* Full Name */}
+                        <div className="mb-3">
+
+                            <InputForm changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
+                                setProfile({ ...profile, fullname: e.target.value })
+                            }} inputValue={profile.fullname} type={"text"} id={"full-name"} label={"Full Name"} />
+                        </div>
+
+                        {/* Email */}
+                        <div className="mb-3">
+                            <InputForm changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
+                                setProfile({ ...profile, email: e.target.value })
+                            }} inputValue={profile.email} type={"email"} id={"email"} label={"Email"} />
+                        </div>
+
+                        {/* Profession */}
+                        <div className="mb-3">
+                            <InputForm changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
+                                setProfile({ ...profile, profession: e.target.value })
+                            }} inputValue={profile.profession} type={"text"} id={"profession"} label={"Profession"} />
+                        </div>
+
+                        {/* About */}
+                        <div className="mb-3">
+                            <TextAreaForm id={"about"} inputValue={profile.about} changeHandler={function (e: React.ChangeEvent<HTMLTextAreaElement>): void {
+                                setProfile({ ...profile, about: e.target.value })
+                            }} label={"About"} />
+                        </div>
+
+                        {/* Website */}
+                        <div className="mb-3">
+                            <InputForm changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
+                                setProfile({ ...profile, website: e.target.value })
+                            }} inputValue={profile.website} type={"url"} id={"website"} label={"Website"} />
+                        </div>
+
+                        {/* Phone */}
+                        <div className="mb-3">
+                            <InputForm changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
+                                setProfile({ ...profile, phone: e.target.value })
+                            }} inputValue={profile.phone} type={"tel"} id={"phone"} label={"Phone"} />
+                        </div>
+
+                        {/* Save Button */}
+                        <div className="d-flex justify-content-end">
+                            <button onClick={updateDetails} type="button" className="btn btn-sm btn-success btn-lg d-flex align-items-center">
+                                <i className="bi bi-save-fill me-2" style={{ fontSize: "1.2rem" }}></i>
+                                <span>Save Profile</span>
+                            </button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
