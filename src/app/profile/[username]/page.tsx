@@ -12,10 +12,7 @@ export default function Page() {
   const router = useRouter()
   const { username } = useParams();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isErrorOccured, setIsErrorOccured] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
     fullName: "",
@@ -43,9 +40,6 @@ export default function Page() {
           about: detailsRes.data.props.profile.about,
           fullName: detailsRes.data.props.profile.fullname
         });
-        if (detailsRes.data.props.profile.isEmailVerified) {
-          setIsEmailVerified(true)
-        }
       } else {
         setIsErrorOccured(true);
       }
@@ -55,9 +49,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (!isEditing) {
       getDetails();
-    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

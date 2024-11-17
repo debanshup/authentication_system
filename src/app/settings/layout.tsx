@@ -39,7 +39,7 @@ useEffect(() => {
             <div className="nav flex-column">
               {/* Profile Link */}
               <a
-                href={`/profile/${username}`}
+                href={`/settings/edit`}
                 id="edit"
                 className="nav-link text-dark fw-semibold py-2 px-3 rounded d-flex align-items-center"
                 style={{
@@ -53,8 +53,8 @@ useEffect(() => {
                   (e.currentTarget.style.borderLeft = "4px solid transparent")
                 }
               >
-                <i className="bi bi-person me-2 text-primary" style={{ fontSize: "1.2rem" }}></i>
-                <span>Profile</span>
+                <i className="bi bi-pencil-square me-2 text-primary" style={{ fontSize: "1.2rem" }}></i>
+                <span>Edit</span>
               </a>
 
               {/* Account Link */}

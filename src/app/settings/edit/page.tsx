@@ -28,7 +28,7 @@ const Page = () => {
     const [image, setImage] = useState("");
 
 
-    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    // const [isEmailVerified, setIsEmailVerified] = useState(false);
     // const[isEmailAlreadyUsed, setIsEmailAlreadyUsed]= useState(false)
 
     const [showUpdateAlert, setShowUpdateAlert] = useState(false);
@@ -70,7 +70,7 @@ const Page = () => {
                     fullname: detailsRes.data.field.profile.fullname,
                 });
                 setFullname(detailsRes.data.field.profile.fullname)
-                setIsEmailVerified(detailsRes.data.field.profile.verified);
+                // setIsEmailVerified(detailsRes.data.field.profile.verified);
             } else {
                 // setIsErrorOccured(true);
                 toast.error("Error updating profile");
@@ -91,6 +91,7 @@ const Page = () => {
                     setIsProfileUpdated(true);
                     setShowUpdateAlert(true);
                     setUsername(profile.username);
+                    window.scrollTo(0, 0);
                 } else {
                     toast("Error saving details");
                 }

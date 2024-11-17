@@ -81,7 +81,7 @@ const PasswordChangeAlert = ({ show, close }: { show: boolean, close: () => void
             <input
               type="password"
               className="form-control form-control-sm"
-              id="password"
+              id="password-old"
               onChange={(e) => {
                 setPasswordData({ ...passwordData, currentPassword: e.target.value })
               }}
@@ -108,7 +108,7 @@ const PasswordChangeAlert = ({ show, close }: { show: boolean, close: () => void
                     : "is-invalid"
                   : ""
                 }`}
-              id="password"
+              id="password-new"
               required
             />
             <div id="emailHelp" className="form-text">
