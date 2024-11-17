@@ -14,25 +14,25 @@ export async function GET(request: NextRequest) {
     const user = await User.findOne({
       _id: decodedUser.id,
     }).select("-password");
-    const profile = await Profile.findOne({ userId: user._id });
-    if (!user) {
-      return NextResponse.json({
-        message: "no user found",
-        success: false,
-        status: 400,
-      });
-    }
-    if (!profile) {
-      return NextResponse.json({
-        message: "Something went wrong!",
-        success: false,
-        status: 400,
-      });
-    }
+    // const profile = await Profile.findOne({ userId: user._id });
+    // if (!user) {
+    //   return NextResponse.json({
+    //     message: "no user found",
+    //     success: false,
+    //     status: 400,
+    //   });
+    // }
+    // if (!profile) {
+    //   return NextResponse.json({
+    //     message: "Something went wrong!",
+    //     success: false,
+    //     status: 400,
+    //   });
+    // }
     return NextResponse.json({
       success: true,
       username: user.username,
-      image: profile.image,
+      // image: profile.image,
     });
   } catch (error: any) {
     return NextResponse.json({

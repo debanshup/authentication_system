@@ -51,7 +51,7 @@ export default function ProfileLayout({
             <li className="list-group-item">
               <a
                 className="text-decoration-none"
-                href={`/profile/${userProps.username}/settings/edit`}
+                href={`/settings/edit`}
               >
                 <i className="bi bi-gear-fill me-2"></i> Settings
               </a>

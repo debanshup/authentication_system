@@ -27,14 +27,6 @@ export default function Page() {
     about: "",
   });
 
-  // const [editedProfile, setEditedProfile] = useState({
-  //   // newImage: "",
-  //   newProfession: "",
-  //   newEmail: "",
-  //   newPhone: "",
-  //   newWebsite: "",
-  //   newAbout: "",
-  // });
 
   async function getDetails() {
     try {
@@ -62,44 +54,6 @@ export default function Page() {
     }
   }
 
-  // edit btn click handler
-
-  // async function editBtnClickHandler() {
-  //   setIsEditing(true);
-  //   try {
-  //     setEditedProfile({
-  //       // newImage: profile.image,
-  //       newProfession: profile.profession,
-  //       newEmail: profile.email,
-  //       newPhone: profile.phone,
-  //       newWebsite: profile.website,
-  //       newAbout: profile.about,
-  //     });
-  //   } catch (error) { }
-  // }
-
-  // async function saveBtnClickHandler() {
-  //   try {
-  //     setIsLoading(true);
-  //     const profileRes = await axios.post(
-  //       "/api/users/edit-profile",
-  //       editedProfile
-  //     );
-  //     // alert(profileRes.data.success);
-  //     toast.success("Profile updated successfully");
-  //     setProfile(profileRes.data.new_profile);
-  //   } catch (error) {
-  //     toast.error("Something went wrong!");
-  //   } finally {
-  //     setIsEditing(false);
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // async function discardBtnClickHandler() {
-  //   setIsEditing(false);
-  // }
-
   useEffect(() => {
     if (!isEditing) {
       getDetails();
@@ -108,7 +62,7 @@ export default function Page() {
   }, []);
 
   function editBthClickHandler(): void {
-    router.push("/profile/")
+    router.push("/settings/edit")
   }
 
   return isErrorOccured ? (
