@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import ProfileMenu from "./components/off-canvas/ProfileMenuOffCanvas";
@@ -14,25 +16,35 @@ export default function ProfileLayout({
   children,
 }: {children: React.ReactNode}) {
 
-  const [userProps, setUserProps] = useState({ username: "", fullname: "", image: "" })
+  // const router = useRouter();
+
+  // const [username, setUsername] = useState("")
 
 
-  async function getUserProps() {
-    try {
-      const propRes = await axios.get("/api/users/get-userprops")
-      setUserProps({
-        username: propRes.data.username,
-        fullname: propRes.data.fullname,
-        image: propRes.data.image,
-      })
-    } catch (error) {
+  // async function getUsername() {
+  //   try {
+  //     const usernameRes = await axios.get("/api/users/get-username")
+  //     alert(usernameRes.data.username)
+  //     setUsername(usernameRes.data.username)
+  //   } catch (error) {
 
-    }
-  }
+  //   }
+  // }
 
-  useEffect(() => {
-    getUserProps()
-  }, [])
+  // useEffect(() => {
+
+  //   getUsername();
+
+  // }, [router])
+
+  
+  // useEffect(() => {
+  //   router.push(`/profile/${username}`);
+    
+
+  // }, [router])
+
+  
 
   return (
     <section>

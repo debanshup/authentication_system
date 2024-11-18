@@ -3,9 +3,11 @@ import PopUp from '@/app/global/alerts/PopUp'
 import axios from 'axios'
 import React, { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
-
+import { useRouter } from 'next/navigation'
 const EmailChangeAlert = ({ show, close }: { show: boolean, close: () => void }) => {
+  const router = useRouter();
   const [email, setEmail] = useState("")
+
   // check email valid 
 
   async function verifyBtnClickHandler() {
@@ -22,6 +24,7 @@ const EmailChangeAlert = ({ show, close }: { show: boolean, close: () => void })
           position: "bottom-left",
           duration: 10000
         })
+        router.push("/login")
       }
       else {
         toast(emailChangeRes.data.message, {

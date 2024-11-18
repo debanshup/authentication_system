@@ -126,7 +126,7 @@ const Page = () => {
             <div className="mb-3 text-center">
               <Link
                 className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                href={"/cred"}
+                href={"/enter-email"}
               >
                 {" "}
                 Forgot password?
