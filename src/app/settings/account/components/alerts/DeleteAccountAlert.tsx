@@ -34,7 +34,7 @@ const DeleteAccountAlert = ({
           position: "bottom-left"
         })
         setTimeout(() => {
-          router.push("/login")
+          router.push("/")
         }, 1000);
       }
     } catch (error) { }

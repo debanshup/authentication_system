@@ -47,7 +47,10 @@ const Page = () => {
         !user.password ||
         !user.confirmPassword
       ) {
-        toast.error("Please fill in all fields.");
+        toast("Please fill in all fields.",{
+          position:"bottom-left",
+          className:"bg-danger text-white rounded p-1"
+        });
         return;
       }
       if (allValid) {
@@ -58,19 +61,24 @@ const Page = () => {
               `An account with the email ${user.email} already exists.\n Please log in to continue, or use a different email to sign up.`,
               {
                 duration: 6000,
-                className: "bg-danger text-white p-3 rounded", // Bootstrap classes
-                icon: "⚠️", // Optional: Add an icon to enhance the look
+                className: "bg-danger text-white p-3 rounded",
+                position:"bottom-left"
               }
             );
           } else if (signupRes.data.username_exist) {
             toast.error(
               `Username not available. Please select another username`,
-              {}
+              {
+                position:"bottom-left",
+                className:"bg-danger text-white rounded p-1"
+              }
             );
           } else if (!signupRes.data.registration_status) {
-            toast(`A verification email has been sent to ${user.email}`, {
-              icon: "✅",
-              duration: 6000,
+            toast(`A verification email has been sent to ${user.email}. Please check your inbox.`, {
+              duration: 10000,
+              className:"text-white bg-success",
+              position:"bottom-left",
+
             });
           }
         }
@@ -79,21 +87,30 @@ const Page = () => {
           "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).",
           {
             className: "bg-danger text-white rounded",
-            duration: 6000,
+            position:"bottom-left",
+
           }
         );
       } else if (!passwordConfirmed) {
         toast("Passwords do not match.", {
           className: "bg-danger text-white rounded",
+          position:"bottom-left",
+
         });
       } else {
         toast("Something went wrong", {
           className: "bg-danger text-white rounded",
+          position:"bottom-left",
+
         });
       }
     } catch (error: any) {
       toast.error(
-        "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+        "An unexpected error occurred. Please try again later, or contact support if the issue persists.",
+        {
+          position:"bottom-left",
+
+        }
       );
     } finally {
       setIsLoading(false);
@@ -165,9 +182,11 @@ const Page = () => {
           style={{ backdropFilter: "blur(50px)" }}
           className="shadow-lg rounded p-4  col-xxl-3 col-xl-4 col-lg-5 col-md-6 col-sm-8"
         >
+           <span className="lead fw-bold">Sign up</span>
+           <hr />
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
-              Full name
+              Full name*
             </label>
             <input
               onFocus={fullnameInput.handleFocus}
@@ -175,7 +194,7 @@ const Page = () => {
                 setUser({ ...user, fullname: e.target.value });
               }}
               type="text"
-              className={`form-control form-control-lg ${
+              className={`form-control form-control ${
                 fullnameInput.isFocused
                   ? fullnameValid
                     ? "is-valid"
@@ -192,7 +211,7 @@ const Page = () => {
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
-              Username
+              Username*
             </label>
             <input
               onFocus={usernameInput.handleFocus}
@@ -201,7 +220,7 @@ const Page = () => {
               }}
               value={user.username}
               type="text"
-              className={`form-control form-control-lg ${
+              className={`form-control form-control ${
                 usernameInput.isFocused
                   ? usernameValid && usernameAvailable
                     ? "is-valid"
@@ -229,7 +248,7 @@ const Page = () => {
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
-              Email
+              Email*
             </label>
             <input
               onFocus={emailInput.handleFocus}
@@ -237,7 +256,7 @@ const Page = () => {
                 setUser({ ...user, email: e.target.value.toLowerCase() });
               }}
               type="email"
-              className={`form-control form-control-lg ${
+              className={`form-control form-control ${
                 emailInput.isFocused
                   ? emailValid
                     ? "is-valid"
@@ -255,7 +274,7 @@ const Page = () => {
 
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
-              Password
+              Password*
             </label>
             <input
               onFocus={passwordInput.handleFocus}
@@ -263,7 +282,7 @@ const Page = () => {
                 setUser({ ...user, password: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${
+              className={`form-control form-control ${
                 passwordInput.isFocused
                   ? passwordValid
                     ? "is-valid"
@@ -344,7 +363,7 @@ const Page = () => {
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
-              Confirm password
+              Confirm password*
             </label>
             <input
               onFocus={confirmPasswordInput.handleFocus}
@@ -352,7 +371,7 @@ const Page = () => {
                 setUser({ ...user, confirmPassword: e.target.value });
               }}
               type="password"
-              className={`form-control form-control-lg ${
+              className={`form-control form-control ${
                 confirmPasswordInput.isFocused
                   ? passwordConfirmed
                     ? "is-valid"
@@ -372,13 +391,12 @@ const Page = () => {
             )}
           </div>
 
-          <div className="text-end">
+          <div className="text-center">
             <button
               type="button"
-              className="btn btn-primary btn-lg w-100 flex-grow-1 me-2 d-flex align-items-center justify-content-center"
+              className="btn btn-primary w-100 mt-2 p-2"
               onClick={createAccountBtnClickHandler}
               disabled={isLoading}
-              style={{ height: "50px", minHeight: "50px" }} // Fixed height
             >
               {isLoading ? (
                 <div className="d-flex align-items-center gap-2">

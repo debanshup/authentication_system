@@ -17,6 +17,7 @@ console.log("pathname:  "+pathname);
     "/verify-email",
     "/enter-email",
     "/reset-password",
+    "/"
   ];
 
   // Check if the current path is a public route
@@ -24,7 +25,7 @@ console.log("pathname:  "+pathname);
   // user logged in access public routes
 
   if (sessionId && isPublicRoute) {
-    return NextResponse.redirect(new URL("/profile/:path*", request.nextUrl));
+    return NextResponse.redirect(new URL("/profile/", request.nextUrl));
   }
   if (!sessionId && !isPublicRoute) {
     return NextResponse.redirect(new URL("/", request.nextUrl));

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     await User.findOneAndDelete({ _id: user._id });
     const response = NextResponse.json({
       success: true,
-      message: "Account deleted successfully!",
+      message: "Account deleted!",
     });
 
     return clearCookie(response);

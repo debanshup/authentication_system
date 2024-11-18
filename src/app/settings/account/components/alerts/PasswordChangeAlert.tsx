@@ -31,7 +31,7 @@ const PasswordChangeAlert = ({ show, close }: { show: boolean, close: () => void
     });
   }, [passwordData.updatedPassword]);
 
-  const passwordValid = Object.values(conditions).every(Boolean);
+  const passwordValid = Object.values(conditions).every(Boolean) && passwordData.currentPassword === passwordData.updatedPassword
 
 
   async function changeClickHandler() {
@@ -41,6 +41,7 @@ const PasswordChangeAlert = ({ show, close }: { show: boolean, close: () => void
           className: "bg-danger text-white rounded",
           position: "bottom-left"
         })
+        return
       }
 
       const passwordChangeRes = await axios.post("/api/users/change-password", passwordData)
@@ -51,12 +52,18 @@ const PasswordChangeAlert = ({ show, close }: { show: boolean, close: () => void
           position: "bottom-left"
         })
       } else {
-        toast(passwordChangeRes.data.message)
+        toast(passwordChangeRes.data.message, {
+          className: "bg-danger text-white rounded",
+          position: "bottom-left"
+        })
       }
 
 
     } catch (error) {
-
+      toast("Something went wrong!", {
+        className: "bg-success text-white rounded",
+        position: "bottom-left"
+      })
     }
   }
 

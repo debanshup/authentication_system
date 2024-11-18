@@ -31,12 +31,19 @@ const UsernameChangeAlert = ({
           formRef.current?.reset();
           setIsErrorOccured(false);
           setSuggestion(changeUsernameRes.data.message)
-          toast.success("Username changed", { position: "bottom-left" });
+          toast("Username changed", {
+            position: "bottom-left",
+            className: "bg-success text-white"
+
+
+          });
         } else {
           setIsErrorOccured(true)
           setSuggestion(changeUsernameRes.data.message)
-          toast.error(changeUsernameRes.data.message, {
+          toast(changeUsernameRes.data.message, {
             position: "bottom-left",
+            className: "bg-danger text-white"
+
           });
         }
       } else {
@@ -46,11 +53,14 @@ const UsernameChangeAlert = ({
         );
         toast("Please fill up the required field properly", {
           className: "bg-danger text-white rounded",
-          position:"bottom-left"
+          position: "bottom-left"
         });
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast(error.message, {
+        className: "bg-danger text-white rounded",
+        position: "bottom-left"
+      });
     }
   }
 
@@ -80,9 +90,8 @@ const UsernameChangeAlert = ({
               required
             />
             <p
-              className={`text-${
-                isErrorOccured ? "danger" : "success"
-              } form-text`}
+              className={`text-${isErrorOccured ? "danger" : "success"
+                } form-text`}
             >
               {suggestion}
             </p>

@@ -15,34 +15,16 @@ import PopUp from "@/app/global/alerts/PopUp";
 
 const Page = () => {
     const router = useRouter();
-    // const usernameInput = useInputFocus();
-    // const emailInput = useInputFocus();
-    // const [isLoadingVerify, setIsLoadingVerify] = useState(false);
-    // const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    // const [usernameAvailable, setUsernameAvailable] = useState(false);
     const [isProfileUpdated, setIsProfileUpdated] = useState(false);
-    // const [isEmailSent, setIsEmailSent] = useState(false);
-    // const [email, setEmail] = useState("")
     const [username, setUsername] = useState("");
     const [fullname, setFullname] = useState("");
-    const [image, setImage] = useState("");
-
-
-    // const [isEmailVerified, setIsEmailVerified] = useState(false);
-    // const[isEmailAlreadyUsed, setIsEmailAlreadyUsed]= useState(false)
-
+    const [email, setEmail] = useState("");
+    const [image, setImage] = useState("")
     const [showUpdateAlert, setShowUpdateAlert] = useState(false);
     const handleCloseUpdateAlert = () => setShowUpdateAlert(false);
-    // const handleShowAlert = () => setShowAlert(true);
 
-    // const [showEmailSentAlert, setShowEmailSentAlert] = useState(false)
-    // const handleCloseEmailSentAlert = () => setShowEmailSentAlert(false);
-
-    // const [showEmailNotVerifiedAlert, setShowEmailNotVerifiedAlert] = useState(false)
-    // const handleCloseEmailNotVerifiedAlert = () => setShowEmailNotVerifiedAlert(false);
 
     const [profile, setProfile] = useState({
-        image: "",
         profession: "",
         email: "",
         phone: "",
@@ -52,28 +34,28 @@ const Page = () => {
         fullname: "",
     });
 
-    const usernameValid = /^[a-z\d]{3,}$/.test(profile.username);
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email);
-    const allValid = usernameValid && emailValid;
+    const fullnameValid = /^[a-zA-Z\s]{1,}$/.test(profile.fullname);
+
     async function getDetails() {
         try {
             const detailsRes = await axios.get("/api/users/get-details-from-request");
             if (detailsRes.data.success) {
                 setProfile({
-                    email: detailsRes.data.field.profile.email,
-                    image: detailsRes.data.field.profile.image,
+                    ...profile,
                     profession: detailsRes.data.field.profile.profession,
                     phone: detailsRes.data.field.profile.phone,
                     website: detailsRes.data.field.profile.website,
                     about: detailsRes.data.field.profile.about,
-                    username: detailsRes.data.field.profile.username,
                     fullname: detailsRes.data.field.profile.fullname,
                 });
                 setFullname(detailsRes.data.field.profile.fullname)
+                setEmail(detailsRes.data.field.profile.email)
+                setUsername(detailsRes.data.field.profile.username)
+                setImage(detailsRes.data.field.profile.image)
                 // setIsEmailVerified(detailsRes.data.field.profile.verified);
             } else {
                 // setIsErrorOccured(true);
-                toast.error("Error updating profile");
+                toast.error("Error fetching data");
             }
         } catch (error: any) {
             toast.error(error.message);
@@ -82,7 +64,7 @@ const Page = () => {
 
     async function updateDetails() {
         try {
-            if (allValid) {
+            if (fullnameValid) {
                 const updateRes = await axios.post(
                     "/api/users/update-details",
                     profile
@@ -93,68 +75,28 @@ const Page = () => {
                     setUsername(profile.username);
                     window.scrollTo(0, 0);
                 } else {
-                    toast("Error saving details");
+                    toast("Error saving details", {
+                        position: "bottom-left",
+                        className: "bg-danger text-white p-1 rounded"
+                    });
                 }
             } else {
-                toast("Please fill up all the required fields");
+                toast("Please fill up all the required fields properly", {
+                    position: "bottom-left",
+                    className: "bg-danger text-white p-1 rounded"
+                });
             }
         } catch (error) {
-            toast("Something went wrong");
+            toast("Something went wrong", {
+                position: "bottom-left",
+                className: "bg-danger text-white p-1 rounded"
+            });
         }
     }
 
     useEffect(() => {
         getDetails();
     }, []);
-
-    // async function verifyBtnClickHandler(): Promise<void> {
-    //     setIsLoadingVerify(true);
-    //     try {
-    //         if (!emailValid) {
-    //             toast("Please enter a valid email address!", {
-    //                 className: "bg-danger text-white rounded",
-    //             });
-    //             return;
-    //         } else if (emailValid) {
-    //             const verificationEmailRes = await axios.post(
-    //                 "/api/users/send-verification-email",
-    //                 { email: profile.email }
-    //             );
-    //             if (verificationEmailRes.data.success) {
-    //                 setEmail(profile.email)
-    //                 setIsEmailSent(true);
-    //                 setShowEmailSentAlert(true)
-    //                 setShowEmailNotVerifiedAlert(false)
-    //                 toast(verificationEmailRes.data.message, {
-    //                     icon: "✅",
-    //                     duration: 6000,
-    //                 });
-    //             } else if (verificationEmailRes.data.already_verified) {
-    //                 setIsEmailVerified(true);
-    //                 toast(verificationEmailRes.data.message, {
-    //                     icon: "⚠️",
-    //                 });
-    //             } else if (verificationEmailRes.data.already_used) {
-    //                 toast(verificationEmailRes.data.message, {
-    //                     icon: "⚠️",
-    //                 });
-    //             } else {
-    //                 toast(verificationEmailRes.data.message);
-    //             }
-    //         } else {
-    //             toast("Please provide a valid email address");
-    //         }
-    //     } catch (error) {
-    //         toast("Something went wrong!", {
-    //             className: "bg-danger text-white rounded",
-    //         });
-    //         return;
-    //     } finally {
-    //         // setIsEmailSent(false);
-    //         setIsLoadingVerify(false);
-    //         // window.location.reload()
-    //     }
-    // }
 
     function changeBtnClickHandler(): void {
         router.push(`/settings/account`);
@@ -206,8 +148,8 @@ const Page = () => {
                         </div>
                         <div>
                             <img
-                            className="border"
-                                src={profile.image}
+                                className="border"
+                                src={image}
                                 alt="Profile"
                                 style={{
                                     width: "80px",
@@ -233,24 +175,20 @@ const Page = () => {
                                 inputValue={profile.fullname}
                                 type={"text"}
                                 id={"full-name"}
-                                label={"Full Name"}
+                                label={"Full Name*"}
                             />
                         </div>
 
                         {/* Email */}
                         <div className="mb-3 d-flex align-items-center">
                             <InputForm
-                                changeHandler={function (
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ): void {
-                                    setProfile({ ...profile, email: e.target.value });
+                                changeHandler={function (e: React.ChangeEvent<HTMLInputElement>): void {
                                 }}
-                                inputValue={profile.email}
+                                inputValue={email}
                                 type={"email"}
                                 id={"email"}
                                 label={"Email"}
                                 disabled={true}
-
                             />
                             <button
                                 type="button"
@@ -266,9 +204,8 @@ const Page = () => {
                                 changeHandler={function (
                                     e: React.ChangeEvent<HTMLInputElement>
                                 ): void {
-                                    setProfile({ ...profile, username: e.target.value });
                                 }}
-                                inputValue={profile.username}
+                                inputValue={username}
                                 type={"text"}
                                 id={"username"}
                                 label={"Username"}
