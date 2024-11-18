@@ -22,7 +22,7 @@ function ProfileMenu({
 
     return (
         <>
-            <Button variant="light" className="rounded-circle" onClick={handleShow}>
+            <Button variant="light" className="rounded-circle p-0" onClick={handleShow}>
                 <img src={image} alt={username} className="rounded-circle" width="40" height="40" />
             </Button>
 

@@ -19,16 +19,20 @@ export async function POST(request: NextRequest) {
     }
     const reqBody = await request.json();
     const {
-      image,
       profession,
-      email,
       phone,
       website,
       about,
-      username,
       fullname,
-      // isEmailVerified,
     } = reqBody;
+
+    const fullnameValid = /^[a-zA-Z\s]{1,}$/.test(fullname);
+if (!fullnameValid) {
+  return NextResponse.json({
+    message: "Format error!",
+    success: false,
+  });
+}
 
     const user = await User.findOne({ email: decodedUser.email });
 
@@ -38,11 +42,6 @@ export async function POST(request: NextRequest) {
         success: false,
       });
     }
-    const emailChanged = email !== user.email;
-    const emailVerified = user.isEmailVerified;
-
-    console.log(emailChanged + " " + emailVerified);
-
     const profileRecord = await Profile.findOne({ userId: user._id });
 
     if (!profileRecord) {
@@ -55,33 +54,17 @@ export async function POST(request: NextRequest) {
     profileRecord.image =
       `https://ui-avatars.com/api/?name=${encodeURIComponent(
         fullname
-      )}&background=random&color=random&size=128` || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=random&size=128`;
-    profileRecord.profession = profession || "N/A";
-    profileRecord.phone = phone || "N/A";
-    profileRecord.website = website || "N/A";
-    profileRecord.about = about || "N/A";
-    profileRecord.email = email || "N/A";
-    profileRecord.fullname = fullname || "N/A";
-    user.username = username ;
-    user.email = email || "N/A";
-    user.isEmailVerified = !(emailChanged || !emailVerified);
-    const modifiedUser = await user.save();
-    const modifiedProfileRecord = await profileRecord.save();
+      )}&background=random&color=random&size=128`
+    profileRecord.profession = profession;
+    profileRecord.phone = phone;
+    profileRecord.website = website;
+    profileRecord.about = about;
+    profileRecord.fullname = fullname;
+    await profileRecord.save();
     const response = NextResponse.json({
       message: "Profile updated successfully",
       success: true,
     });
-
-    if (email !== decodedUser.email) {
-      const payload = {
-        id: modifiedUser._id,
-        email: modifiedUser.email,
-        role: modifiedUser.role,
-        verified: modifiedUser.isEmailVerified,
-      };
-
-      return await generateCookie({ payload, response });
-    }
 
     return response;
   } catch (error) {}

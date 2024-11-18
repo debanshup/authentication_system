@@ -5,22 +5,14 @@
 import React from "react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import axios from "axios";
-import { Button } from "react-bootstrap";
-import Image from "next/image";
-import Spin from "../components/spinner/Spinner";
-import { useContext } from "react";
-import Overlay from "@/app/global/components/NotVerifiedOverlay";
-import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 export default function Page() {
+  const router = useRouter()
   const { username } = useParams();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isErrorOccured, setIsErrorOccured] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false)
 
   const [profile, setProfile] = useState({
     fullName: "",
@@ -32,14 +24,6 @@ export default function Page() {
     about: "",
   });
 
-  const [editedProfile, setEditedProfile] = useState({
-    // newImage: "",
-    newProfession: "",
-    newEmail: "",
-    newPhone: "",
-    newWebsite: "",
-    newAbout: "",
-  });
 
   async function getDetails() {
     try {
@@ -56,9 +40,6 @@ export default function Page() {
           about: detailsRes.data.props.profile.about,
           fullName: detailsRes.data.props.profile.fullname
         });
-        if (detailsRes.data.props.profile.isEmailVerified) {
-          setIsEmailVerified(true)
-        }
       } else {
         setIsErrorOccured(true);
       }
@@ -67,50 +48,15 @@ export default function Page() {
     }
   }
 
-  // edit btn click handler
-
-  async function editBtnClickHandler() {
-    setIsEditing(true);
-    try {
-      setEditedProfile({
-        // newImage: profile.image,
-        newProfession: profile.profession,
-        newEmail: profile.email,
-        newPhone: profile.phone,
-        newWebsite: profile.website,
-        newAbout: profile.about,
-      });
-    } catch (error) { }
-  }
-
-  async function saveBtnClickHandler() {
-    try {
-      setIsLoading(true);
-      const profileRes = await axios.post(
-        "/api/users/edit-profile",
-        editedProfile
-      );
-      // alert(profileRes.data.success);
-      toast.success("Profile updated successfully");
-      setProfile(profileRes.data.new_profile);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setIsEditing(false);
-      setIsLoading(false);
-    }
-  }
-
-  async function discardBtnClickHandler() {
-    setIsEditing(false);
-  }
-
   useEffect(() => {
-    if (!isEditing) {
       getDetails();
-    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function editBthClickHandler(): void {
+    router.push("/settings/edit")
+  }
 
   return isErrorOccured ? (
     <>
@@ -123,227 +69,84 @@ export default function Page() {
   ) : (
     <>
       <Toaster />
-      <div className="container-lg p-4 bg-white" style={{ maxWidth: "1280px" }}>
-        <div className="row">
-          {/* Left Section: Profile Info */}
-          <div className="col-md-4 text-center border-end">
-            {/* Profile Image */}
-            <div className="mb-3">
-              <img
-                src={profile.image || "def"}// Or use an external image with proper config
-                alt="avatar"
-                loading="lazy"
-                className="img-fluid rounded-circle border"
-              />
-            </div>
+      <div
+        className="my-4 d-flex justify-content-center"
+        style={{
+          padding: "20px",
+        }}
+      >
+        <div
+          className="card shadow-lg"
+          style={{
+            width: "100%",
+            maxWidth: "800px",
+            border: "none",
+            borderRadius: "20px",
+            overflow: "hidden",
+          }}
+        >
+          {/* Header with gradient */}
+          <div
+            className="card-header text-white text-center"
+            style={{
+              background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+              padding: "50px 20px",
+            }}
+          >
+            <img
+              src={profile.image}
+              alt="User Avatar"
+              className="rounded-circle border border-1 border-light"
+              style={{
+                width: "120px",
+                height: "120px",
+                marginBottom: "20px",
+              }}
+            />
+            <h3 className="mb-0">{profile.fullName}</h3>
+            <p className="text-light">{profile.profession}</p>
+          </div>
 
-            {/* Name & Username */}
-            <div className="mb-3">
-              <h5 className="display-6 mb-0">{profile.fullName}</h5>
-              <p className="text-muted mb-0">{username}</p>
+          {/* Body with detailed info */}
+          <div className="card-body bg-light p-4">
+            <div className="row">
+              {/* Info Section */}
+              <div className="col-md-6 mb-3">
+                <h5 className="text-muted">Contact Information</h5>
+                <p>
+                  <i className="bi bi-envelope me-2 text-primary"></i>
+                  <strong>Email:</strong> {profile.email}
+                </p>
+                <p>
+                  <i className="bi bi-phone me-2 text-success"></i>
+                  <strong>Phone:</strong> {profile.phone}
+                </p>
+                <p>
+                  <i className="bi bi-globe me-2 text-info"></i>
+                  <strong>Website:</strong>{" "}
+                  <a href={profile.website} className="text-decoration-none">
+                  {profile.website}
+                  </a>
+                </p>
+              </div>
+
+              {/* About Section */}
+              <div className="col-md-6 mb-3">
+                <h5 className="text-muted">About</h5>
+                <p>
+                {profile.about}
+                </p>
+              </div>
             </div>
 
             {/* Edit Button */}
-            <Button
-              onClick={editBtnClickHandler}
-              variant="outline-primary"
-              className={`mb-3`}
-              disabled={isEditing || isLoading}
-            >
-              Edit Profile
-            </Button>
-
-            {/* Contact Information */}
-            <ul className="list-group list-group-flush text-center mt-3">
-              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <div className="mb-0">
-                  {isEditing ? (
-
-                    <form action="" className="form-floating">
-                      <input
-                        className="form-control"
-                        onChange={(e) => {
-                          setEditedProfile({
-                            ...editedProfile,
-                            newProfession: e.target.value,
-                          });
-                        }}
-                        value={editedProfile.newProfession}
-                        type="text"
-                        placeholder="Profession"
-                        name=""
-                        id="profession"
-                      />
-                      <label htmlFor="profession">Profession</label>
-                    </form>
-                  ) : (
-                    <span className="badge text-bg-success d-flex align-items-center gap-2">
-                      <i className="bi bi-briefcase-fill"></i>
-                      {profile.profession || "Profession"}
-                    </span>
-
-                  )}
-                </div>
-              </li>
-
-              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <i className="bi bi-envelope-at text-primary"></i>
-                <div className="mb-0">
-                  {isEditing ? (
-                    <form action="" className="form-floating">
-                      <input
-                        id="email"
-                        className="form-control"
-                        onChange={(e) => {
-                          setEditedProfile({
-                            ...editedProfile,
-                            newEmail: e.target.value,
-                          });
-                        }}
-                        value={editedProfile.newEmail}
-                        type="email"
-                        placeholder="Email"
-                        disabled
-                      />
-                      <label htmlFor="email">Email</label>
-
-                    </form>
-                  ) : (
-
-
-                    <span className="">
-                      {profile.email + " "}
-                      {isEmailVerified ? (
-
-                        <i className="bi bi-check-circle text-success"></i>
-
-                      ) : (
-                        <Link className="btn btn-sm p-0" href={`/profile/${username}/settings/edit`}>
-                          <Overlay>
-                            <i className="bi bi-exclamation-circle fs-6 text-danger"></i>
-                          </Overlay>
-                        </Link>
-                      )}
-                    </span>
-
-                  )}
-                </div>
-              </li>
-              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <i className="bi bi-phone text-primary"></i>
-                <div className="mb-0">
-                  {isEditing ? (
-                    <form action="" className="form-floating">
-                      <input
-
-                        type="tel"
-                        className="form-control"
-                        onChange={(e) => {
-                          setEditedProfile({
-                            ...editedProfile,
-                            newPhone: e.target.value,
-                          });
-                        }}
-                        value={editedProfile.newPhone}
-                        placeholder="Phone"
-                        name=""
-                        id="phone"
-                      />
-                      <label htmlFor="phone">Phone</label>
-
-                    </form>
-                  ) : (
-                    <span>{profile.phone}</span>
-                  )}
-                </div>
-              </li>
-              <li className="list-group-item border-0 d-flex justify-content-center align-items-center gap-2">
-                <i className="bi bi-globe text-primary"></i>
-                <div className="mb-0">
-                  {isEditing ? (
-                    <form action="" className="form-floating">
-                      <input
-                        className="form-control"
-                        onChange={(e) => {
-                          setEditedProfile({
-                            ...editedProfile,
-                            newWebsite: e.target.value,
-                          });
-                        }}
-                        value={editedProfile.newWebsite}
-                        placeholder="Website"
-                        type="text"
-                        name=""
-                        id="website"
-                      />
-                      <label htmlFor="website">Website</label>
-
-                    </form>
-                  ) : (
-                    profile.website
-                  )}
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          {/* Right Section: About */}
-          <div className="col-md-8 border-0 text-center">
-            <div className="text-muted mt-4">
-              {isEditing ? (
-                <form className="form-floating">
-                  <textarea
-                    className="form-control"
-                    id="about"
-                    placeholder="Write about yourself (max 500 characters)"
-                    value={editedProfile.newAbout}
-                    onChange={(e) =>
-                      setEditedProfile({ ...editedProfile, newAbout: e.target.value })
-                    }
-                    maxLength={500}
-                    style={{ maxHeight: "500px", minHeight: "150px" }} // Ensures better usability
-                  ></textarea>
-                  <label htmlFor="about">About</label>
-                </form>
-              ) : (
-                profile.about
-              )}
+            <div className="d-flex justify-content-end">
+              <button onClick={editBthClickHandler} className="btn btn-outline-dark btn-gradient btn-lg">
+                <i className="bi bi-pencil me-2"></i>Edit Profile
+              </button>
             </div>
           </div>
         </div>
-        {isEditing && (
-          <div className="row mt-4">
-            <div className="col d-flex justify-content-center align-items-center gap-3">
-              <button
-                onClick={discardBtnClickHandler}
-                className="btn btn-outline-secondary"
-                style={{ height: "50px", minHeight: "50px" }}
-                disabled={isLoading}
-              >
-                Discard
-              </button>
-              <button
-                onClick={saveBtnClickHandler}
-                className="btn btn-success d-flex align-items-center justify-content-center"
-                style={{
-                  height: "50px",
-                  width: "100px",
-                  minWidth: "100px",
-                  minHeight: "50px",
-                }}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="d-flex align-items-center gap-2">
-                    <Spin />
-                  </div>
-                ) : (
-                  "Save"
-                )}
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );

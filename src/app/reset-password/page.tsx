@@ -33,7 +33,10 @@ const Page = () => {
     try {
       setIsLoading(true);
       if (!password || !confirmPassword) {
-        toast.error("Please fill in all fields.");
+        toast("Please fill in all fields.", {
+          className: "bg-danger text-white rounded p-1",
+          position: "bottom-left"
+        });
         return;
       }
       if (allValid) {
@@ -48,10 +51,8 @@ const Page = () => {
           return;
         }
         toast.success("Your password has been changed successfully!", {
-          icon: "🔒",
-          duration: 5000,
-          className: "bg-success text-white p-3 rounded",
-          style: { border: "1px solid #28a745", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" },
+          className: "bg-success text-white rounded p-1",
+          position: "bottom-left"
         });
 
         router.push("./login");
@@ -60,16 +61,19 @@ const Page = () => {
           "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).",
           {
             className: "bg-danger text-white rounded",
-            duration: 6000,
+            position: "bottom-left"
+
           }
         );
       } else if (!passwordConfirmed) {
         toast("Passwords do not match.", {
           className: "bg-danger text-white rounded",
+          position:"bottom-left"
+
         });
       } else {
         setErrorMessage(
-          "An unexpected error occurred. Please try again later, or contact support if the issue persists."
+          "An unexpected error occurred. Please try again later, or contact support if the issue persists.",
         );
       }
     } catch (error: any) {
@@ -128,6 +132,8 @@ const Page = () => {
             action=""
             className="shadow-lg rounded p-4 col-xxl-3 col-xl-4 col-lg-5 col-md-6 col-sm-8"
           >
+             <span className="lead fw-bold">Reset password</span>
+             <hr />
             <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">
                 Password
@@ -138,13 +144,12 @@ const Page = () => {
                   setPassword(e.target.value);
                 }}
                 type="password"
-                className={`form-control form-control-lg ${
-                  passwordInput.isFocused
+                className={`form-control form-control-lg ${passwordInput.isFocused
                     ? passwordValid
                       ? "is-valid"
                       : "is-invalid"
                     : ""
-                }`}
+                  }`}
                 minLength={8}
                 disabled={isLoading}
                 required
@@ -226,13 +231,12 @@ const Page = () => {
                   setConfirmPassword(e.target.value);
                 }}
                 type="password"
-                className={`form-control form-control-lg ${
-                  confirmPasswordInput.isFocused
+                className={`form-control form-control-lg ${confirmPasswordInput.isFocused
                     ? passwordConfirmed
                       ? "is-valid"
                       : "is-invalid"
                     : ""
-                }`}
+                  }`}
                 minLength={8}
                 disabled={isLoading}
                 required

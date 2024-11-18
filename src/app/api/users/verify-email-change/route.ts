@@ -7,6 +7,8 @@ import { clearCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
+  console.log("Hi");
+
   try {
     const reqBody = await request.json();
     const { token } = reqBody;
@@ -17,16 +19,18 @@ export async function POST(request: NextRequest) {
       .createHash("sha256")
       .update(token)
       .digest("hex");
-    const userPendingEmailChangeReq = await User.findOne({
+    const user = await User.findOne({
       newEmailVerificationToken: encryptedToken,
       newEmailVerificationTokenExpires: { $gt: Date.now() },
       // isnewEmailVerified: false,
     });
 
-    console.log(userPendingEmailChangeReq);
-    userPendingEmailChangeReq.email = userPendingEmailChangeReq.newEmail;
-    userPendingEmailChangeReq.setEmailVerified();
-    await userPendingEmailChangeReq.save();
+    console.log(user);
+    user.email = user.newEmail;
+    user.setEmailVerified();
+    user.clearNewEmailVerificationToken();
+    user.newEmail = undefined;
+    await user.save();
     const response = NextResponse.json({
       success: true,
       status: 200,
@@ -34,9 +38,10 @@ export async function POST(request: NextRequest) {
     });
 
     return clearCookie(response);
-
-
-
-
-  } catch (error) {}
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      status: 500,
+    });
+  }
 }

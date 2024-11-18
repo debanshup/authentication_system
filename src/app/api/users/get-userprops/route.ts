@@ -10,10 +10,11 @@ connect();
 export async function GET(request: NextRequest) {
   try {
     const decodedUser = await getDataFromToken(request);
-    // console.log(decodedUser);
+
     const user = await User.findById(decodedUser.id).select("-password");
-    const profile = await Profile.findOne({ userId: user._id });
     
+    const profile = await Profile.findOne({ userId: user._id });
+
     if (!user) {
       return NextResponse.json({
         message: "no user found",
@@ -28,8 +29,6 @@ export async function GET(request: NextRequest) {
         status: 400,
       });
     }
-    // console.log(user);
-    // console.log(decodedUser);
 
     return NextResponse.json({
       success: true,
