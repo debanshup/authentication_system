@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
 
     existedUser.newEmail = newEmail;
     const token = existedUser.createNewEmailVerificationToken();
-    console.log(token);
     
     await sendVerificationEmail({ email: newEmail, token, emailType: "updated" });
     await existedUser.save();
@@ -70,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     // change cookie
   } catch (error: any) {
-    console.log(error.message);
+    // console.log(error.message);
 
     return NextResponse.json({
       success: false,

@@ -1,9 +1,6 @@
-import { getDataFromToken } from "@/helper/dataFetcher";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/dbConfig/dbConfig";
-import { URL } from "url";
-import Profile from "@/models/profileModel";
 import { sendVerificationEmail } from "@/helper/mailer";
 // import { generateCookie } from "@/helper/cookieManager";
 
@@ -20,7 +17,7 @@ export async function POST(request: NextRequest) {
     // }
     const reqBody = await request.json();
     const { email } = reqBody;
-    console.log(email);
+    // console.log(email);
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailValid) {
       return NextResponse.json({
@@ -54,23 +51,10 @@ export async function POST(request: NextRequest) {
     }
 
     const token = user.createEmailVerificationToken();
-    await sendVerificationEmail({ email, token });
-    // savedUser.email = email;
-    // savedUser.isEmailVerified = false;
-    // const modifiedUser = await savedUser.save();
-    // console.log("saving user:");
-
-    // console.log(x);
-
-    // const payload = {
-    //   id: modifiedUser._id,
-    //   email: modifiedUser.email,
-    //   role: modifiedUser.role,
-    //   verified: modifiedUser.isEmailVerified,
-    // };
+    await sendVerificationEmail({ email:email, token:token, emailType: "new" });
 
     const savedUser =await user.save();
-    console.log(savedUser);
+    // console.log(savedUser);
     
     const response = NextResponse.json({
       message: `A verification email has been sent to ${email}`,
@@ -78,7 +62,7 @@ export async function POST(request: NextRequest) {
     });
     return response;
   } catch (error: any) {
-    console.log(error.message);
+    // console.log(error.message);
 
     return NextResponse.json({
       status: 500,

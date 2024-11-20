@@ -3,10 +3,10 @@
 // import useUserDataStore from "../store/userDataStore";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import Spin from "./components/spinner/Spinner";
+import Spin from "../global/components/Spinner";
 import { userAgent } from "next/server";
 import EmailVerificationAlert from "./components/alerts/EmailVerificationAlert";
 
@@ -64,6 +64,9 @@ const Page = () => {
       setIsLoading(false);
     }
   }
+
+ 
+  
 
   return (
     <>

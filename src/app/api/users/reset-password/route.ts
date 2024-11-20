@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       message: "password changed successfully",
     });
   } catch (error: any) {
-    console.log(error);
+    // console.log(error);
     return NextResponse.json({
       status: 500,
     });

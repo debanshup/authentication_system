@@ -8,7 +8,7 @@ import crypto from "crypto";
 connect();
 
 export async function POST(request: NextRequest) {
-  console.log("in token");
+  // console.log("in token");
   try {
 
     
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       .update(reqId)
       .digest("hex");
 
-      console.log(encryptedReqId);
+      // console.log(encryptedReqId);
       
     const otpRecord = await OTP.findOne({ reqId: encryptedReqId });
     if (!otpRecord) {

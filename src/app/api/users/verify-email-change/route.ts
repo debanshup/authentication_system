@@ -2,12 +2,11 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import User from "@/models/userModel";
-import { getDataFromToken } from "@/helper/dataFetcher";
 import { clearCookie } from "@/helper/cookieManager";
 connect();
 
 export async function POST(request: NextRequest) {
-  console.log("Hi");
+  // console.log("Hi");
 
   try {
     const reqBody = await request.json();
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
       // isnewEmailVerified: false,
     });
 
-    console.log(user);
+    // console.log(user);
     user.email = user.newEmail;
     user.setEmailVerified();
     user.clearNewEmailVerificationToken();

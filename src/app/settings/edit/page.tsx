@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
@@ -117,6 +118,7 @@ const Page = () => {
                     </p>
                 </AlertDismissible>
             )}
+        <p className="lead fw-bold">Edit Your Profile</p>
 
             <div
                 className="my-4"
@@ -124,6 +126,7 @@ const Page = () => {
                     borderRadius: "20px",
                 }}
             >
+                
                 <div
                     className=""
                     style={{

@@ -1,7 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
-import { generateCookie } from "@/helper/cookieManager";
 import { getDataFromToken } from "@/helper/dataFetcher";
-import { sendVerificationEmail } from "@/helper/mailer";
 import Profile from "@/models/profileModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";

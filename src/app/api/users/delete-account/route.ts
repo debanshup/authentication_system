@@ -1,6 +1,6 @@
 import { connect } from "@/dbConfig/dbConfig";
 import { clearCookie } from "@/helper/cookieManager";
-import { getDataFromToken, isUsernameAvailable } from "@/helper/dataFetcher";
+import { getDataFromToken } from "@/helper/dataFetcher";
 import OTP from "@/models/OTPModel";
 import Profile from "@/models/profileModel";
 import User from "@/models/userModel";

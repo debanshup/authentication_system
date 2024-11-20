@@ -49,8 +49,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-      getDetails();
-    
+    getDetails();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -124,9 +124,15 @@ export default function Page() {
                 <p>
                   <i className="bi bi-globe me-2 text-info"></i>
                   <strong>Website:</strong>{" "}
-                  <a href={profile.website} className="text-decoration-none">
-                  {profile.website}
+                  <a
+                    href={(profile.website && profile.website.startsWith("http")) ? profile.website : `https://${profile.website}`}
+                    className="text-decoration-none"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {profile.website}
                   </a>
+
                 </p>
               </div>
 
@@ -134,7 +140,7 @@ export default function Page() {
               <div className="col-md-6 mb-3">
                 <h5 className="text-muted">About</h5>
                 <p>
-                {profile.about}
+                  {profile.about}
                 </p>
               </div>
             </div>

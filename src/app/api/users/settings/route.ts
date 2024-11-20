@@ -2,15 +2,13 @@ import { getDataFromToken } from "@/helper/dataFetcher";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/dbConfig/dbConfig";
-import { URL } from "url";
-import Profile from "@/models/profileModel";
 
 connect();
 
 export async function GET(request: NextRequest) {
   try {
     const decodedUser = await getDataFromToken(request);
-    console.log(decodedUser);
+    // console.log(decodedUser);
     const user = await User.findOne({
       _id: decodedUser.id,
     }).select("-password");

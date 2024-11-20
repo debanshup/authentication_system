@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     "src/app/store/userDataStore.ts",
     "src/context/UserContext.jsx"
-  ],
+, "src/app/context/UserContext.js"  ],
   "exclude": [
     "node_modules"
   ]

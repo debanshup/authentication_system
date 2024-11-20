@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       .update(token)
       .digest("hex");
 
-    console.log(encryptedToken);
+    // console.log(encryptedToken);
 
     const user = await User.findOne({
       emailVerificationToken: encryptedToken,
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
         return clearCookie(response);
       }
     } catch (error) {
-      console.log("This is not unexpected");
-      console.log("got it");
+      // console.log("This is not unexpected");
+      // console.log("got it");
     }
 
     return response;
