@@ -1,49 +1,58 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import ProfileMenu from "./ProfileMenu";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { profile } from "console";
+import ProfileMenu from "./ProfileMenu";
 
 const Header = () => {
-    const router = useRouter()
-    const [loggedIn, setLoggedIn] = useState(false)
-    const [userProps, setUserProps] = useState({
-        username: "",
-        fullname: "",
-        image: "",
-    });
+  const router = useRouter();
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userProps, setUserProps] = useState({
+    username: "",
+    fullname: "",
+    image: "",
+  });
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
-
-
-    
-
-
-    async function getUserProps() {
-        try {
-            const propRes = await axios.get("/api/users/get-userprops");
-            if (propRes.data.success) {
-                setUserProps({
-                    username: propRes.data.username,
-                    fullname: propRes.data.fullname,
-                    image: propRes.data.image,
-                });
-                setLoggedIn(true)
-            } else {
-                setLoggedIn(false)
-
-            }
-        } catch (error) {
-            setLoggedIn(false)
-
-        }
-
+  async function getUserProps() {
+    try {
+      const propRes = await axios.get("/api/users/get-userprops");
+      if (propRes.data.success) {
+        setUserProps({
+          username: propRes.data.username,
+          fullname: propRes.data.fullname,
+          image: propRes.data.image,
+        });
+        setLoggedIn(true);
+      }
+    } catch (error) {
+      setLoggedIn(false);
+    } finally {
+      setIsLoading(false); // Mark loading as complete
     }
-    useEffect(() => {
-        getUserProps()
-    }, []);
+  }
+
+  useEffect(() => {
+    getUserProps();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <header
+        className="p-3 bg-light sticky-top shadow-sm d-flex justify-content-between align-items-center"
+        style={{
+          borderBottom: "2px solid #ddd",
+          zIndex: 1030,
+        }}
+      >
+        <div className="d-flex align-items-center">
+          <i className="bi bi-emoji-smile me-2 fs-4 text-primary"></i>
+          <span className="fw-bold text-primary">Loading...</span>
+        </div>
+      </header>
+    );
+  }
 
     return (
         <header
@@ -100,7 +109,16 @@ const Header = () => {
                         </ul>
                     </ProfileMenu>
                 </>) : (<>
-                    <button>Hi</button>
+                    <div className="">
+                        <a href="/login" className="fw-bold link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                            Log In
+                        </a>
+                        <span className="text-muted"> / </span>
+                        <a href="/signup" className="fw-bold link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                            Sign Up
+                        </a>
+                    </div>
+
                 </>)}
             </div>
         </header>

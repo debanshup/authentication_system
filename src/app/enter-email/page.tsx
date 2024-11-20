@@ -4,7 +4,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IdentifierParams } from "@/types/enums";
-import Spin from "./components/spinner/Spinner";
 import toast, { Toaster } from "react-hot-toast";
 
 const Cred = () => {
@@ -84,10 +83,10 @@ const Cred = () => {
         disabled={loadingNext}
       />
     </div>
-    <div className="row w-100">
+    <div className="row">
       <div className="col-6 mb-3 mb-md-0">
         <Link
-          className="btn btn-lg btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+          className="btn btn-sm btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
           href="/login"
         >
           Back
@@ -96,16 +95,10 @@ const Cred = () => {
       <div className="col-6">
         <button
           type="button"
-          className="btn btn-lg btn-primary w-100 d-flex align-items-center justify-content-center"
+          className="btn btn-sm btn-primary w-100 d-flex align-items-center justify-content-center"
           onClick={nextBtnClickHandler}
         >
-          {loadingNext ? (
-            <div className="d-flex align-items-center gap-2">
-              <Spin />
-            </div>
-          ) : (
-            "Next"
-          )}
+          Next
         </button>
       </div>
     </div>

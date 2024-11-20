@@ -4,8 +4,6 @@ import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { sendPasswordResetEmail } from "@/helper/mailer";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import OTP from "@/models/OTPModel";
 
 connect();
@@ -56,7 +54,7 @@ export async function POST(request: NextRequest) {
       otp_sent_status: true,
     });
   } catch (error: any) {
-    console.log(error.message);
+    // console.log(error.message);
     return NextResponse.json({
       success: false,
       error: error.message,

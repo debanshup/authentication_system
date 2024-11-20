@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 connect();
 export async function GET(request: NextRequest) {
-  console.log("get-mail route");
+  // console.log("get-mail route");
 
   try {
     const reqId: any = request.nextUrl.searchParams.get("token");
-    console.log(reqId);
+    // console.log(reqId);
 
     const encryptedReqId = crypto
       .createHash("sha256")

@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import { useRouter } from 'next/navigation'
+import Header from './global/components/Header'
 
 const Home = () => {
     const router = useRouter()
@@ -12,9 +13,18 @@ const Home = () => {
     }
 
     return (
-        <div className="container-fluid bg-light vh-100 d-flex flex-column">
+<>
+<Header/>
+
+<div className="container-fluid bg-light vh-100 d-flex flex-column">
             {/* Hero Section */}
-            <div className="d-flex flex-column justify-content-center align-items-center flex-grow-1 bg-primary text-white text-center p-5">
+            <div className="d-flex flex-column justify-content-center align-items-center flex-grow-1 text-white text-center p-5"
+                style={{
+                    background: "linear-gradient(135deg, #6a11cb, #2575fc)",
+                    padding: "50px 20px",
+                }}
+            >
+                <p className="bg-danger border text-white rounded p-2">This page is for design purposes only. Please do not take it seriously.</p>
                 <h1 className="display-3 fw-bold mb-4">Welcome to Our Platform</h1>
                 <p className="lead mb-4">
                     Explore endless possibilities with our user-friendly and secure platform.
@@ -55,7 +65,7 @@ const Home = () => {
                     <div className="col-md-4">
                         <div className="card border-0 shadow h-100">
                             <div className="card-body text-center">
-                                <i className="bi bi-gear text-danger display-4 mb-3"></i>
+                                <i className="bi bi-gear text-secondary display-4 mb-3"></i>
                                 <h5 className="card-title fw-bold">Easy to Use</h5>
                                 <p className="card-text">
                                     Our platform is designed for effortless navigation and usage.
@@ -74,6 +84,7 @@ const Home = () => {
             </footer>
         </div>
 
+</>
     )
 }
 

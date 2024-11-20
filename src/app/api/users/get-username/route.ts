@@ -2,8 +2,6 @@ import { getDataFromToken } from "@/helper/dataFetcher";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/dbConfig/dbConfig";
-import { URL } from "url";
-import Profile from "@/models/profileModel";
 
 connect();
 

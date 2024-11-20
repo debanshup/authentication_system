@@ -17,7 +17,8 @@ console.log("pathname:  "+pathname);
     "/verify-email",
     "/enter-email",
     "/reset-password",
-    "/"
+    "/",
+    "/verify-otp",
   ];
 
   // Check if the current path is a public route

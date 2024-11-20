@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
         }
       }
     } catch (error: any) {
-      console.log(error.message);
+      // console.log(error.message);.
+      
+      // this has been intentionally left blank
+      
     }
     const isAvailable = await isUsernameAvailable(username);
     // console.log(isAvailable);
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
       username_available: isAvailable,
     });
   } catch (error: any) {
-    console.log(error.message);
+    // console.log(error.message);
     return NextResponse.json({
       success: false,
       status: 500,

@@ -69,19 +69,21 @@ export async function POST(request: NextRequest) {
       userId: user._id,
     });
     // send verification email
-    const token = user.createEmailVerificationToken();
+    // const token = user.createEmailVerificationToken();
 
-    await sendVerificationEmail({ email, token, emailType: "new" });
+    // await sendVerificationEmail({ email, token, emailType: "new" });
     await user.save();
 
+    // console.log(user);
+    
     return NextResponse.json({
       message: "User created successfully",
       success: true,
       registration_status: user.isEmailVerified,
-      user: user,
-      otpDocument: otpDocument,
-      profile: profile,
-      email: user.email,
+      // user: user,
+      // otpDocument: otpDocument,
+      // profile: profile,
+      // email: user.email,
     });
   } catch (error: any) {
     console.log(error.message);

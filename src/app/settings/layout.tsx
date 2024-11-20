@@ -6,32 +6,34 @@ import User from '@/models/userModel'
 import { ListGroup } from 'react-bootstrap'
 import Link from 'next/link'
 import axios from 'axios'
+import Header from '../global/components/Header'
 
 const Layout = ({ children }: any) => {
-const [username, setUsername] = useState("")
+  const [username, setUsername] = useState("")
 
-async function getUsername() {
-  try {
-    const usernameRes = await axios.get("/api/users/get-username")
-    if (!usernameRes.data.success) {
-      throw new Error("Something went wrong!")
+  async function getUsername() {
+    try {
+      const usernameRes = await axios.get("/api/users/get-username")
+      if (!usernameRes.data.success) {
+        throw new Error("Something went wrong!")
+      }
+      setUsername(usernameRes.data.username)
+    } catch (error) {
+
     }
-    setUsername(usernameRes.data.username)
-  } catch (error) {
-    
   }
-}
 
-useEffect(() => {
-  getUsername()
+  useEffect(() => {
+    getUsername()
 
-  
-}, [])
+
+  }, [])
 
 
   return (
 
     <>
+      <Header />
       <div className="container-sm bg-white mt-5 p-4 rounded shadow-sm">
         <div className="row">
           {/* Sidebar */}

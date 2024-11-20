@@ -1,11 +1,10 @@
 // import { connect } from "@/dbConfig/dbConfig";
 
 import { NextRequest, NextResponse } from "next/server";
-import { getDataFromToken } from "@/helper/dataFetcher";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('entered logout route');
+    // console.log('entered logout route');
     // const decodedUser = getDataFromToken(request)
     const response = NextResponse.json({ success: true });
     response.cookies.set("sessionId", "", {
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error: any) {
-    console.error(error.message);
+    // console.error(error.message);
     
     return NextResponse.json({
       success: false,
