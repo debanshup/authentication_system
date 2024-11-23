@@ -17,7 +17,8 @@
 /out/
 
 # production
-/build
+/build# Environment variables
+.env
 
 # misc
 .DS_Store
