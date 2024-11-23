@@ -17,8 +17,12 @@
 /out/
 
 # production
+<<<<<<< HEAD
 /build# Environment variables
 .env
+=======
+/build
+>>>>>>> parent of 2e5029a (Remove .env from repository)
 
 # misc
 .DS_Store
