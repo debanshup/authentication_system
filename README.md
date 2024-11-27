@@ -29,7 +29,7 @@ npm run dev
 # Email Functionality
 ---
 
-This project uses the [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails. The email functionality has been implemented in the [`src/helper/mailer.ts`](src/helper/mailer) directory.
+This project uses the [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails. The email functionality has been implemented in the `src/helper/mailer.ts`.
 
 For more details about the SMTP server, refer to the official repository: [SMTP_SERVER on GitHub](https://github.com/debanshup/SMTP_SERVER).
 
@@ -51,3 +51,12 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/)
+
+---
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software in accordance with the terms of the license.
+
+---
