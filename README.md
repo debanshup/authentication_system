@@ -55,9 +55,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ---
 
-## Contribution
+## Contributing
 
 Contributions are welcome! Feel free to submit a Pull Request. See the [CONTRIBUTING](CONTRIBUTING.md) section for more details.
+
 
 ---
 
