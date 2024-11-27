@@ -8,7 +8,7 @@ Install all the required dependencies
 npm install
 ```
 
-Create a .env  with the following details in the root of your project
+Create a .env with the following details in the root of your project
 
 ```bash
 MONGO_URI="YOUR MONGO URI"
@@ -26,6 +26,13 @@ Run local development server
 npm run dev
 ```
 
+# Email Functionality
+
+This project uses [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails, which has been implemented in `/helper/mailer`.  
+
+Please refer to the [SMTP_SERVER Repository](https://github.com/debanshup/SMTP_SERVER) for more details.  
+
+Alternatively, you can implement your own email sender.
 
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
