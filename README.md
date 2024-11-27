@@ -29,7 +29,7 @@ npm run dev
 # Email Functionality
 ---
 
-This project uses the [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails. The email functionality has been implemented in the [`src/helper/mailer`](src/helper/mailer) directory.
+This project uses the [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails. The email functionality has been implemented in the [`src/helper/mailer.ts`](src/helper/mailer) directory.
 
 For more details about the SMTP server, refer to the official repository: [SMTP_SERVER on GitHub](https://github.com/debanshup/SMTP_SERVER).
 
