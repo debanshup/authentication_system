@@ -26,7 +26,8 @@ Run local development server
 npm run dev
 ```
 
-# Email Functionality
+## Email Functionality
+
 ---
 
 This project uses the [SMTP_SERVER](https://github.com/debanshup/SMTP_SERVER) to send emails. The email functionality has been implemented in the `src/helper/mailer.ts`.
@@ -54,6 +55,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ---
 
+## Contribution
+
+Contributions are welcome! Feel free to submit a Pull Request. See the [CONTRIBUTING](CONTRIBUTING.md) section for more details.
+
+---
 
 ## License
 
