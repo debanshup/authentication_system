@@ -1,3 +1,12 @@
+/**
+ * this method was implemented when I used Nodemailer to send email
+ */
+
+
+
+
+
+
 // import nodemailer from "nodemailer";
 // const transporter = nodemailer.createTransport({
 //   host: "sandbox.smtp.mailtrap.io",
